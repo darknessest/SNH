@@ -125,9 +125,9 @@ public class Controller implements Initializable {
             AP.getChildren().add(iv);
 
             SelectedImagePath = selectedFile.getAbsolutePath();
-
             FileAddressField.setText(SelectedImagePath);
-            CommandFlow.getChildren().add(new Text(SelectedImagePath + " has been opened\n"));
+
+            PutText(getSelectedImagePath() + " has been opened\n", false, Color.BLACK, "Arial", 16);
         }
     }
 
@@ -138,22 +138,23 @@ public class Controller implements Initializable {
 //        This method is already linked with "RUN" button
 //        code in the body of this method will run
 //        once button is pressed
+
         if (getSelectedImagePath() == null) {
-            CommandFlow.getChildren().add(new Text("Please choose a picture or a folder\n"));
+            PutText("Please choose a picture or a folder\n", false, Color.BLACK, "Arial", 16);
+
         } else {
             String path = getSelectedImagePath();
             res = recognizeMathExpr(path, clm, mwm, true);
-            CommandFlow.getChildren().add(new Text(getSelectedImagePath()));
-            CommandFlow.getChildren().add(new Text("\n" + res + "\n"));
-            CommandFlow.getChildren().add(new Text(" "));
+
+            PutText(getSelectedImagePath() + "\n" + res + "\n ", false, Color.BLACK, "Arial", 16);
         }
-        //CommandFlow.getChildren().add(new Text("RUN button is pressed\n"));
+
     }
 
     @FXML
     void PreProccess() throws InterruptedException {
         if (getSelectedImagePath() == null) {
-            CommandFlow.getChildren().add(new Text("Please choose a picture or a folder\n"));
+            PutText("Please choose a picture or a folder\n", false, Color.BLACK, "Arial", 16);
         }
         String path = getSelectedImagePath();
         System.out.println(path + " ");//+ pic);
@@ -165,15 +166,14 @@ public class Controller implements Initializable {
         //String newFolder = "res\\prepresult";//E:\CoreMath\SNH\first\res\prepresult
         preprocessImage(pic.substring(1, pic.length()), oldfolder, newFolder, nPixelDiv, true);
         SelectedImagePath = newFolder + File.separator + pic.substring(1, pic.length()) + ".bmp";
-        System.out.println("preprocess path: " + SelectedImagePath);
-        CommandFlow.getChildren().add(new Text(SelectedImagePath));
-        CommandFlow.getChildren().add(new Text(" "));
+
+        PutText("PreProcess image path: " + SelectedImagePath + "\n", false, Color.BLACK, "Arial", 16);
     }
 
     @FXML
     void calculate() throws InterruptedException, SMErrProcessor.JSmartMathErrException, ErrProcessor.JFCALCExpErrException {
         if (getRes() == null) {
-            CommandFlow.getChildren().add(new Text("There is no result yet.\n"));
+            PutText("There is no result yet\n", false, Color.BLACK, "Arial", 16);
             return;
         }
         String calcA = "null";
@@ -208,8 +208,9 @@ public class Controller implements Initializable {
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         socket.getInputStream())); // 输入， from 服务器 socket
                 calcA = in.readLine();
-                CommandFlow.getChildren().add(new Text("答案：" + "\n"));
-                CommandFlow.getChildren().add(new Text(calcA + "\n"));
+
+                PutText("答案：\n" + calcA + "\n", false, Color.BLACK, "Arial", 16);
+
 
                 //System.out.printlnin.readLine()); // 打印服务器发过来的字符串
                 System.out.println("Client end!");
@@ -224,12 +225,13 @@ public class Controller implements Initializable {
         } else
             calcA = SmartCalcProcLib.calculate(strExpressions, false);
 
-        String temp = calcA.replace(File.separator + "text", ""); //改了\\
+        String temp = calcA.replace(File.separator + "text", "");
         temp = temp.replace("\"", "");
         temp = temp.replace("{", "(");
         temp = temp.replace("}", ")");
-        CommandFlow.getChildren().add(new Text(temp + "\n"));
-        CommandFlow.getChildren().add(new Text(" "));
+
+        PutText(temp + "\n", false, Color.BLACK, "Arial", 16);
+
         System.out.println(temp);
     }
 
@@ -253,6 +255,7 @@ public class Controller implements Initializable {
 
     // This method can be used outside (in other files)
     // Returns path to the opened image
+    // TODO 如果在别的文档不能用这个函数，就可以删掉
     public String getSelectedImagePath() {
         return SelectedImagePath;
     }
