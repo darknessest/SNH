@@ -246,7 +246,7 @@ public class JImageProcessor {
         }
         long endTime = System.nanoTime();
         System.out.println("After restruct, image " + strImageFile + " includes expression :\n" + strOutput);
-//        String dir = "E:\\recomath\\final\\SNH\\Python\\Pretre\\Pretre\\data"; //TODO 更改路径
+//        String dir = "E:\\recomath\\final\\SNH\\Python\\Pretre\\Pretre\\data"; //TODO 更改路径，暂时注释化了
 //        delAllFile(dir);
 
         System.out.println(String.format("recognize %s takes %s", strImageFile, toString(endTime - startTime)));
