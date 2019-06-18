@@ -16,7 +16,7 @@ public class SNH extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));   // Settings for elements on the screen
-        primaryStage.setTitle("算你狠");//TODO 测试CYX
+        primaryStage.setTitle("算你狠");//TODO 测试CYX啦啦啦
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
     }
