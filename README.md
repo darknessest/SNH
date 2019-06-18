@@ -4,3 +4,5 @@
 
 ### 通知：请每次都检查TODO表
 做好某个TODO任务，请删掉TODO注释，并且在commit message记录
+
+大家好，我叫CYX，能看到我么=￣ω￣=
