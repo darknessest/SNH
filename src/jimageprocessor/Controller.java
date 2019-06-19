@@ -49,7 +49,6 @@ public class Controller implements Initializable {
     private CharLearningMgr clm;
     private MisrecogWordMgr mwm;
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         int nTestMode0PrintRecogMode = ExprRecognizer.RECOG_SPRINT_MODE;
@@ -126,35 +125,16 @@ public class Controller implements Initializable {
 
             SelectedImagePath = selectedFile.getAbsolutePath();
             FileAddressField.setText(SelectedImagePath);
-
+            //TODO PutText 只有第一次调用是正常的，之后均有延迟，（注释掉第一次条用的代码，则只有第二次调用的是正常的）
             PutText(getSelectedImagePath() + " has been opened\n", false, Color.BLACK, "Arial", 16);
         }
-    }
-
-    @FXML
-    void RunProccess() throws InterruptedException {
-//        CommandFlow.getChildren().clear(); /* clears CommandFlow (right) */
-
-//        This method is already linked with "RUN" button
-//        code in the body of this method will run
-//        once button is pressed
-
-        if (getSelectedImagePath() == null) {
-            PutText("Please choose a picture or a folder\n", false, Color.BLACK, "Arial", 16);
-
-        } else {
-            String path = getSelectedImagePath();
-            res = recognizeMathExpr(path, clm, mwm, true);
-
-            PutText(getSelectedImagePath() + "\n" + res + "\n ", false, Color.BLACK, "Arial", 16);
-        }
-
     }
 
     @FXML
     void PreProccess() throws InterruptedException {
         if (getSelectedImagePath() == null) {
             PutText("Please choose a picture or a folder\n", false, Color.BLACK, "Arial", 16);
+            return;
         }
         String path = getSelectedImagePath();
         System.out.println(path + " ");//+ pic);
@@ -163,11 +143,20 @@ public class Controller implements Initializable {
         String pic = path.replace(path.substring(0, path.lastIndexOf(File.separator)), "");
         System.out.println(oldfolder + " " + pic.substring(1, pic.length()));
         String newFolder = "res" + File.separator + "prepresult";
-        //String newFolder = "res\\prepresult";//E:\CoreMath\SNH\first\res\prepresult
         preprocessImage(pic.substring(1, pic.length()), oldfolder, newFolder, nPixelDiv, true);
         SelectedImagePath = newFolder + File.separator + pic.substring(1, pic.length()) + ".bmp";
-
         PutText("PreProcess image path: " + SelectedImagePath + "\n", false, Color.BLACK, "Arial", 16);
+    }
+
+    @FXML
+    void RunProccess() throws InterruptedException {
+        if (getSelectedImagePath() == null) {
+            PutText("Please choose a picture or a folder\n", false, Color.BLACK, "Arial", 16);
+            return;
+        }
+        String path = getSelectedImagePath();
+        res = recognizeMathExpr(path, clm, mwm, true);
+        PutText("The recognition result:"+"\n"+res+"\n",false, Color.RED, "Arial", 16);
     }
 
     @FXML
@@ -176,7 +165,7 @@ public class Controller implements Initializable {
             PutText("There is no result yet\n", false, Color.BLACK, "Arial", 16);
             return;
         }
-        String calcA = "null";
+        String calcA = null;
         String strExpressions = res;
         if (strExpressions.indexOf("\n") != -1)//方程组
         {
@@ -195,9 +184,9 @@ public class Controller implements Initializable {
             temp = temp.replace("^", "**");
             strExpressions = temp + "==" + strarraycup[1];
         }
-        if (strExpressions.indexOf("derivative") != -1) {
+        if (strExpressions.indexOf("derivative") != -1) {//求导
             Function df = new Function(strExpressions);
-            String arg = df.x + String.valueOf(df.ccount) + df.str;
+            String arg = df.x + String.valueOf(df.ccount) + df.str;//这里的df.ccount，为求导阶数，目前一阶导数测试通过
             try {
                 Socket socket = new Socket("127.0.0.1", 9999);
                 System.out.println("Client start!");
@@ -208,30 +197,25 @@ public class Controller implements Initializable {
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         socket.getInputStream())); // 输入， from 服务器 socket
                 calcA = in.readLine();
-
-                PutText("答案：\n" + calcA + "\n", false, Color.BLACK, "Arial", 16);
-
-
-                //System.out.printlnin.readLine()); // 打印服务器发过来的字符串
                 System.out.println("Client end!");
                 socket.close();
-                //String dir = "E:\\recomath\\final\\SNH\\Python\\Pretre\\Pretre\\data";
                 //boolean success = (new File(dir)).delete();
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else
+        } else {
             calcA = SmartCalcProcLib.calculate(strExpressions, false);
+        }
 
         String temp = calcA.replace(File.separator + "text", "");
         temp = temp.replace("\"", "");
         temp = temp.replace("{", "(");
         temp = temp.replace("}", ")");
-
-        PutText(temp + "\n", false, Color.BLACK, "Arial", 16);
-
+        if(temp.length()==0)
+            temp="I can calculate it yet";
+        PutText("ANWSER:\n"+temp + "\n\n", false, Color.BLACK, "Arial", 16);
         System.out.println(temp);
     }
 
@@ -249,7 +233,6 @@ public class Controller implements Initializable {
         Text caption = new Text(text);
         caption.setFont(Font.font(fontName, size));
         caption.setFill(color);
-
         CommandFlow.getChildren().add(caption);
     }
 
@@ -273,9 +256,9 @@ public class Controller implements Initializable {
             }
             str = Ostr.substring(count[0] + 1, count[1]);
             x = Ostr.substring(count[2] + 1, count[3]);
-            ccount = 0;
+            ccount = 1;
         }
-
+        // TODO 计算求导阶数，并赋值给ccount
         public static void StringCount(String str) {
             int index = 0;
             String key = "derivative";

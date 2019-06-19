@@ -10,14 +10,15 @@ from PIL import ImageEnhance, Image
 from cnn.neural_network import CNN
 from keras.utils import np_utils
 from skimage import io
-#import matplotlib.pyplot as plt
+
 
 def calculDiff(strExpr):
-    x = sympy.Symbol(strExpr)
+    x = sympy.Symbol(strExpr[0])
     val = int(strExpr[1])
-    str = strExpr[2:]
-    print(sympy.diff(str, x, val))
-    newSocket.send(bytes(str(sympy.diff(str, x, val))))
+    str_ = strExpr[2:]
+    ans=sympy.diff(str_, x, val)
+    print(ans)
+    newSocket.send(bytes(str(ans),encoding='utf-8'))
 
 def convert_img(img_file, path_to_img='data/'):#E:\\recomath\\final\SNH\Python\Pretre\Pretre\data/
     if img_file.endswith('.jpg') or img_file.endswith('.png') or img_file.endswith('.bmp'):
@@ -77,7 +78,7 @@ if __name__ == "__main__":
         i = 0
         newSocket,clientAddr = sock.accept()
         recvData = str(newSocket.recv(1024),encoding = 'utf-8')
-        print(recvData)
+        # print(recvData)
         if(recvData.find("derivative")!=-1):
             calculDiff(recvData.split(':')[1])
         else:
@@ -110,20 +111,3 @@ if __name__ == "__main__":
 
         #newSocket.send(bytes('thank you\n', encoding='utf-8'))
         newSocket.close()
-
-    #print("image shape: ")
-    #print(input_img.shape)
-
-    #print("label shape: ")
-    #print(input_labels.shape)
-
-    #print('\nLoading the Model...')
-
-    #text_file = open("predictions.txt", "w")
-    #print("Writing predictions to predictions.txt ...")
-     #+ ' - ' + pic_names[num], file=text_file)
-        # print(model_labels[int(prediction[0])] + ' - ' + pic_names[num])
-        # print(model_labels[int(prediction[0])] + ' Number of Picture: {}'.format(np.argmax(input_labels[num])))
-
-    #text_file.close()
-    #print("Done")
