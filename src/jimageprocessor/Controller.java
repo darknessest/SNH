@@ -131,7 +131,7 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    void PreProccess() throws InterruptedException {
+    void PreProcess() throws InterruptedException {
         if (getSelectedImagePath() == null) {
             PutText("Please choose a picture or a folder\n", false, Color.BLACK, "Arial", 16);
             return;
@@ -149,14 +149,14 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    void RunProccess() throws InterruptedException {
+    void RunProcess() throws InterruptedException {
         if (getSelectedImagePath() == null) {
             PutText("Please choose a picture or a folder\n", false, Color.BLACK, "Arial", 16);
             return;
         }
         String path = getSelectedImagePath();
         res = recognizeMathExpr(path, clm, mwm, true);
-        PutText("The recognition result:"+"\n"+res+"\n",false, Color.RED, "Arial", 16);
+        PutText("The recognition result:" + "\n" + res + "\n", false, Color.RED, "Arial", 16);
     }
 
     @FXML
@@ -213,9 +213,9 @@ public class Controller implements Initializable {
         temp = temp.replace("\"", "");
         temp = temp.replace("{", "(");
         temp = temp.replace("}", ")");
-        if(temp.length()==0)
-            temp="I can calculate it yet";
-        PutText("ANWSER:\n"+temp + "\n\n", false, Color.BLACK, "Arial", 16);
+        if (temp.length() == 0)
+            temp = "I can calculate it yet";
+        PutText("ANSWER:\n" + temp + "\n\n", false, Color.BLACK, "Arial", 16);
         System.out.println(temp);
     }
 
@@ -233,12 +233,13 @@ public class Controller implements Initializable {
         Text caption = new Text(text);
         caption.setFont(Font.font(fontName, size));
         caption.setFill(color);
-        CommandFlow.getChildren().add(caption);
+        CommandFlow.getChildren().addAll(caption, new Text("\n"));
     }
 
     // This method can be used outside (in other files)
     // Returns path to the opened image
     // TODO 如果在别的文档不能用这个函数，就可以删掉
+    // 注意函数自动增加 '\n'
     public String getSelectedImagePath() {
         return SelectedImagePath;
     }
@@ -258,6 +259,7 @@ public class Controller implements Initializable {
             x = Ostr.substring(count[2] + 1, count[3]);
             ccount = 1;
         }
+
         // TODO 计算求导阶数，并赋值给ccount
         public static void StringCount(String str) {
             int index = 0;
