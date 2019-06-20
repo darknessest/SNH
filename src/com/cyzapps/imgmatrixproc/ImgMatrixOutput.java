@@ -40,53 +40,54 @@ public class ImgMatrixOutput {
         }
     }
 
-//    public static void createMatrixImage(byte[][] matrix, String filedir) throws IOException {
-//        int cx = matrix.length;
-//        int cy = matrix[0].length;
-//
-//        //填充矩形高宽
-//        //int cz = 10;
-//        //生成图的宽度
-//        int width = cx;// * cz;
-//        //生成图的高度
-//        int height = cy;// * cz;
-//
-//        int czh=0,czw=0;
-//        if(width>height)
-//        {
-//            czh=(width-height)/2;
-//            height=width;
-//        }
-//        else
-//        {
-//            czw=(height-width)/2;
-//            width=height;
-//        }
-//
-//        OutputStream output = new FileOutputStream(new File(filedir));
-//        BufferedImage bufImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-//        Graphics2D gs = bufImg.createGraphics();
-//        gs.setBackground(Color.WHITE);
-//        gs.clearRect(0, 0, width, height);
-//
-//
-//        gs.setColor(Color.BLACK);
-//        for (int i = 0; i < cx; i++) {
-//            for (int j = 0; j < cy; j++) {
-//                //1绘制填充黑矩形
-//                if(matrix[i][j]==1){
-//
-//                    gs.drawRect(i+czw, j+czh, 1, 1);
-//                    gs.fillRect(i+czw, j+czh, 1, 1);
-//                }
-//            }
-//        }
-//        gs.dispose();
-//        bufImg.flush();
-//        //输出文件
-//        ImageIO.write(bufImg, "jpeg", output);
-//
-//    }
+    public static void createMatrixImage_ful(byte[][] matrix, String filedir) throws IOException {
+        int cx = matrix.length;
+        int cy = matrix[0].length;
+
+        //填充矩形高宽
+        //int cz = 10;
+        //生成图的宽度
+        int width = cx;// * cz;
+        //生成图的高度
+        int height = cy;// * cz;
+
+        int czh=0,czw=0;
+        if(width>height)
+        {
+            czh=(width-height)/2;
+            height=width;
+        }
+        else
+        {
+            czw=(height-width)/2;
+            width=height;
+        }
+
+        OutputStream output = new FileOutputStream(new File(filedir));
+        BufferedImage bufImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D gs = bufImg.createGraphics();
+        gs.setBackground(Color.WHITE);
+        gs.clearRect(0, 0, width, height);
+
+
+        gs.setColor(Color.BLACK);
+        for (int i = 0; i < cx; i++) {
+            for (int j = 0; j < cy; j++) {
+                //1绘制填充黑矩形
+                if(matrix[i][j]==1){
+
+                    gs.drawRect(i+czw, j+czh, 1, 1);
+                    gs.fillRect(i+czw, j+czh, 1, 1);
+                }
+            }
+        }
+        gs.dispose();
+        bufImg.flush();
+        //输出文件
+        ImageIO.write(bufImg, "jpeg", output);
+
+    }
+
     //生成32bmp
     public static void createMatrixImage(byte[][] matrix, String filedir) throws IOException, InterruptedException {
 

@@ -4,6 +4,7 @@
  */
 package jimageprocessor;
 
+import com.cyzapps.imgmatrixproc.ImgMatrixOutput;
 import com.cyzapps.imgmatrixproc.ImgNoiseFilter;
 import com.cyzapps.imgmatrixproc.ImgThreshBiMgr;
 import com.cyzapps.imgproc.ImageMgr;
@@ -19,10 +20,8 @@ import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-//import static com.cyzapps.mathrecog.ExprRecognizer.ssss;
 
 /**
- *
  * @author tonyc
  */
 public class JImageProcessor {
@@ -31,28 +30,28 @@ public class JImageProcessor {
      * @param args the command line arguments
      */
 
-    public static String[] resu = new  String[500];
+    public static String[] resu = new String[500];
     public static double[] similarty = new double[500];
 
-    public static void main(String[] args) throws InterruptedException {
-         
+    public static void main(String[] args) throws InterruptedException, IOException {
+
         int nTestMode = 0;
         try {
-        	nTestMode = Integer.parseInt(args[0]);
+            nTestMode = Integer.parseInt(args[0]);
         } catch (NumberFormatException e) {
-        	nTestMode = 0;
+            nTestMode = 0;
         }
-        
+
         int nTestMode0PrintRecogMode = ExprRecognizer.RECOG_SPRINT_MODE;
         int nTestMode0HandwritingRecogMode = ExprRecognizer.RECOG_SHANDWRITING_MODE;
         int nTestMode3and4RecogMode = ExprRecognizer.RECOG_SPRINT_MODE;
         boolean bLoadPrintChars = false;
         boolean bLoadSPrintChars = true;
         boolean bLoadSHandwritingChars = true;
-        if (nTestMode == -1)    {
+        if (nTestMode == -1) {
             // generate UPT loader java files
             generateUPTsJAVALoader();
-        } else if (nTestMode == 0)    {
+        } else if (nTestMode == 0) {
             CharLearningMgr clm = new CharLearningMgr();
             FileInputStream fis = null;
             try {
@@ -89,11 +88,11 @@ public class JImageProcessor {
             UPTJavaLoaderMgr.load(bLoadPrintChars, bLoadSPrintChars, bLoadSHandwritingChars);
             //String[] strFolders = getPrototypeFolders();
             //ImageMgr.loadUnitProtoTypesBMPs2UPTs(UnitRecognizer.msUPTMgr, strFolders, "prototypes");
-        
+
             ExprRecognizer.setRecognitionMode(nTestMode0HandwritingRecogMode); //hand mode on
 
-            int max_num=15;
-            String Img_folder="teat_data3";
+            int max_num = 15;
+            String Img_folder = "teat_data3";
 //            for(int i=1;i<=max_num;++i){
 //                preprocessImage(String.valueOf(i)+".jpg", Img_folder, "prepresult", 100, true);
 //            }
@@ -101,13 +100,10 @@ public class JImageProcessor {
 //                testThinImage("prepresult", "thinimgresult");
 //            }
 
-                recognizeMathExpr("test_data3/"+"3"+".jpg.bmp", clm, mwm, true);
-                System.out.println();
+            recognizeMathExpr("test_data3/" + "3" + ".jpg.bmp", clm, mwm, true);
+            System.out.println();
 
-        }
-
-
-        else if (nTestMode == 1) {
+        } else if (nTestMode == 1) {
             int nPixelDiv = 100;
 
         } else if (nTestMode == 2) {
@@ -115,7 +111,7 @@ public class JImageProcessor {
         } else {
             if (nTestMode == 3 || nTestMode == 4) {
                 int nPixelDiv = 100;
-                byte[][] biMatrix = preprocessImage("mr_initial.bmp", ".", ".", nPixelDiv, nTestMode == 3);                
+                byte[][] biMatrix = preprocessImage("mr_initial.bmp", ".", ".", nPixelDiv, nTestMode == 3);
                 ImageChop imgChop = new ImageChop();
                 /* From test it is found that after rectify there are more noises, effect is worse, so comment this part.
                 imgChop.setImageChop(biMatrix, 0, 0, biMatrix.length, biMatrix[0].length, ImageChop.TYPE_UNKNOWN);
@@ -125,8 +121,8 @@ public class JImageProcessor {
                 biMatrix = StrokeFinder.smoothStroke(biMatrix, 0, 0, biMatrix.length, biMatrix[0].length, 19);*/
                 BufferedImage image_rectified = ImageMgr.convertBiMatrix2Img(biMatrix);
                 ImageMgr.saveImg(image_rectified, "mr_rectified.bmp");
-                
-                if (biMatrix.length > 0 && biMatrix[0].length > 0)  {
+
+                if (biMatrix.length > 0 && biMatrix[0].length > 0) {
                     imgChop.setImageChop(biMatrix, 0, 0, biMatrix.length, biMatrix[0].length, ImageChop.TYPE_UNKNOWN);
                     imgChop = StrokeFinder.thinImageChop(imgChop, true);
                     BufferedImage image_finalized = ImageMgr.convertBiMatrix2Img(imgChop.mbarrayImg);
@@ -173,7 +169,7 @@ public class JImageProcessor {
             recognizeMathExpr("mr_finalized.bmp", clm, mwm, true);
             //recognizeMathExpr("mr_smoothed.bmp", clm, mwm);
             //recognizeMathExpr("regtest/recog_regtest24.bmp", clm, mwm, true);
-            
+
             recognizeMathExpr("regtest/recog_regtest204.bmp", clm, mwm, true);
             recognizeMathExpr("todo/filter1/mr_finallyproc(1).bmp", clm, mwm, true);
             recognizeMathExpr("todo/filter1/mr_finallyproc(2).bmp", clm, mwm, true);
@@ -185,8 +181,8 @@ public class JImageProcessor {
             //recognizeMathExpr("mr_finalized.bmp", clm, mwm);
         }
     }
-    
-    public static String recognizeMathExpr(String strImageFile, CharLearningMgr clm, MisrecogWordMgr mwm, boolean bFilter) throws InterruptedException   {
+
+    public static String recognizeMathExpr(String strImageFile, CharLearningMgr clm, MisrecogWordMgr mwm, boolean bFilter) throws InterruptedException, IOException {
         BufferedImage image = ImageMgr.readImg(strImageFile);
         byte[][] biMatrix = ImageMgr.convertImg2BiMatrix(image);
         ImageChop imgChop = new ImageChop();
@@ -195,59 +191,66 @@ public class JImageProcessor {
         System.out.println("Now reading image file " + strImageFile + " :");
         long startTime = System.nanoTime();
         String strOutput = "\\Exception";
+
+        //ImgMatrixOutput.createMatrixImage_ful(imgChop.mbarrayImg, "dml_data/101.jpg");
+
         try {
 
-            //重点1
-            StructExprRecog ser = ExprRecognizer.recognize(imgChop,null, -1, 0,0);
+            //重点1 初步解构加识别
+            ExprRecognizer.dml_cnt=0;
+            StructExprRecog ser = ExprRecognizer.recognize(imgChop, null, -1, 0, 0);
+            StructExprRecog serOld = ser; //保存上一步的结果，便于与本步对比
+            System.out.println("\n1-RAW: image " + strImageFile + " includes expression :\n" + ser.toString());
 
-            StructExprRecog serOld = ser;
+            //todo 这块的代码结构可以进一步优化，反复调用了过滤程序
 
-            System.out.println("raw , image " + strImageFile + " includes expression : " + ser.toString());
-
+            //调用过滤（filter)程序
             if (bFilter) {
                 ser = ExprFilter.filterRawSER(ser, null);
                 serOld = ser;
             }
+
             if (ser != null) {
-                //重点2
+                //重点2 字符串重构
                 ser = ser.restruct();
-                System.out.println(" restruct, image " + strImageFile + " includes expression : " + ser.toString());
+                System.out.println("\n2-RESTRUCT: image " + strImageFile + " includes expression :\n" + ser.toString());
                 serOld = ser;
 
                 if (bFilter) {
                     ser = ExprFilter.filterRestructedSER(ser, null, null);
                     serOld = ser;
                 }
+
                 if (ser != null) {
+                    //重点3 错误识别一轮二轮修正，错误识别函数名修正
                     ser.rectifyMisRecogChars1stRnd(clm);
-
-                    //勉强重点3
                     ser.rectifyMisRecogChars2ndRnd();
-                    System.out.println("end restruct, image " + strImageFile + " includes expression : " + ser.toString());
                     ser.rectifyMisRecogWords(mwm);
+                    System.out.println("\n3-RECTIFY: image " + strImageFile + " includes expression :\n" + ser.toString());
 
-
+                    //重点4 最终结果（结构化表达式） 翻译成可计算的数学表达式
                     SerMFPTransFlags smtFlags = new SerMFPTransFlags();
                     smtFlags.mbConvertAssign2Eq = true;
-
                     strOutput = SerMFPTranslator.cvtSer2MFPExpr(ser, null, new CurPos(0), mwm, smtFlags);
+
                 } else {
                     strOutput = "2NO VALID EXPRESSION FOUND.";
                 }
             } else {
                 strOutput = "1NO VALID EXPRESSION FOUND.";
             }
-        } catch(ExprRecognizeException e)   {
-            if (e.getMessage().compareTo(ExprRecognizer.TOO_DEEP_CALL_STACK) == 0)    {
+        } catch (ExprRecognizeException e) {
+            //递归爆栈 20
+            if (e.getMessage().compareTo(ExprRecognizer.TOO_DEEP_CALL_STACK) == 0) {
                 strOutput = "Expression is too complicated to recognize.";
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         long endTime = System.nanoTime();
-        System.out.println("After restruct, image " + strImageFile + " includes expression :\n" + strOutput);
+        System.out.println("\n4-FINAL_RESULT: image " + strImageFile + " includes expression :\n" + strOutput);
 
-        System.out.println(String.format("recognize %s takes %s", strImageFile, toString(endTime - startTime)));
+        System.out.println(String.format("\nTOTAL TIME : Recognize %s takes %s\n", strImageFile, toString(endTime - startTime)));
         return strOutput;
     }
 
@@ -277,8 +280,8 @@ public class JImageProcessor {
         }
         return flag;
     }
-    
-    public static byte[][] preprocessImage(String strImageFile, String strSrcFolder, String strDestFolder, int nPixelDiv, boolean bFilterSmooth) throws InterruptedException  {
+
+    public static byte[][] preprocessImage(String strImageFile, String strSrcFolder, String strDestFolder, int nPixelDiv, boolean bFilterSmooth) throws InterruptedException {
         System.out.println("Now processing image file " + strImageFile);
         if (bFilterSmooth) {
             BufferedImage image = ImageMgr.readImg(strSrcFolder + File.separator + strImageFile);
@@ -291,22 +294,22 @@ public class JImageProcessor {
             ImageMgr.saveImg(image_filtered, "mr_filtered.bmp");
 
             int nWHMax = Math.max(grayMatrix.length, grayMatrix[0].length);
-            int nEstimatedStrokeWidth = (int)Math.ceil((double)nWHMax/(double)nPixelDiv);
-            byte[][] biMatrix = ImgThreshBiMgr.convertGray2Bi2ndD(grayMatrix, (int)Math.max(3.0, nEstimatedStrokeWidth / 2.0));  // selected value was 6.
+            int nEstimatedStrokeWidth = (int) Math.ceil((double) nWHMax / (double) nPixelDiv);
+            byte[][] biMatrix = ImgThreshBiMgr.convertGray2Bi2ndD(grayMatrix, (int) Math.max(3.0, nEstimatedStrokeWidth / 2.0));  // selected value was 6.
             BufferedImage image_bilized1 = ImageMgr.convertBiMatrix2Img(biMatrix);
             ImageMgr.saveImg(image_bilized1, "mr_bilized1.bmp");
             ImageChop imgChop = new ImageChop();
             imgChop.setImageChop(biMatrix, 0, 0, biMatrix.length, biMatrix[0].length, ImageChop.TYPE_UNKNOWN);
             double dAvgStrokeWidth = imgChop.calcAvgStrokeWidth();
 
-            int nFilterR = (int)Math.ceil((dAvgStrokeWidth/2.0 - 1)/2.0);
+            int nFilterR = (int) Math.ceil((dAvgStrokeWidth / 2.0 - 1) / 2.0);
             biMatrix = ImgNoiseFilter.filterNoiseNbAvg4Bi(biMatrix, nFilterR, 1);
             biMatrix = ImgNoiseFilter.filterNoiseNbAvg4Bi(biMatrix, nFilterR, 2);
             imgChop.setImageChop(biMatrix, 0, 0, biMatrix.length, biMatrix[0].length, ImageChop.TYPE_UNKNOWN);
             BufferedImage image_smoothed1 = ImageMgr.convertBiMatrix2Img(imgChop.mbarrayImg);
             ImageMgr.saveImg(image_smoothed1, "mr_smoothed1.bmp");
 
-            biMatrix = ImgNoiseFilter.filterNoisePoints4Bi(biMatrix, (int)dAvgStrokeWidth);
+            biMatrix = ImgNoiseFilter.filterNoisePoints4Bi(biMatrix, (int) dAvgStrokeWidth);
             imgChop.setImageChop(biMatrix, 0, 0, biMatrix.length, biMatrix[0].length, ImageChop.TYPE_UNKNOWN);
             BufferedImage image_smoothed2 = ImageMgr.convertBiMatrix2Img(imgChop.mbarrayImg);
             ImageMgr.saveImg(image_smoothed2, "mr_smoothed2.bmp");
@@ -318,15 +321,15 @@ public class JImageProcessor {
             return biMatrix;
         }
     }
-    
+
     public static void generateUPTsJAVALoader() {
         String[] strFolders = getPrototypeFolders();
         ImageMgr.loadUnitProtoTypesBmps2JAVA(UnitRecognizer.msUPTMgrPrint, strFolders, "prototypes_print", "uptloadersprint", UPTJavaLoaderMgr.LOAD_UPTS_JAVA_CNT_PRINT);
         ImageMgr.loadUnitProtoTypesBmps2JAVA(UnitRecognizer.msUPTMgrSPrint, strFolders, "prototypes_sprint", "uptloaderssprint", UPTJavaLoaderMgr.LOAD_UPTS_JAVA_CNT_SPRINT);
         ImageMgr.loadUnitProtoTypesBmps2JAVA(UnitRecognizer.msUPTMgrSHandwriting, strFolders, "prototypes_shandwriting", "uptloadersshandwriting", UPTJavaLoaderMgr.LOAD_UPTS_JAVA_CNT_SHANDWRITING);
     }
-    
-    public static String[] getPrototypeFolders()    {
+
+    public static String[] getPrototypeFolders() {
         String[] strFolders = new String[118];
         int idx = 0;
         strFolders[idx++] = "add";
@@ -450,39 +453,39 @@ public class JImageProcessor {
         return strFolders;
     }
 
-    public static String[] getPrototypeTestFolders()    {
+    public static String[] getPrototypeTestFolders() {
         String[] strFolders = new String[1];
         strFolders[0] = "right_arrow";
         return strFolders;
     }
-    
+
     public static String toString(long nanoSecs) {
-		int minutes    = (int) (nanoSecs / 60000000000.0);
-		int seconds    = (int) (nanoSecs / 1000000000.0)  - (minutes * 60);
-		int millisecs  = (int) ( ((nanoSecs / 1000000000.0) - (seconds + minutes * 60)) * 1000);
+        int minutes = (int) (nanoSecs / 60000000000.0);
+        int seconds = (int) (nanoSecs / 1000000000.0) - (minutes * 60);
+        int millisecs = (int) (((nanoSecs / 1000000000.0) - (seconds + minutes * 60)) * 1000);
 
 
-		if (minutes == 0 && seconds == 0)	{
-			return millisecs + "ms";
-		} else if (minutes == 0 && millisecs == 0)	{
-			return seconds + "s";
-		} else if (seconds == 0 && millisecs == 0)	{
-			return minutes + "min";
-		} else if (minutes == 0)	{
-			return seconds + "s " + millisecs + "ms";
-		} else if (seconds == 0)	{
-			return minutes + "min " + millisecs + "ms";
-		} else if (millisecs == 0)	{
-			return minutes + "min " + seconds + "s";
-		}
-		return minutes + "min " + seconds + "s " + millisecs + "ms";
-	}
+        if (minutes == 0 && seconds == 0) {
+            return millisecs + "ms";
+        } else if (minutes == 0 && millisecs == 0) {
+            return seconds + "s";
+        } else if (seconds == 0 && millisecs == 0) {
+            return minutes + "min";
+        } else if (minutes == 0) {
+            return seconds + "s " + millisecs + "ms";
+        } else if (seconds == 0) {
+            return minutes + "min " + millisecs + "ms";
+        } else if (millisecs == 0) {
+            return minutes + "min " + seconds + "s";
+        }
+        return minutes + "min " + seconds + "s " + millisecs + "ms";
+    }
 
-    public static void testThinImage(String strSrcFolder, String strDestFolder) throws InterruptedException  {
+    public static void testThinImage(String strSrcFolder, String strDestFolder) throws InterruptedException {
         System.out.println("Now test thinning image algorithm, source image folder is " + strSrcFolder + ", destination folder is " + strDestFolder);
         File folder = new File(strSrcFolder);
-        for (File fProtoType : folder.listFiles())  {
-            if (fProtoType.isFile())    {
+        for (File fProtoType : folder.listFiles()) {
+            if (fProtoType.isFile()) {
                 String strFileName = fProtoType.getName();
                 String strFilePath = fProtoType.getPath();
                 BufferedImage image = ImageMgr.readImg(strFilePath);
@@ -495,5 +498,5 @@ public class JImageProcessor {
             }
         }
         return;
-    }   
+    }
 }

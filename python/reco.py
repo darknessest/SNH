@@ -2,7 +2,7 @@ import os
 
 import socket
 
-import sys
+import time
 import sympy
 
 import numpy as np
@@ -71,6 +71,9 @@ if __name__ == "__main__":
     sock.bind(address)
     sock.listen()
 
+    dml_cnt=0
+    dml_last_time=time.time()
+    dml_this_time=dml_last_time
     while True:
         all_images = []
         all_labels = []
@@ -85,8 +88,15 @@ if __name__ == "__main__":
             #here we can put our code
             for file in os.listdir(path):
                 if not file.startswith("."):
-                    # if file.endswith('_conv.png'):
-                    print(file + " - " + str(i))
+
+                    dml_last_time=dml_this_time
+                    dml_this_time=time.time()
+                    if(dml_this_time-dml_last_time>1):
+                        dml_cnt=1
+                        print('----------------------------------------')
+                    print(dml_cnt)
+                    dml_cnt+=1
+
                     img = io.imread(os.path.join(path, file), as_gray=True)
                     #plt.imshow(img)
                     #plt.show()
@@ -102,9 +112,9 @@ if __name__ == "__main__":
                 probs = clf.predict(input_img[np.newaxis, num])
                 prediction = probs.argmax(axis=1)
 
-                print(int(prediction[0]))
-                print( probs[0][int(prediction[0])])#probs.argmax(axis=1))
-                print('The recognition result:' + model_labels[int(prediction[0])])# + '-' + probs[int(prediction[0])])
+                print('LABEL:\t',int(prediction[0]))
+                print('PROBS:\t',probs[0][int(prediction[0])])#probs.argmax(axis=1))
+                print('IT IS:\t',model_labels[int(prediction[0])]+'\n')# + '-' + probs[int(prediction[0])])
 
                 newSocket.send(bytes(model_labels[int(prediction[0])] + "\n", encoding = 'utf-8'))
                 newSocket.send(bytes(str(probs[0][int(prediction[0])]) + "\n", encoding = 'utf-8'))
