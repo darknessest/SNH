@@ -661,7 +661,7 @@ public class ExprSeperator {
                                                         nWorstCaseLineDivOrOnLen);
     }    
 
-    //todo 水平切的相关逻辑研究
+    //todo 水平切的相关逻辑研究 .
     //========================================================================================================
     // here assume the input is minimum container and barrayImg has been horizontally adjusted.
     // the output imgchops are also minimum container adjusted (except the blank div).
