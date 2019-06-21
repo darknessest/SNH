@@ -63,18 +63,20 @@ public class ExprRecognizer {
         }
     }
 
-    //分析水平切块
+    //分析水平切块，水平切块会分成上下，或上中下结构，所以需要确定DIV(分割线) 的位置,从而判断类型。进一步决定ＤＩＶ是作为分数线保留，还是当成上划线或下划线丢弃
     public static StructExprRecog analyzeHCuts(ImageChops imgChops, int nOriginalStartIdx, int nOriginalEndIdx, double dAvgStrokeWidth, int nStackLvl) throws ExprRecognizeException, InterruptedException, IOException {
         if (nStackLvl >= MAX_RECOGNIZING_STACK_COUNT) {
             throw new ExprRecognizeException(TOO_DEEP_CALL_STACK);
         }
         // all the horizontal divs here are line divs
+        //这里预先定义了分数线的索引IDX,长度，作用域nStartIdx-nEndIdx
         int nMajorLnDivIdx = -1, nMajorLnDivLen = -1;
         int nStartIdx = -1, nEndIdx = -1;
         for (int idx = nOriginalStartIdx; idx <= nOriginalEndIdx; idx++) { // top or bottom line div should not be divide char.
             ImageChop imgChop = imgChops.mlistChops.get(idx);
-            if (imgChop.mnChopType != ImageChop.TYPE_BLANK_DIV
-                    && imgChop.mnChopType != ImageChop.TYPE_CAP_DIV && imgChop.mnChopType != ImageChop.TYPE_UNDER_DIV) {
+            if (imgChop.mnChopType != ImageChop.TYPE_BLANK_DIV &&
+                    imgChop.mnChopType != ImageChop.TYPE_CAP_DIV &&
+                    imgChop.mnChopType != ImageChop.TYPE_UNDER_DIV) {
                 nStartIdx = idx;
                 break;
             }
@@ -82,8 +84,9 @@ public class ExprRecognizer {
 
         for (int idx = nOriginalEndIdx; idx >= nOriginalStartIdx; idx--) {
             ImageChop imgChop = imgChops.mlistChops.get(idx);
-            if (imgChop.mnChopType != ImageChop.TYPE_BLANK_DIV
-                    && imgChop.mnChopType != ImageChop.TYPE_CAP_DIV && imgChop.mnChopType != ImageChop.TYPE_UNDER_DIV) {
+            if (imgChop.mnChopType != ImageChop.TYPE_BLANK_DIV &&
+                    imgChop.mnChopType != ImageChop.TYPE_CAP_DIV &&
+                    imgChop.mnChopType != ImageChop.TYPE_UNDER_DIV) {
                 nEndIdx = idx;
                 break;
             }
@@ -92,9 +95,12 @@ public class ExprRecognizer {
         StructExprRecog serReturn = new StructExprRecog(imgChops.mlistChops.get(nStartIdx).mbarrayOriginalImg);
 
         if (nStartIdx == nEndIdx) {
+            //就一个，直接递归下去
             serReturn = recognize(imgChops.mlistChops.get(nStartIdx), imgChops, 0, dAvgStrokeWidth, nStackLvl + 1);
             return serReturn;
-        } else {
+        }
+        else {
+            //获取当前切块序列（nStartIdx -> nEndIdx) 的最大边界
             int nLeft = Integer.MAX_VALUE, nTop = Integer.MAX_VALUE, nRightP1 = Integer.MIN_VALUE, nBottomP1 = Integer.MIN_VALUE;
             for (int idx = nStartIdx; idx <= nEndIdx; idx++) {
                 ImageChop chopThis = imgChops.mlistChops.get(idx);
@@ -116,6 +122,8 @@ public class ExprRecognizer {
             }
         }
 
+        //todo 关键还是要在这里识别出 TYPE_LINE_DIV 类型
+        //先在这里找到分数线的长度，默认是最长的那个imgchop的宽度
         for (int idx = nStartIdx; idx <= nEndIdx; idx++) {
             ImageChop imgChop = imgChops.mlistChops.get(idx);
             if (imgChop.mnChopType == ImageChop.TYPE_LINE_DIV && nMajorLnDivLen < imgChop.mnWidth) {
@@ -123,6 +131,8 @@ public class ExprRecognizer {
                 nMajorLnDivIdx = idx;
             }
         }
+        //#1 这里就已经不是分数线了
+        //没有识别类型是LINE_DIV的
         if (nMajorLnDivIdx == -1) {
             // this is a unit with cap or under, no line divs. If it is a cap/under, always pass average stroke width
             // because unlikely cap under will be small and thing characters (except star and dot, but the width of 
@@ -161,23 +171,33 @@ public class ExprRecognizer {
                 }
                 serReturn.setStructExprRecog(listSers, StructExprRecog.EXPRRECOGTYPE_HBLANKCUT);
             }
-        } else if (nMajorLnDivIdx != nStartIdx && nMajorLnDivIdx != nEndIdx) {
-            // this must be a divide.
+        }
+
+        //#2 这里一定是分数线分割的分数类型了
+        else if (nMajorLnDivIdx != nStartIdx && nMajorLnDivIdx != nEndIdx) {
+            //分子here
             StructExprRecog serNom = analyzeHCuts(imgChops, nStartIdx, nMajorLnDivIdx - 1, dAvgStrokeWidth, nStackLvl + 1);
             ImageChop imgChopLn = imgChops.mlistChops.get(nMajorLnDivIdx);
             ImageChop imgChopShinkedLn = imgChopLn.shrinkImgArray();
+            //分数线here
             StructExprRecog serLn = new StructExprRecog(imgChopLn.mbarrayOriginalImg);
             serLn.setStructExprRecog(UnitProtoType.Type.TYPE_SUBTRACT, serNom.mstrFont,
                     imgChopLn.getLeftInOriginalImg(), imgChopLn.getTopInOriginalImg(),
                     imgChopLn.mnWidth, imgChopLn.mnHeight, imgChopShinkedLn,
                     UnitCandidate.BEST_SIMILARITY_VALUE);   // because it is must be a divide, so set similarity value to be best.
+            //分母here
             StructExprRecog serDen = analyzeHCuts(imgChops, nMajorLnDivIdx + 1, nEndIdx, dAvgStrokeWidth, nStackLvl + 1);
+
+            //组成{分子，-，分母}结构
             LinkedList<StructExprRecog> listSers = new LinkedList<StructExprRecog>();
             listSers.add(serNom);
             listSers.add(serLn);
             listSers.add(serDen);
             serReturn.setStructExprRecog(listSers, StructExprRecog.EXPRRECOGTYPE_HLINECUT);
-        } else if (nMajorLnDivIdx == nEndIdx) {
+
+        }
+        //#3 分数线在最后的类型---下划线类型
+        else if (nMajorLnDivIdx == nEndIdx) {
             StructExprRecog serBase = analyzeHCuts(imgChops, nStartIdx, nMajorLnDivIdx - 1, dAvgStrokeWidth, nStackLvl + 1);
             StructExprRecog serUnder = new StructExprRecog(imgChops.mlistChops.get(nMajorLnDivIdx).mbarrayOriginalImg);
             int nLeft = imgChops.mlistChops.get(nEndIdx).getLeftInOriginalImg();
@@ -196,7 +216,9 @@ public class ExprRecognizer {
                 listSers.add(serUnder);
                 serReturn.setStructExprRecog(listSers, StructExprRecog.EXPRRECOGTYPE_HCUTUNDER);
             }
-        } else {    //if (nMajorLnDivIdx == nStartIdx) {
+        }
+        //#4 分数线在第一个的类型---上划线类型
+        else {    //if (nMajorLnDivIdx == nStartIdx) {
             StructExprRecog serCap = new StructExprRecog(imgChops.mlistChops.get(nMajorLnDivIdx).mbarrayOriginalImg);
             int nLeft = imgChops.mlistChops.get(nStartIdx).getLeftInOriginalImg();
             int nTop = imgChops.mlistChops.get(nStartIdx).getTopInOriginalImg();
@@ -235,11 +257,14 @@ public class ExprRecognizer {
         if (nStackLvl >= MAX_RECOGNIZING_STACK_COUNT) {
             throw new ExprRecognizeException(TOO_DEEP_CALL_STACK);
         }
+
         StructExprRecog serReturn = new StructExprRecog(imgChopOriginal.mbarrayOriginalImg);
 
         // todo 重点！！！ 判断切块类型
-        if (imgChopOriginal.isEmptyImage() || imgChopOriginal.mnChopType == ImageChop.TYPE_BLANK_DIV
-                || imgChopOriginal.mnChopType == ImageChop.TYPE_UNDER_DIV || imgChopOriginal.mnChopType == ImageChop.TYPE_CAP_DIV) {
+        if (imgChopOriginal.isEmptyImage() ||
+                imgChopOriginal.mnChopType == ImageChop.TYPE_BLANK_DIV ||
+                imgChopOriginal.mnChopType == ImageChop.TYPE_UNDER_DIV ||
+                imgChopOriginal.mnChopType == ImageChop.TYPE_CAP_DIV) {
             ImageChop imgChopShrinked = new ImageChop();
             byte[][] barrayImage = new byte[imgChopOriginal.mnWidth][imgChopOriginal.mnHeight];
 
@@ -247,7 +272,7 @@ public class ExprRecognizer {
             imgChopShrinked.setImageChop(barrayImage, 0, 0, imgChopOriginal.mnWidth, imgChopOriginal.mnHeight,
                     imgChopOriginal.mbarrayOriginalImg, imgChopOriginal.getLeftInOriginalImg(), imgChopOriginal.getTopInOriginalImg(), imgChopOriginal.mnChopType);
 
-            //不知道这里为什么就返回空类型了，TYPE_UNDER_DIV 为啥就等同于空类型了呢？
+            //不知道这里为什么就返回空类型了，TYPE_UNDER_DIV 为啥就等同于空类型了呢-----!!!因为还没有加入显示这些上划线，下划线的功能，至于TYPE_BLANK_DIV 因为本来就是个空白分割器
             serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_EMPTY, StructExprRecog.UNKNOWN_FONT_TYPE,
                     imgChopOriginal.getLeftInOriginalImg(), imgChopOriginal.getTopInOriginalImg(),
                     imgChopOriginal.mnWidth, imgChopOriginal.mnHeight, imgChopShrinked, 1);  // empty char similarity is always 1.
@@ -262,7 +287,6 @@ public class ExprRecognizer {
                     imgChopOriginal.mnWidth, imgChopOriginal.mnHeight, imgChopShrinked, 1);  // empty char similarity is always 1.
 
             return serReturn;
-
         }
 
         //计算切块后的总点数
@@ -317,6 +341,7 @@ public class ExprRecognizer {
         }
 
         // the output imgchops are also minimum container adjusted
+        //原始图片进来后首先进行水平方向的切分，传入的参数……见下面
         ImageChops imgChops = ExprSeperator.cutHorizontallyProj(imgChopOriginal, dAvgStrokeWidth, dMaxEstCharWidth, dMaxEstCharHeight);
 
         //分成了很多块
@@ -357,7 +382,6 @@ public class ExprRecognizer {
                 int idx = 0;
                 while (idx < chops.mlistChops.size()) {
                     ImageChop imgChop = chops.mlistChops.get(idx);
-
                     //递归识别！！我调用我自己
                     StructExprRecog ser = recognize(imgChop, chops, 1, 0, nStackLvl + 1); // it could be lower note with thin strokes, so do not pass avg stroke width.
 

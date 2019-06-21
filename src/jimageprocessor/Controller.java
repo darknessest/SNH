@@ -123,7 +123,6 @@ public class Controller implements Initializable {
 
             SelectedImagePath = selectedFile.getAbsolutePath();
             FileAddressField.setText(SelectedImagePath);
-            //TODO PutText 只有第一次调用是正常的，之后均有延迟，（注释掉第一次条用的代码，则只有第二次调用的是正常的）
             PutText(getSelectedImagePath() + " has been opened\n", false, Color.BLACK, "Arial", 16);
         }
     }
