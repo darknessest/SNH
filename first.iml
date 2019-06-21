@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/res" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/python/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/python/data" />
       <excludeFolder url="file://$MODULE_DIR$/python/venv" />
     </content>
     <orderEntry type="inheritedJdk" />
