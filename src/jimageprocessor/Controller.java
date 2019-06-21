@@ -181,7 +181,7 @@ public class Controller implements Initializable {
         }
         int i = 0;
         for (File x : selectedFiles) {
-            results.add(recognizeMathExpr("res" + File.separator + "prepresult" + File.separator + x.getName(),
+            results.add(recognizeMathExpr("res" + File.separator + "prepresult" + File.separator + x.getName() + ".bmp",
                     clm, mwm, true));
             PutText(i + ") The recognition result:" + "\n" + results.get(i++) + "\n", false, Color.RED, "Arial", 16);
         }
