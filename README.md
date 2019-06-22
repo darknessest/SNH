@@ -14,3 +14,9 @@
 &_&:【补充运行须知】
 在python下新建data文件夹
 在res下新建prepresult文件夹
+
+LH's work:
+1.  Add two function in StructExprRecog.java to not use PY or not trust PY with certain conditions
+2.  Add some code in StructExprEecog.restruct
+3.  Add some Misrecog in wmw.xml
+4.  Add one rule in rectifyMisRecogChars1stRnd() to rectify the recognise of tan.
