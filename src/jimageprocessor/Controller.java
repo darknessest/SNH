@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 
 import static com.cyzapps.SmartCalc.Cut;
 import static jimageprocessor.JImageProcessor.recognizeMathExpr;
-
+import static jimageprocessor.JImageProcessor.preprocessImage;
 
 public class Controller implements Initializable {
     @FXML
@@ -58,12 +58,10 @@ public class Controller implements Initializable {
         boolean bLoadSPrintChars = true;
         boolean bLoadSHandwritingChars = true;
 
-
         clm = new CharLearningMgr();
         FileInputStream fis = null;
         try {
             fis = new FileInputStream("res" + File.separator + "clm.xml");
-            //fis = new FileInputStream("res/clm.xml");
         } catch (FileNotFoundException ex) {
             Logger.getLogger(JImageProcessor.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -76,11 +74,11 @@ public class Controller implements Initializable {
                 Logger.getLogger(JImageProcessor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+
         mwm = new MisrecogWordMgr();
         fis = null;
         try {
             fis = new FileInputStream("res" + File.separator + "mwm.xml");
-            //fis = new FileInputStream("res/mwm.xml");
         } catch (FileNotFoundException ex) {
             Logger.getLogger(JImageProcessor.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -125,7 +123,6 @@ public class Controller implements Initializable {
 
             SelectedImagePath = selectedFile.getAbsolutePath();
             FileAddressField.setText(SelectedImagePath);
-            //TODO PutText 只有第一次调用是正常的，之后均有延迟，（注释掉第一次条用的代码，则只有第二次调用的是正常的）
             PutText(getSelectedImagePath() + " has been opened\n", false, Color.BLACK, "Arial", 16);
         }
     }
@@ -149,7 +146,7 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    void RunProcess() throws InterruptedException {
+    void RunProcess() throws InterruptedException, IOException {
         if (getSelectedImagePath() == null) {
             PutText("Please choose a picture or a folder\n", false, Color.BLACK, "Arial", 16);
             return;
@@ -214,7 +211,7 @@ public class Controller implements Initializable {
         temp = temp.replace("{", "(");
         temp = temp.replace("}", ")");
         if (temp.length() == 0)
-            temp = "I can calculate it yet";
+            temp = "I can't calculate it yet";
         PutText("ANSWER:\n" + temp + "\n\n", false, Color.BLACK, "Arial", 16);
         System.out.println(temp);
     }
@@ -271,47 +268,5 @@ public class Controller implements Initializable {
 
         }
     }
-
-    public static byte[][] preprocessImage(String strImageFile, String strSrcFolder, String strDestFolder, int nPixelDiv, boolean bFilterSmooth) throws InterruptedException {
-        System.out.println("Now processing image file " + strImageFile);
-        if (bFilterSmooth) {
-            BufferedImage image = ImageMgr.readImg(strSrcFolder + File.separator + strImageFile);
-            int[][] grayMatrix = ImageMgr.convertImg2GrayMatrix(image);
-            BufferedImage image_grayed = ImageMgr.convertGrayMatrix2Img(grayMatrix);
-            ImageMgr.saveImg(image_grayed, "mr_grayed.bmp");
-
-            grayMatrix = ImgNoiseFilter.filterNoiseNbAvg4Gray(grayMatrix, 1);
-            BufferedImage image_filtered = ImageMgr.convertGrayMatrix2Img(grayMatrix);
-            ImageMgr.saveImg(image_filtered, "mr_filtered.bmp");
-
-            int nWHMax = Math.max(grayMatrix.length, grayMatrix[0].length);
-            int nEstimatedStrokeWidth = (int) Math.ceil((double) nWHMax / (double) nPixelDiv);
-            byte[][] biMatrix = ImgThreshBiMgr.convertGray2Bi2ndD(grayMatrix, (int) Math.max(3.0, nEstimatedStrokeWidth / 2.0));  // selected value was 6.
-            BufferedImage image_bilized1 = ImageMgr.convertBiMatrix2Img(biMatrix);
-            ImageMgr.saveImg(image_bilized1, "mr_bilized1.bmp");
-            ImageChop imgChop = new ImageChop();
-            imgChop.setImageChop(biMatrix, 0, 0, biMatrix.length, biMatrix[0].length, ImageChop.TYPE_UNKNOWN);
-            double dAvgStrokeWidth = imgChop.calcAvgStrokeWidth();
-
-            int nFilterR = (int) Math.ceil((dAvgStrokeWidth / 2.0 - 1) / 2.0);
-            biMatrix = ImgNoiseFilter.filterNoiseNbAvg4Bi(biMatrix, nFilterR, 1);
-            biMatrix = ImgNoiseFilter.filterNoiseNbAvg4Bi(biMatrix, nFilterR, 2);
-            imgChop.setImageChop(biMatrix, 0, 0, biMatrix.length, biMatrix[0].length, ImageChop.TYPE_UNKNOWN);
-            BufferedImage image_smoothed1 = ImageMgr.convertBiMatrix2Img(imgChop.mbarrayImg);
-            ImageMgr.saveImg(image_smoothed1, "mr_smoothed1.bmp");
-
-            biMatrix = ImgNoiseFilter.filterNoisePoints4Bi(biMatrix, (int) dAvgStrokeWidth);
-            imgChop.setImageChop(biMatrix, 0, 0, biMatrix.length, biMatrix[0].length, ImageChop.TYPE_UNKNOWN);
-            BufferedImage image_smoothed2 = ImageMgr.convertBiMatrix2Img(imgChop.mbarrayImg);
-            ImageMgr.saveImg(image_smoothed2, "mr_smoothed2.bmp");
-            ImageMgr.saveImg(image_smoothed2, strDestFolder + File.separator + strImageFile + ".bmp");
-            return biMatrix;
-        } else {
-            BufferedImage image = ImageMgr.readImg(strSrcFolder + File.separator + strImageFile);
-            byte[][] biMatrix = ImageMgr.convertImg2BiMatrix(image);
-            return biMatrix;
-        }
-    }
-
 
 }

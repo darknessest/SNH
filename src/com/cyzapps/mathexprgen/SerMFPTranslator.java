@@ -11,7 +11,7 @@ import com.cyzapps.mathrecog.UnitPrototypeMgr.UnitProtoType;
 import java.util.LinkedList;
 
 /**
- *
+ *转化为可计算的数学表达式
  * @author tonyc
  */
 public class SerMFPTranslator   {
@@ -1429,6 +1429,7 @@ public class SerMFPTranslator   {
                         }
                     }
                 }
+                //TODO 求导阶数信息原来在这里
                 if (bIsDefDeri) {
                     strReturn = "deri_ridders(\"" + addEscapes(strToDeri) + "\", \"" + addEscapes(strVarName) + "\", " + strVarVal + ", " + strOrder + ")";
                     curPos.mnPos += 2;  

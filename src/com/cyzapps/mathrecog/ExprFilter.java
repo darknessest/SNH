@@ -413,8 +413,7 @@ public class ExprFilter {
         return serOutput;
     }   
 
-
-    //相当于最原始的预处理
+    //原始字符序列（raw ser) 初步过滤（filter) 变为更加合理的表达式
     // this function filters raw ser(structexpress) input and returns another raw ser which is most likely to be
     // a valid expression. Here raw ser means the ser hasn't been restructed. If the raw ser input
     // cannot be a valid expression, it returns null. note that returned ser could be a part of or
@@ -622,7 +621,8 @@ public class ExprFilter {
         }
         return serOutput;
     }
-    
+
+    //对restructed 后的字符序列进行过滤
     // this function will try to filter any non math expression part and keep the expression that can be calculated.
     // here we do not consider situation like a^*, although it is could be right in some complicated expressions.
     public static StructExprRecog filterRestructedSER(StructExprRecog serInput, StructExprRecog serParent, StructExprRecog serGrandParent) {
