@@ -468,19 +468,20 @@ public class ExprRecognizer {
 
                     //test3
                     System.out.println("[JAVA___RESULT]\t" + serReturnCand1.mType + " \t" + serReturnCand1.toString());
-                    System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu);
+                    System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu +"\t"+similarty);
                     //选择python的识别结果
-                    if (similarty >= 0.99&&getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_I&&getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_J) {
+                    if (similarty >= 0.995&&getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_I&&getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_J) {
                         serReturn = serReturnCand1;
                         serReturn.mType = getTpye(resu);
                         serReturn.mdSimilarity = 0.0;
                         serReturn.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
                         System.out.println("[FINAL__RESULT]\t" + "Choose python!");
                     }
-                    //比较python和java那个识别效果更好，now we compare which one is better.
+                    //比较java那个识别效果更好，now we compare which one is better.
                     else {
                         serReturnCand2 = disconnect2Recog(imgChopsFrom, nCutMode, imgChopsFrom.mlistChops.indexOf(imgChopOriginal), dAvgStrokeWidth, serReturnCand1, new LinkedList<ImageChop>(), nStackLvl + 1);
                         serReturn = selectSERFromCands(serReturnCand1, serReturnCand2);
+                        System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString());
                     }
 
                 } else {
