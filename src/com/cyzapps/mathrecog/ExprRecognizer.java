@@ -227,7 +227,7 @@ public class ExprRecognizer {
     // here assume barrayImg has been the minimum containing rectangle of the image.
     // imgChopsFrom is the image chops that includes imgChopOriginal, it can be null,
     // nReadingOrder is 0 means horizontally cut imgchops, is 1 means vertically cut imgchops.
-    public static int dml_cnt=0;
+    //public static int dml_cnt=0;
     public static StructExprRecog recognize(ImageChop imgChopOriginal, ImageChops imgChopsFrom, int nCutMode, double dAvgStrokeWidth, int nStackLvl) throws ExprRecognizeException, InterruptedException, IOException {
         if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException();
@@ -437,8 +437,8 @@ public class ExprRecognizer {
                     String dir = "python" + File.separator + "data" + File.separator + String.format("%03d", 1) + ".jpg";
                     ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
                     //分析图片用的，可注释这两行
-                    String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
-                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
+                    //String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
+                    //ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
 
                     usePy();
 
