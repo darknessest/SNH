@@ -466,6 +466,7 @@ public class ExprRecognizer {
 
                     usePy();
 
+                    //test3
                     System.out.println("[JAVA___RESULT]\t" + serReturnCand1.mType + " \t" + serReturnCand1.toString());
                     System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu);
                     //选择python的识别结果
