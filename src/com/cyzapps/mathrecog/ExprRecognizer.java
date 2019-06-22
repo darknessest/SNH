@@ -227,7 +227,7 @@ public class ExprRecognizer {
     // here assume barrayImg has been the minimum containing rectangle of the image.
     // imgChopsFrom is the image chops that includes imgChopOriginal, it can be null,
     // nReadingOrder is 0 means horizontally cut imgchops, is 1 means vertically cut imgchops.
-    //public static int dml_cnt=0;
+    public static int dml_cnt=0;
     public static StructExprRecog recognize(ImageChop imgChopOriginal, ImageChops imgChopsFrom, int nCutMode, double dAvgStrokeWidth, int nStackLvl) throws ExprRecognizeException, InterruptedException, IOException {
         if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException();
