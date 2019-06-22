@@ -43,7 +43,7 @@ public class StructExprRecog {
     public final static int VGAP_CNT_IDX = 7;
     public final static int TOTAL_IDX_CNT = 8;
     
-    protected int mnExprRecogType = EXPRRECOGTYPE_ENUMTYPE; // 0 means UnitProtoType, 1 means a list of StructuredExprRecog children
+    public int mnExprRecogType = EXPRRECOGTYPE_ENUMTYPE; // 0 means UnitProtoType, 1 means a list of StructuredExprRecog children
                                     // but unknown cut mode. 2 means horizontally cut by blank, 3 means horizontally cut by line
                                     // 4 means horizontally cut with cap, 5 means horizontally cut with underscore, 6 means horizontally cut with cap and underscore
                                     // 10 means vertically cut, 11 means vertically cut with left top note, 12 means vertically cut with upper note,
@@ -53,7 +53,7 @@ public class StructExprRecog {
     protected UnitProtoType.Type mType = UnitProtoType.Type.TYPE_UNKNOWN;
     public final static String UNKNOWN_FONT_TYPE = "unknown";
     public String mstrFont = UNKNOWN_FONT_TYPE;
-    protected LinkedList<StructExprRecog> mlistChildren = new LinkedList<StructExprRecog>();
+    public LinkedList<StructExprRecog> mlistChildren = new LinkedList<StructExprRecog>();
     
     private byte[][] mbarrayBiValues = new byte[0][0];	// bivalue matrix, not that this is the original matrix.
     // minimum container
@@ -483,7 +483,8 @@ public class StructExprRecog {
             // if a matrix, we cannot convert [x] -> x (e.g. 2 * [2 + 3] -> 2 * 2 + 3 is wrong).
             StructExprRecog ser = mlistChildren.getFirst().restruct();
             return ser;
-        } else if (mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT || mnExprRecogType == EXPRRECOGTYPE_HCUTCAP
+        }
+        else if (mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT || mnExprRecogType == EXPRRECOGTYPE_HCUTCAP
                 || mnExprRecogType == EXPRRECOGTYPE_HCUTCAPUNDER || mnExprRecogType == EXPRRECOGTYPE_HCUTUNDER
                 || mnExprRecogType == EXPRRECOGTYPE_HLINECUT || mnExprRecogType == EXPRRECOGTYPE_MULTIEXPRS
                 || mnExprRecogType == EXPRRECOGTYPE_GETROOT || mnExprRecogType == EXPRRECOGTYPE_VCUTMATRIX)    {
@@ -531,7 +532,28 @@ public class StructExprRecog {
                 listParts.add(imgChopBottom);
                 ImageChop imgChop4SER = ExprSeperator.mergeImgChopsWithSameOriginal(listParts);   // need not to shrink imgChop4SER because it has been min container.
                 serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_ADD, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, dSimilarity);
-            } else if (bIsDivide) {
+            }
+            /*Here we add our rule to convert topunder{.,/,.} to div*/
+            else if(listCuts.getFirst().mType == UnitProtoType.Type.TYPE_DOT
+                    &&listCuts.getLast().mType ==  UnitProtoType.Type.TYPE_DOT
+                    &&listCuts.get(1).mType == UnitProtoType.Type.TYPE_SUBTRACT){
+
+                double dSimilarity = (listCuts.getFirst().getArea() * listCuts.getFirst().mdSimilarity
+                        + listCuts.get(1).getArea() * listCuts.get(1).mdSimilarity
+                        + listCuts.getLast().getArea() * listCuts.getLast().mdSimilarity)
+                        / (listCuts.getFirst().getArea() + listCuts.get(1).getArea() + listCuts.getLast().getArea());  // total area should not be zero here.
+                System.out.println("Now we change it");
+                LinkedList<ImageChop> listParts = new LinkedList<ImageChop>();
+                ImageChop imgChopTop = listCuts.getFirst().getImageChop(false);
+                listParts.add(imgChopTop);
+                ImageChop imgChopHLn = listCuts.get(1).getImageChop(false);
+                listParts.add(imgChopHLn);
+                ImageChop imgChopBottom = listCuts.getLast().getImageChop(false);
+                listParts.add(imgChopBottom);
+                ImageChop imgChop4SER = ExprSeperator.mergeImgChopsWithSameOriginal(listParts);
+                serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_DIVIDE, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, dSimilarity);
+            }
+            else if (bIsDivide) {
                 // is actually an h line cut, i.e. div.
                 serReturn.setStructExprRecog(listCuts, EXPRRECOGTYPE_HLINECUT);
             } else  {
@@ -560,7 +582,8 @@ public class StructExprRecog {
                 bHasVCutChild = false;
                 for (int idx = 0; idx < listMergeVCutChildren1.size(); idx ++)   {
                     if (/*listMergeVCutChildren1.get(idx).mnExprRecogType == EXPRRECOGTYPE_LISTCUT  // treat list cut like vblankcut only when we print its value to string
-                            || */listMergeVCutChildren1.get(idx).isVCutNonMatrixType())    {
+                            || */listMergeVCutChildren1.get(idx).isVCutNonMatrixType())
+                    {
                         for (int idx1 = 0; idx1 < listMergeVCutChildren1.get(idx).mlistChildren.size(); idx1 ++) {
                             if (/*listMergeVCutChildren1.get(idx).mlistChildren.get(idx1).mnExprRecogType == EXPRRECOGTYPE_LISTCUT  // treat list cut like vblankcut only when we print its value to string
                                     || */listMergeVCutChildren1.get(idx).mlistChildren.get(idx1).isVCutNonMatrixType())   {
@@ -636,6 +659,7 @@ public class StructExprRecog {
             LinkedList<Integer> listCharLevel = new LinkedList<Integer>();
             LinkedList<Integer> list1SideAnchorBaseIdx = new LinkedList<Integer>();
             // first of all, find out the highest child which must be base
+            /*It should be the highest one and nonHdivChild, But sometimes there doesn't have*/
             int nBiggestChildHeight = 0;
             int nBiggestChildIdx = 0;
             int nHighestNonHDivChildHeight = -1;
@@ -662,11 +686,14 @@ public class StructExprRecog {
             
             listCharLevel.add(0);
             list1SideAnchorBaseIdx.add(nBiggestChildIdx);
-            
+
+
+
             // from highest child to right
             StructExprRecog serBiggestChild = listMergeVCutChildren.get(nBiggestChildIdx);
             BLUCharIdentifier bluCIBiggest = new BLUCharIdentifier(serBiggestChild);
             BLUCharIdentifier bluCI = bluCIBiggest.clone();
+
             int nLastBaseHeight = listMergeVCutChildren.get(nBiggestChildIdx).mnHeight;
             for (int idx = nBiggestChildIdx + 1; idx < listMergeVCutChildren.size(); idx ++)   {
                 StructExprRecog ser = listMergeVCutChildren.get(idx);
@@ -1984,7 +2011,8 @@ public class StructExprRecog {
                     nMMTop = Integer.MAX_VALUE;
                     nMMBottomP1 = Integer.MIN_VALUE;
                 }
-            } else if ((!ser.isChildListType()) && listCharLevel.get(idx) == 0    // must be a base character
+            }
+            else if ((!ser.isChildListType()) && listCharLevel.get(idx) == 0    // must be a base character
                     && idx != (listMergeVCutChildren.size() - 1)    // should not be in the last character
                     && (ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET
                         || ser.mType == UnitProtoType.Type.TYPE_SQUARE_BRACKET
@@ -1996,7 +2024,8 @@ public class StructExprRecog {
                             && ser.mType != UnitProtoType.Type.TYPE_VERTICAL_LINE
                             && ser.mnHeight / ser.mnWidth > ConstantsMgr.msdExtendableCharWOverHThresh * ConstantsMgr.msdCharWOverHGuaranteedExtRatio))  // seems to be the beginning of a matrix
                     && ser.mnTop <= listMergeVCutChildren.get(nGoThroughModeStartIdx).mnTop
-                    && ser.getBottomPlus1() >= listMergeVCutChildren.get(nGoThroughModeStartIdx).getBottomPlus1())    {
+                    && ser.getBottomPlus1() >= listMergeVCutChildren.get(nGoThroughModeStartIdx).getBottomPlus1())
+            {
                 // we are not in normal mode, but old beginning of the matrix is not a real beginning of a matrix. Beginning of a matrix should start from here.
                 for (int idx1 = nGoThroughModeStartIdx; idx1 < idx; idx1 ++)    {
                     //serFromGTS cannot be vertically cut. it must either be horizontally cut or a character.
@@ -2024,7 +2053,8 @@ public class StructExprRecog {
                 nMMRightP1 = Integer.MIN_VALUE;
                 nMMTop = Integer.MAX_VALUE;
                 nMMBottomP1 = Integer.MIN_VALUE;
-            } else if (ser.isChildListType() == false && listCharLevel.get(idx) == 0    // must be a base character
+            }
+            else if (ser.isChildListType() == false && listCharLevel.get(idx) == 0    // must be a base character
                     && (ser.getBottomPlus1() - listMergeVCutChildren.get(nGoThroughModeStartIdx).mnTop) > ConstantsMgr.msdOpenCloseBracketHeightRatio * ser.mnHeight
                     && (listMergeVCutChildren.get(nGoThroughModeStartIdx).getBottomPlus1() - ser.mnTop) > ConstantsMgr.msdOpenCloseBracketHeightRatio * ser.mnHeight
                     && ser.mnHeight > ConstantsMgr.msdOpenCloseBracketHeightRatio * listMergeVCutChildren.get(nGoThroughModeStartIdx).mnHeight  // must have similar height as the start character
@@ -2037,7 +2067,8 @@ public class StructExprRecog {
                             && ser.mType != UnitProtoType.Type.TYPE_SQUARE_BRACKET
                             && ser.mType != UnitProtoType.Type.TYPE_BRACE
                             && ser.mType != UnitProtoType.Type.TYPE_VERTICAL_LINE
-                            && ser.mnHeight / ser.mnWidth > ConstantsMgr.msdExtendableCharWOverHThresh * ConstantsMgr.msdCharWOverHGuaranteedExtRatio)))    {
+                            && ser.mnHeight / ser.mnWidth > ConstantsMgr.msdExtendableCharWOverHThresh * ConstantsMgr.msdCharWOverHGuaranteedExtRatio)))
+            {
                 bGetMM = false;
                 boolean bHasBaseBlankDiv = false;
                 for (int idx1 = nGoThroughModeStartIdx + 1; idx1 < idx; idx1 ++)    {
@@ -2396,7 +2427,9 @@ public class StructExprRecog {
                     nGoThroughModeStartIdx = -1;
                     idx --;
                 }
-            } else  {
+            }
+            else
+            {
                 // in the middle of a matrix.
                 nMMLeft = (nMMLeft > ser.mnLeft)?ser.mnLeft:nMMLeft;
                 nMMRightP1 = (nMMRightP1 < ser.getRightPlus1())?ser.getRightPlus1():nMMRightP1;
@@ -3582,6 +3615,7 @@ public class StructExprRecog {
     }
 
     public static void rectifyMisRecogNumLetter(CharLearningMgr clm, StructExprRecog ser)   {
+        /*Here isLetter means it is one of 26 letters or Greek alphabet*/
         if (ser.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && !ser.isLetterChar() && !ser.isNumberChar())    {
             // this letter might be miss recognized, look for another candidate.
             LinkedList<CharCandidate> listCands = clm.findCharCandidates(ser.mType, ser.mstrFont);
@@ -3605,6 +3639,7 @@ public class StructExprRecog {
                 if (isLetterChar(listCands.get(idx1).mType) || isNumberChar(listCands.get(idx1).mType)
                         || isSIGMAPITypeChar(listCands.get(idx1).mType) || isIntegTypeChar(listCands.get(idx1).mType)) {
                     // ok, change it to the new char
+                    System.out.println("hhhello1");
                     ser.changeSEREnumType(listCands.get(idx1).mType,
                             (listCands.get(idx1).mstrFont.length() == 0)?ser.mstrFont:listCands.get(idx1).mstrFont);
                     break;
@@ -3643,6 +3678,7 @@ public class StructExprRecog {
                         || ser.mType == UnitProtoType.Type.TYPE_WAVE || ser.mType == UnitProtoType.Type.TYPE_STAR
                         || ser.mType == UnitProtoType.Type.TYPE_DOT) {
                     // ok, change it to the new char
+                    System.out.println("hhhello");
                     ser.changeSEREnumType(listCands.get(idx1).mType,
                             (listCands.get(idx1).mstrFont.length() == 0)?ser.mstrFont:listCands.get(idx1).mstrFont);
                     break;
@@ -3673,6 +3709,7 @@ public class StructExprRecog {
             } case EXPRRECOGTYPE_HCUTCAP:
             case EXPRRECOGTYPE_HCUTUNDER:
             case EXPRRECOGTYPE_HCUTCAPUNDER: {
+                System.out.println("hhhello2");
                 StructExprRecog serCap = null, serBase = null, serUnder = null;
                 if (mnExprRecogType == EXPRRECOGTYPE_HCUTCAP)   {
                     serCap = mlistChildren.getFirst();
@@ -3694,21 +3731,39 @@ public class StructExprRecog {
                     rectifyMisRecogCapUnderNotesChar(clm, serUnder);
                 }
                 break;
-            } case EXPRRECOGTYPE_VBLANKCUT: {
+            }
+            case EXPRRECOGTYPE_VBLANKCUT: {
                 for (int idx = 0; idx < mlistChildren.size(); idx ++)   {
+
                     StructExprRecog serThisChild = mlistChildren.get(idx);
+
+                    /*If we find a 't' and the second letter after it is n, then we think the letter after 't' should be a*/
+                    if(serThisChild.mType == UnitProtoType.Type.TYPE_SMALL_T){
+                        if((idx + 2) < mlistChildren.size() && mlistChildren.get(idx+2).mType == UnitProtoType.Type.TYPE_SMALL_N){
+                            mlistChildren.get(idx+1).mType = UnitProtoType.Type.TYPE_SMALL_A;
+                            mlistChildren.get(idx+1).mstrFont = "";
+                            mlistChildren.get(idx+1).mdSimilarity = 0.0;
+
+                            mlistChildren.get(idx+1).mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
+                        }
+                    }
+
                     StructExprRecog serThisChildPrinciple = serThisChild.getPrincipleSER(4); // get principle from upper or lower notes.
                     if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && serThisChild.mType == UnitProtoType.Type.TYPE_BRACE
                             && idx < (mlistChildren.size() - 1) && mlistChildren.get(idx + 1).mnExprRecogType != EXPRRECOGTYPE_HBLANKCUT
                             && mlistChildren.get(idx + 1).mnExprRecogType != EXPRRECOGTYPE_MULTIEXPRS
                             && mlistChildren.get(idx + 1).mnExprRecogType != EXPRRECOGTYPE_VCUTMATRIX)   {
                         // should change { to ( if the following ser is not a mult exprs nor a matrix
+                        if(serThisChild.mnExprRecogType == 6){
+                            System.out.println("hello, I am here2");
+                        }
                         serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ROUND_BRACKET, serThisChild.mstrFont);
                     } else if (serThisChildPrinciple.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && serThisChildPrinciple.mType == UnitProtoType.Type.TYPE_CLOSE_BRACE
                             && idx > 0 && mlistChildren.get(idx - 1).mnExprRecogType != EXPRRECOGTYPE_HBLANKCUT
                             && mlistChildren.get(idx - 1).mnExprRecogType != EXPRRECOGTYPE_MULTIEXPRS
                             && mlistChildren.get(idx - 1).mnExprRecogType != EXPRRECOGTYPE_VCUTMATRIX)    {
                         // should change } to ) if the previous ser is not a mult exprs nor a matrix
+
                         serThisChildPrinciple.changeSEREnumType(UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET, serThisChildPrinciple.mstrFont);
                     } else if (idx < mlistChildren.size() - 1) {
                         StructExprRecog serThisChildPrincipleCapUnderUL = serThisChild.getPrincipleSER(5);
@@ -3717,6 +3772,7 @@ public class StructExprRecog {
                                 && serThisChildPrincipleCapUnderUL.mstrFont.equalsIgnoreCase("cambria_italian_48_thinned") // only this font of small f can be misrecognized integrate.
                                 && serThisChild.mlistChildren.size() == 3) {
                             // implies that there are upper note and lower note. So it should be integrate.
+
                             serThisChildPrincipleCapUnderUL.changeSEREnumType(UnitProtoType.Type.TYPE_INTEGRATE, serThisChildPrinciple.mstrFont);
                         }
                     }
@@ -3739,7 +3795,9 @@ public class StructExprRecog {
                                 }
                             }
                         }
-                    } else if (idx == mlistChildren.size() - 1) {
+                    }
+                    else if (idx == mlistChildren.size() - 1) {
+
                         if (serThisChildPrinciple.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
                                 && !serThisChildPrinciple.isLetterChar() && !serThisChildPrinciple.isNumberChar() && !serThisChildPrinciple.isCloseBoundChar()
                                 && !serThisChildPrinciple.isPostUnOptChar() && !serThisChildPrinciple.isPostUnitChar())    {
@@ -3756,7 +3814,8 @@ public class StructExprRecog {
                                 }
                             }
                         }
-                    } else  {
+                    }
+                    else  {
                         StructExprRecog serPrevChild = mlistChildren.get(idx - 1);
                         StructExprRecog serNextChild = mlistChildren.get(idx + 1);
                         if (serPrevChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
@@ -4129,6 +4188,7 @@ public class StructExprRecog {
     }
     
     public void rectifyMisRecogWords(MisrecogWordMgr mwm) throws InterruptedException   {
+        /*here I should add some rules to let it can recognise word better*/
         if (mnExprRecogType == EXPRRECOGTYPE_VBLANKCUT) {
             int idx = 0;
             while (idx < mlistChildren.size())  {

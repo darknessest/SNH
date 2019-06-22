@@ -11,6 +11,7 @@
 			<LetterCandidate>o</LetterCandidate>
 			<LetterCandidate>O</LetterCandidate>
 			<LetterCandidate>0</LetterCandidate>
+			<LetterCandidate Misrecog="true" >D</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_S" >
 			<LetterCandidate>s</LetterCandidate>
@@ -26,6 +27,9 @@
 		</LetterCandidates>
 		<LetterCandidates Index="1" UnitType="SMALL_I" >
 			<LetterCandidate>i</LetterCandidate>
+			<LetterCandidate Misrecog="true" >I</LetterCandidate>
+			<LetterCandidate Misrecog="true" >1</LetterCandidate>
+			<LetterCandidate Misrecog="true" >|</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_N" >
 			<LetterCandidate>n</LetterCandidate>
@@ -69,6 +73,7 @@
 			<LetterCandidate>o</LetterCandidate>
 			<LetterCandidate>O</LetterCandidate>
 			<LetterCandidate>0</LetterCandidate>
+			<LetterCandidate Misrecog="true" >D</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_G" >
 			<LetterCandidate>g</LetterCandidate>
@@ -89,6 +94,7 @@
 			<LetterCandidate>a</LetterCandidate>
 			<LetterCandidate Misrecog="true" >O</LetterCandidate>
 			<LetterCandidate Misrecog="true" >o</LetterCandidate>
+			<LetterCandidate Misrecog="true" >α</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_N" >
 			<LetterCandidate>n</LetterCandidate>

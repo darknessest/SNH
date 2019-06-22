@@ -53,6 +53,7 @@ public class JImageProcessor {
             // generate UPT loader java files
             generateUPTsJAVALoader();
         } else if (nTestMode == 0)    {
+            /*Here clm is rectify the letter that is easy to be misunderstood, like 'o' and '0'*/
             CharLearningMgr clm = new CharLearningMgr();
             FileInputStream fis = null;
             try {
@@ -200,6 +201,11 @@ public class JImageProcessor {
             //重点1
             StructExprRecog ser = ExprRecognizer.recognize(imgChop,null, -1, 0,0);
 
+            for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
+                StructExprRecog serThisChild = ser.mlistChildren.get(idx);
+                System.out.println(serThisChild.mnExprRecogType + ":  ;;;" + serThisChild.toString());
+            }
+
             StructExprRecog serOld = ser;
 
             System.out.println("raw , image " + strImageFile + " includes expression : " + ser.toString());
@@ -211,16 +217,23 @@ public class JImageProcessor {
             if (ser != null) {
                 //重点2
                 ser = ser.restruct();
+                System.out.println("The ser's type is :" + ser.mnExprRecogType);
+                for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
+                    StructExprRecog serThisChild = ser.mlistChildren.get(idx);
+                    System.out.println(serThisChild.mnExprRecogType + ": " + serThisChild.toString());
+                }
                 System.out.println(" restruct, image " + strImageFile + " includes expression : " + ser.toString());
                 serOld = ser;
+
 
                 if (bFilter) {
                     ser = ExprFilter.filterRestructedSER(ser, null, null);
                     serOld = ser;
                 }
+
                 if (ser != null) {
                     ser.rectifyMisRecogChars1stRnd(clm);
-
+                    System.out.println("middle restruct, image " + strImageFile + " includes expression : " + ser.toString());
                     //勉强重点3
                     ser.rectifyMisRecogChars2ndRnd();
                     System.out.println("end restruct, image " + strImageFile + " includes expression : " + ser.toString());

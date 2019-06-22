@@ -4,10 +4,6 @@
  */
 package com.cyzapps.imgmatrixproc;
 
-import com.cyzapps.imgproc.ImageMgr;
-import com.cyzapps.mathrecog.ImageChop;
-import com.cyzapps.mathrecog.StrokeFinder;
-import com.cyzapps.imgmatrixproc.Thin;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -17,7 +13,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import static com.cyzapps.imgmatrixproc.Thin.Xihua;
-import static java.lang.StrictMath.round;
 
 /**
  *
@@ -95,6 +90,7 @@ public class ImgMatrixOutput {
 
         int cx = matrix.length;
         int cy = matrix[0].length;
+       // System.out.println("the size of pic: "+cx+ " " + cy );
 
         //填充矩形高宽
         int cz = 0;

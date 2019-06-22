@@ -443,12 +443,18 @@ public class ExprRecognizer {
 
                     String dir = "python" + File.separator + "data" + File.separator + String.format("%03d", 1) + ".jpg";
                     ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
+                    dir = "python" + File.separator + "data_backup" + File.separator + String.format("%03d", countss) + ".jpg";
+                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
+                    if(!shouldnotUsePy(serReturnCand1))
+                        usePy();
 
-                    usePy();
+                    UnitProtoType.Type cType = getType((resu));
+                    /*这里先简单的舍弃python识别为i或j的值，而后再看看怎么更改*/
+                    if (similarty >= 0.99 && !shouldnotUsePy(serReturnCand1) && !shouldnotTrustPy(cType)) {
 
-                    if (similarty >= 0.99) {
                         serReturn = serReturnCand1;
-                        serReturn.mType = getTpye(resu);
+                        serReturn.mType = cType;
+                        serReturn.mstrFont = "";
                         serReturn.mdSimilarity = 0.0;
 
                         serReturn.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
@@ -472,16 +478,40 @@ public class ExprRecognizer {
 
     public static String resu;
     public static double similarty;
+    public static int countss = 0;
+
+    public static boolean shouldnotUsePy(StructExprRecog ser){
+        /*Some case wo shoule not use py, Because use py may let to misunderstood and to save time*/
+        /*UnitProtoType.Type.TYPE_VERTICAL_LINE
+        UnitProtoType.Type.TYPE_SUBTRACT
+        UnitProtoType.Type.TYPE_EMPTY
+        UnitProtoType.Type.TYPE_DOT
+        UnitProtoType.Type.TYPE_ONE
+        //those character is pre-Recognised by java
+        */
+        if(ser.mType == UnitProtoType.Type.TYPE_DOT || ser.mType == UnitProtoType.Type.TYPE_ONE || ser.mType ==  UnitProtoType.Type.TYPE_VERTICAL_LINE
+                || ser.mType == UnitProtoType.Type.TYPE_SUBTRACT || ser.mType == UnitProtoType.Type.TYPE_EMPTY)
+            return true;
+        return false;
+    }
+
+    public static boolean shouldnotTrustPy(UnitProtoType.Type cType){
+        /*We do not trust the result of python because it should not get a result of 'i' or 'j' ect.*/
+        if(cType != UnitProtoType.Type.TYPE_SMALL_I && cType != UnitProtoType.Type.TYPE_SMALL_J )
+            return false;
+        return true;
+    }
 
     public static void usePy() {
-        System.out.println("hello");
+        System.out.println("This is the " + countss++ + "th time to use python");
+
         String line = null;
         resu = new String();
         similarty = 1;
         try {
             int count = 0;
             Socket socket = new Socket("127.0.0.1", 9999);
-            System.out.println("Client start!");
+            //System.out.println("Client start!");
             PrintWriter out = new PrintWriter(socket.getOutputStream()); // 输出，to 服务器 socket
             out.println("Client request! :-) ");
             out.flush(); // 刷缓冲输出，to 服务器
@@ -491,15 +521,18 @@ public class ExprRecognizer {
             while ((line = in.readLine()) != null) {
                 line = line.toLowerCase();
                 //System.out.println(line);
-                if (i % 2 == 0)
+                if (i % 2 == 0) {
                     resu = line;
+                    System.out.println("The python have give a result: " + line);
+                }
                 else {
                     //count++;
+                    System.out.println("and its similary is: "+ line);
                     similarty = Double.valueOf(line);
                 }
                 i++;
             }
-            System.out.println("Client end!");
+            //System.out.println("Client end!");
             socket.close();
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -512,7 +545,7 @@ public class ExprRecognizer {
     }
 
 
-    public static UnitProtoType.Type getTpye(String line) {
+    public static UnitProtoType.Type getType(String line) {
         UnitProtoType.Type rety = UnitProtoType.Type.TYPE_UNKNOWN;
         switch (line) {
             case "infty":
@@ -575,10 +608,10 @@ public class ExprRecognizer {
                 rety = UnitProtoType.getmningTypeValue("\\times");
                 break;
             case "{":
-                rety = UnitProtoType.getmningTypeValue("{");
+                rety = UnitProtoType.getmningTypeValue("\\brace");
                 break;
             case "}":
-                rety = UnitProtoType.getmningTypeValue("}");
+                rety = UnitProtoType.getmningTypeValue("\\closebrace");
                 break;
             case "!":
                 rety = UnitProtoType.getmningTypeValue("!");
