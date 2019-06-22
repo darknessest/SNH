@@ -204,7 +204,7 @@ public class JImageProcessor {
 
             //todo 这块的代码结构可以进一步优化，反复调用了过滤程序
 
-            //调用过滤（filter)程序
+            //todo 这里有很严重的bug cos(1/2)
             if (bFilter) {
                 ser = ExprFilter.filterRawSER(ser, null);
                 serOld = ser;

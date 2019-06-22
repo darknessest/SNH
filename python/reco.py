@@ -1,7 +1,5 @@
 import os
-
 import socket
-
 import time
 import sympy
 
@@ -11,7 +9,11 @@ from cnn.neural_network import CNN
 from keras.utils import np_utils
 from skimage import io
 
+#忽视警告(省的老是有人说---报错了hhhh)
+import warnings
+warnings.filterwarnings("ignore")
 
+#计算微分
 def calculDiff(strExpr):
     x = sympy.Symbol(strExpr[0])
     val = int(strExpr[1])
@@ -20,6 +22,7 @@ def calculDiff(strExpr):
     print(ans)
     newSocket.send(bytes(str(ans),encoding='utf-8'))
 
+#图像格式转化
 def convert_img(img_file, path_to_img='data/'):#E:\\recomath\\final\SNH\Python\Pretre\Pretre\data/
     if img_file.endswith('.jpg') or img_file.endswith('.png') or img_file.endswith('.bmp'):
         #print(img_file + ' is being processed')
@@ -45,7 +48,7 @@ def convert_img(img_file, path_to_img='data/'):#E:\\recomath\\final\SNH\Python\P
             image.save('.' + image_path + '_conv.png')
 
 if __name__ == "__main__":
-    #print('\nLoading Data For Prediction...')
+    print('CNN model is ready to work')
     path = 'data/'
     all_images = []
     all_labels = []
@@ -53,13 +56,13 @@ if __name__ == "__main__":
     i = 0
 
     model_labels = []
-    with open("tag_h.txt") as file:  # change labels file name  E:\\CoreMath\SNH\python\Pretre\
+    with open("labels_yuxi.txt") as file:  # change labels file name  E:\\CoreMath\SNH\python\Pretre\
         for line in file:
             line = line.strip().split()[0]
             model_labels.append(line)
 
     clf = CNN.build(width=32, height=32, depth=1, total_classes=len(model_labels), input_shape=(32, 32, 1),
-                    Saved_Weights_Path='cnn_weights_new_h.hdf5')  # change model file name
+                    Saved_Weights_Path='cnn_weights_yuxi_update3.hdf5')  # change model file name
 
     #for file in sorted(os.listdir(path)):
         #if not file.startswith("."):
