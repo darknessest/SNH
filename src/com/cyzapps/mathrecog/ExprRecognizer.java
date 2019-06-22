@@ -461,21 +461,24 @@ public class ExprRecognizer {
                     String dir = "python" + File.separator + "data" + File.separator + String.format("%03d", 1) + ".jpg";
                     ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
                     //分析图片用的，可注释这两行
-                    String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
-                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
+//                    String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
+//                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
 
                     usePy();
 
-                    if (similarty >= 0.99) {
+                    System.out.println("[JAVA___RESULT]\t" + serReturnCand1.mType + " \t" + serReturnCand1.toString());
+                    System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu);
+                    //选择python的识别结果
+                    if (similarty >= 0.99&&getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_I&&getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_J) {
                         serReturn = serReturnCand1;
                         serReturn.mType = getTpye(resu);
                         serReturn.mdSimilarity = 0.0;
-
                         serReturn.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
-                        System.out.println("[TEST!!!]  " + serReturn.mType + " \n" + serReturn.toString() + "\n");
-                    } else {
+                        System.out.println("[FINAL__RESULT]\t" + "Choose python!");
+                    }
+                    //比较python和java那个识别效果更好，now we compare which one is better.
+                    else {
                         serReturnCand2 = disconnect2Recog(imgChopsFrom, nCutMode, imgChopsFrom.mlistChops.indexOf(imgChopOriginal), dAvgStrokeWidth, serReturnCand1, new LinkedList<ImageChop>(), nStackLvl + 1);
-                        // now we compare which one is better.
                         serReturn = selectSERFromCands(serReturnCand1, serReturnCand2);
                     }
 
@@ -494,7 +497,7 @@ public class ExprRecognizer {
     public static double similarty;
 
     public static void usePy() {
-        System.out.println("Hello,ready to use python");
+        System.out.println("\nHello,ready to use python");
         String line = null;
         resu = new String();
         similarty = 1;
@@ -508,7 +511,7 @@ public class ExprRecognizer {
             int i = 0;
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // 输入， from 服务器 socket
             while ((line = in.readLine()) != null) {
-                //todo 这里已经将所有符号都转化成小写了？
+                //todo 这里已经将所有符号都转化成小写了
                 line = line.toLowerCase();
                 //System.out.println(line);
                 if (i % 2 == 0)
