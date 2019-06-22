@@ -633,7 +633,8 @@ public class ExprFilter {
                     && serInput.mType != UnitProtoType.Type.TYPE_BIG_PI) {  // big Pi is not recognized as a letter, but it can be misrecognized n.
                 if (serParent == null) {
                     serOutput = null;   // a single char has to be letter or number (not possible number)
-                } else if ((serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_HCUTCAP
+                }
+                else if ((serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_HCUTCAP
                             || serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_HCUTUNDER
                             || serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_HCUTCAPUNDER
                             || serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_VCUTLEFTTOPNOTE
@@ -676,7 +677,8 @@ public class ExprFilter {
                 } else {
                     serOutput = serInput;
                 }
-            } else if ((serParent == null || ((serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_MULTIEXPRS || serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_HBLANKCUT)
+            }
+            else if ((serParent == null || ((serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_MULTIEXPRS || serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_HBLANKCUT)
                                 && (serGrandParent == null || serGrandParent.mnExprRecogType != StructExprRecog.EXPRRECOGTYPE_VCUTMATRIX)))
                     && !serInput.isNumberChar() && !serInput.isLetterChar() && serInput.mType != UnitProtoType.Type.TYPE_INFINITE
                     && serInput.mType != UnitProtoType.Type.TYPE_BIG_PI) {
@@ -688,7 +690,8 @@ public class ExprFilter {
         } case StructExprRecog.EXPRRECOGTYPE_LISTCUT: { // this type actually is not used.
             serOutput = serInput;
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_HBLANKCUT:
+        }
+        case StructExprRecog.EXPRRECOGTYPE_HBLANKCUT:
           case StructExprRecog.EXPRRECOGTYPE_MULTIEXPRS: {
             LinkedList<StructExprRecog> listChildren = new LinkedList<StructExprRecog>();
             for (int idx = 0; idx < serInput.mlistChildren.size(); idx ++) {

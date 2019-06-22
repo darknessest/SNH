@@ -223,23 +223,32 @@ public class ExprRecognizer {
         return serReturn;
     }
 
-    //CORE::分块好的图片——>StructExprRecog
+
+    public static int Caolulu = 0;
+    public static int Caolulu1 = 0;
+
+
+    //就是的！是core！！！！！? 分块好的图片——>StructExprRecog
     // here assume barrayImg has been the minimum containing rectangle of the image.
     // imgChopsFrom is the image chops that includes imgChopOriginal, it can be null,
     // nReadingOrder is 0 means horizontally cut imgchops, is 1 means vertically cut imgchops.
-    public static int dml_cnt=0;
     public static StructExprRecog recognize(ImageChop imgChopOriginal, ImageChops imgChopsFrom, int nCutMode, double dAvgStrokeWidth, int nStackLvl) throws ExprRecognizeException, InterruptedException, IOException {
+
+//        System.out.println("experssion:开始");
         if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException();
         }
         if (nStackLvl >= MAX_RECOGNIZING_STACK_COUNT) {
             throw new ExprRecognizeException(TOO_DEEP_CALL_STACK);
         }
+
         StructExprRecog serReturn = new StructExprRecog(imgChopOriginal.mbarrayOriginalImg);
 
-        // todo 重点！！！ 判断切块类型
+
+        //就当是预处理一下
         if (imgChopOriginal.isEmptyImage() || imgChopOriginal.mnChopType == ImageChop.TYPE_BLANK_DIV
                 || imgChopOriginal.mnChopType == ImageChop.TYPE_UNDER_DIV || imgChopOriginal.mnChopType == ImageChop.TYPE_CAP_DIV) {
+            //压缩一下？
             ImageChop imgChopShrinked = new ImageChop();
             byte[][] barrayImage = new byte[imgChopOriginal.mnWidth][imgChopOriginal.mnHeight];
 
@@ -247,15 +256,12 @@ public class ExprRecognizer {
             imgChopShrinked.setImageChop(barrayImage, 0, 0, imgChopOriginal.mnWidth, imgChopOriginal.mnHeight,
                     imgChopOriginal.mbarrayOriginalImg, imgChopOriginal.getLeftInOriginalImg(), imgChopOriginal.getTopInOriginalImg(), imgChopOriginal.mnChopType);
 
-            //不知道这里为什么就返回空类型了，TYPE_UNDER_DIV 为啥就等同于空类型了呢？
             serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_EMPTY, StructExprRecog.UNKNOWN_FONT_TYPE,
                     imgChopOriginal.getLeftInOriginalImg(), imgChopOriginal.getTopInOriginalImg(),
                     imgChopOriginal.mnWidth, imgChopOriginal.mnHeight, imgChopShrinked, 1);  // empty char similarity is always 1.
 
             return serReturn;
-        }
-        //todo  TYPE_LINE_DIV——>TYPE_SUBTRACT
-        else if (imgChopOriginal.mnChopType == ImageChop.TYPE_LINE_DIV) {
+        } else if (imgChopOriginal.mnChopType == ImageChop.TYPE_LINE_DIV) {
             ImageChop imgChopShrinked = imgChopOriginal.shrinkImgArray();
             serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_SUBTRACT, StructExprRecog.UNKNOWN_FONT_TYPE,
                     imgChopOriginal.getLeftInOriginalImg(), imgChopOriginal.getTopInOriginalImg(),
@@ -320,6 +326,7 @@ public class ExprRecognizer {
         ImageChops imgChops = ExprSeperator.cutHorizontallyProj(imgChopOriginal, dAvgStrokeWidth, dMaxEstCharWidth, dMaxEstCharHeight);
 
         //分成了很多块
+
         if (imgChops.mlistChops.size() > 1) {
             int nThisCutStartIdx = 0, nThisCutEndIdx = -1;  // cut by blank div.
             LinkedList<StructExprRecog> listHBlankCuts = new LinkedList<StructExprRecog>();
@@ -389,7 +396,7 @@ public class ExprRecognizer {
                             imgChopOriginal.getLeftInOriginalImg(), imgChopOriginal.getTopInOriginalImg(),
                             imgChopOriginal.mnWidth, imgChopOriginal.mnHeight, imgChopShinked, 1);  // empty char similarity is always 1.
                 }
-                //识别单个字符,重点中的重点
+                //识别单个字符重点中的重点
                 else if (imgChopsExtracted.mlistChops.size() == 1) {
 
                     StructExprRecog serReturnCand1 = new StructExprRecog(imgChopOriginal.mbarrayOriginalImg),
@@ -436,31 +443,34 @@ public class ExprRecognizer {
 
                     String dir = "python" + File.separator + "data" + File.separator + String.format("%03d", 1) + ".jpg";
                     ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
-                    //分析图片用的，可注释这两行
-                    String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
-                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
+                    dir = "python" + File.separator + "data_backup" + File.separator + String.format("%03d", countss) + ".jpg";
+                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
+                    if(!shouldnotUsePy(serReturnCand1))
+                        usePy();
 
-                    usePy();
+                    UnitProtoType.Type cType = getType((resu));
+                    /*这里先简单的舍弃python识别为i或j的值，而后再看看怎么更改*/
+                    if (similarty >= 0.99 && !shouldnotUsePy(serReturnCand1) && !shouldnotTrustPy(cType)) {
 
-                    if (similarty >= 0.99) {
                         serReturn = serReturnCand1;
-                        serReturn.mType = getTpye(resu);
+                        serReturn.mType = cType;
+                        serReturn.mstrFont = "";
                         serReturn.mdSimilarity = 0.0;
 
                         serReturn.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
-                        System.out.println("[TEST!!!]  " + serReturn.mType + " \n" + serReturn.toString() + "\n");
+                        System.out.println("test!!! " + serReturn.mType + " \n" + serReturn.toString() + "\n");
                     } else {
                         serReturnCand2 = disconnect2Recog(imgChopsFrom, nCutMode, imgChopsFrom.mlistChops.indexOf(imgChopOriginal), dAvgStrokeWidth, serReturnCand1, new LinkedList<ImageChop>(), nStackLvl + 1);
                         // now we compare which one is better.
                         serReturn = selectSERFromCands(serReturnCand1, serReturnCand2);
                     }
-
                 } else {
                     int nExtractedMajorIdx = ExprSeperator.getMajorChopFromSameOriginal(imgChopsExtracted);
                     serReturn = extract2Recog(imgChopsExtracted, nExtractedMajorIdx, dAvgStrokeWidth, nStackLvl + 1);// from test, it seems that cut-recog cannot improve correctness, so do not do.
                 }
             }
         }
+
         //识别出结构化的字符
         serReturn = serReturn.identifyHSeperatedChar();   // = or always equal might be h cuted here.
         return serReturn;
@@ -468,44 +478,74 @@ public class ExprRecognizer {
 
     public static String resu;
     public static double similarty;
+    public static int countss = 0;
+
+    public static boolean shouldnotUsePy(StructExprRecog ser){
+        /*Some case wo shoule not use py, Because use py may let to misunderstood and to save time*/
+        /*UnitProtoType.Type.TYPE_VERTICAL_LINE
+        UnitProtoType.Type.TYPE_SUBTRACT
+        UnitProtoType.Type.TYPE_EMPTY
+        UnitProtoType.Type.TYPE_DOT
+        UnitProtoType.Type.TYPE_ONE
+        //those character is pre-Recognised by java
+        */
+        if(ser.mType == UnitProtoType.Type.TYPE_DOT || ser.mType == UnitProtoType.Type.TYPE_ONE || ser.mType ==  UnitProtoType.Type.TYPE_VERTICAL_LINE
+                || ser.mType == UnitProtoType.Type.TYPE_SUBTRACT || ser.mType == UnitProtoType.Type.TYPE_EMPTY)
+            return true;
+        return false;
+    }
+
+    public static boolean shouldnotTrustPy(UnitProtoType.Type cType){
+        /*We do not trust the result of python because it should not get a result of 'i' or 'j' ect.*/
+        if(cType != UnitProtoType.Type.TYPE_SMALL_I && cType != UnitProtoType.Type.TYPE_SMALL_J )
+            return false;
+        return true;
+    }
 
     public static void usePy() {
-        System.out.println("Hello,ready to use python");
+        System.out.println("This is the " + countss++ + "th time to use python");
+
         String line = null;
         resu = new String();
         similarty = 1;
         try {
             int count = 0;
             Socket socket = new Socket("127.0.0.1", 9999);
-            System.out.println("Client start!");
+            //System.out.println("Client start!");
             PrintWriter out = new PrintWriter(socket.getOutputStream()); // 输出，to 服务器 socket
             out.println("Client request! :-) ");
             out.flush(); // 刷缓冲输出，to 服务器
             int i = 0;
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // 输入， from 服务器 socket
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    socket.getInputStream())); // 输入， from 服务器 socket
             while ((line = in.readLine()) != null) {
-                //todo 这里已经将所有符号都转化成小写了？
                 line = line.toLowerCase();
                 //System.out.println(line);
-                if (i % 2 == 0)
+                if (i % 2 == 0) {
                     resu = line;
+                    System.out.println("The python have give a result: " + line);
+                }
                 else {
                     //count++;
+                    System.out.println("and its similary is: "+ line);
                     similarty = Double.valueOf(line);
                 }
                 i++;
             }
-            System.out.println("Client end!");
+            //System.out.println("Client end!");
             socket.close();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //StructExprRecog serReturn = new StructExprRecog();
+
     }
 
 
-    public static UnitProtoType.Type getTpye(String line) {
+    public static UnitProtoType.Type getType(String line) {
         UnitProtoType.Type rety = UnitProtoType.Type.TYPE_UNKNOWN;
         switch (line) {
             case "infty":
@@ -568,10 +608,10 @@ public class ExprRecognizer {
                 rety = UnitProtoType.getmningTypeValue("\\times");
                 break;
             case "{":
-                rety = UnitProtoType.getmningTypeValue("{");
+                rety = UnitProtoType.getmningTypeValue("\\brace");
                 break;
             case "}":
-                rety = UnitProtoType.getmningTypeValue("}");
+                rety = UnitProtoType.getmningTypeValue("\\closebrace");
                 break;
             case "!":
                 rety = UnitProtoType.getmningTypeValue("!");
