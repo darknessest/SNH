@@ -27,6 +27,7 @@ public class ConstantsMgr {
     public static double msdItalianIntegrateLowerNoteMostRight = 0.6;   // if integrate is italian, right of lower note can be at most 0.6 width of integrate from left
     public static double msdMaxHorizontalSlope = 0.03;	// user should ensure that slope is less than 0.03.
     public static double msdDisconnectPoss2Width = 0.005;  // clearly, if very long, we may see some small disconnects which should be ignored.
+
     public static double msdHeightSkewRatio = 0.06;	// larger height implies that h-cut's width can be shorter compared to chop width.
     public static double msdMaxHLnThickness = 0.14;   // max line div thinkness is calculated by avg stroke width + 0.14 * width. 0.14 = sqrt(3)/2 - 1
     public static double msdCapUnderHeightRatio2Base = 0.7;  // height of cap or under cannot be more than 0.7 height of its base.
@@ -133,6 +134,7 @@ public class ConstantsMgr {
     public static double msdDotOnCnt2AreaMin = 0.8; // if on cnt > 0.6 * area and w/h is from (0.5 to 2), then it is a dot.
     public static double msdNeighborHeight2PossDotHeight = 3.5;   // if a lower note is 1/5.0 height of its left and right number neighbour, it is actually a dot.
     public static double msdNeighborHeight2PossDotWidth = 3.0;   // if a lower note's width is 1/4.0 height of its left and right number neighbour, it is actually a dot.
+
     public static double msdWorstCaseLineDivOnLenRatio = 0.95;  // line div's on point should be 95% of image chop width at least.
     public static double msdMajorArea2TopBtmThresh = 1.5;   // if cap or btm's area > 2* major area, cap or btm is major, major is actually btm or cap.
     

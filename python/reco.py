@@ -55,13 +55,13 @@ if __name__ == "__main__":
     i = 0
 
     model_labels = []
-    with open("tag_h.txt") as file:  # change labels file name  E:\\CoreMath\SNH\python\Pretre\
+    with open("labels_yuxi.txt") as file:  # change labels file name  E:\\CoreMath\SNH\python\Pretre\
         for line in file:
             line = line.strip().split()[0]
             model_labels.append(line)
 
     clf = CNN.build(width=32, height=32, depth=1, total_classes=len(model_labels), input_shape=(32, 32, 1),
-                    Saved_Weights_Path='cnn_weights_new_h.hdf5')  # change model file name
+                    Saved_Weights_Path='cnn_weights_yuxi_update_r3.hdf5')  # change model file name
 
     # for file in sorted(os.listdir(path)):
     # if not file.startswith("."):

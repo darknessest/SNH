@@ -54,7 +54,7 @@ public class Controller implements Initializable {
     Button prevPicButton, nextPicButton;
 
     private String SelectedImagePath = null;
-    private String res;
+    private String res = null;
     private CharLearningMgr clm;
     private MisrecogWordMgr mwm;
     private int currentPicIndex = 0;
@@ -76,7 +76,6 @@ public class Controller implements Initializable {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream("res" + File.separator + "clm.xml");
-            //fis = new FileInputStream("res/clm.xml");
         } catch (FileNotFoundException ex) {
             Logger.getLogger(JImageProcessor.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -94,7 +93,6 @@ public class Controller implements Initializable {
         fis = null;
         try {
             fis = new FileInputStream("res" + File.separator + "mwm.xml");
-            //fis = new FileInputStream("res/mwm.xml");
         } catch (FileNotFoundException ex) {
             Logger.getLogger(JImageProcessor.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -135,7 +133,6 @@ public class Controller implements Initializable {
     private void OpenFiles() {
         FileChooser fileChooser = new FileChooser();
 
-
         //Set extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
                 "image files: bmp, png, jpg",
@@ -160,7 +157,6 @@ public class Controller implements Initializable {
             selectedFiles = tempListOfFiles;
             results.clear();
         }
-
     }
 
     @FXML
