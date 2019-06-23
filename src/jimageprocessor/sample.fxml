@@ -48,10 +48,10 @@
                   <Image url="@logo.PNG" />
                </image>
             </ImageView>
-            <Button fx:id="prevPicButton" layoutX="115.0" layoutY="559.0" mnemonicParsing="false" text="&lt;" />
-            <Button fx:id="nextPicButton" layoutX="247.0" layoutY="559.0" mnemonicParsing="false" text="&gt;" />
+            <Button fx:id="prevPicButton" layoutX="148.0" layoutY="559.0" mnemonicParsing="false" text="&lt;" />
+            <Button fx:id="nextPicButton" layoutX="254.0" layoutY="559.0" mnemonicParsing="false" text="&gt;" />
             <Label fx:id="fileNameLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="542.0" prefHeight="17.0" prefWidth="400.0" textAlignment="CENTER" />
-            <Button layoutX="175.0" layoutY="245.0" mnemonicParsing="false" onAction="#RunAll" text="!!!" wrapText="true">
+            <Button layoutX="189.0" layoutY="243.0" mnemonicParsing="false" onAction="#RunAll" text="!!!" wrapText="true">
                <font>
                   <Font name="Menlo Regular" size="16.0" />
                </font>

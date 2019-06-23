@@ -54,11 +54,9 @@ public class Controller implements Initializable {
     Button prevPicButton, nextPicButton;
 
     private String SelectedImagePath = null;
-    private String res = null;
     private CharLearningMgr clm;
     private MisrecogWordMgr mwm;
     private int currentPicIndex = 0;
-    private ImageView iv;
     private List<File> selectedFiles;
     private ArrayList<String> results;
 
@@ -133,7 +131,7 @@ public class Controller implements Initializable {
     private void OpenFiles() {
         FileChooser fileChooser = new FileChooser();
 
-        //Set extension filter
+        // Set extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
                 "image files: bmp, png, jpg",
                 "*.bmp", "*.png", "*.jpg"); // more file extensions can be added
@@ -145,6 +143,7 @@ public class Controller implements Initializable {
 
         if (!tempListOfFiles.isEmpty()) {
             tempListOfFiles.forEach(x -> PutText(x.getPath(), false, Color.BLACK, "Arial", 16));
+            currentPicIndex = 0;
 
             // show in program
             showImage(tempListOfFiles.get(currentPicIndex));
@@ -153,7 +152,7 @@ public class Controller implements Initializable {
             FileAddressField.setText(SelectedImagePath);
             fileNameLabel.setText(tempListOfFiles.get(currentPicIndex).getName());
 
-            currentPicIndex = 0;
+
             selectedFiles = tempListOfFiles;
             results.clear();
         }
@@ -221,7 +220,7 @@ public class Controller implements Initializable {
             }
             if (strExpressions.indexOf("derivative") != -1) {//求导
                 Function df = new Function(strExpressions);
-                String arg = df.x + String.valueOf(df.ccount) + df.str;//这里的df.ccount，为求导阶数，目前一阶导数测试通过
+                String arg = Function.x + Function.ccount + Function.str;//这里的df.ccount，为求导阶数，目前一阶导数测试通过
                 try {
                     Socket socket = new Socket("127.0.0.1", 9999);
                     System.out.println("Client start!");
@@ -304,9 +303,9 @@ public class Controller implements Initializable {
                 temp = temp.replace("^", "**");
                 strExpressions = temp + "==" + strarraycup[1];
             }
-            if (strExpressions.indexOf("derivative") != -1) {//求导
+            if (strExpressions.contains("derivative")) {//求导
                 Function df = new Function(strExpressions);
-                String arg = df.x + String.valueOf(df.ccount) + df.str;//这里的df.ccount，为求导阶数，目前一阶导数测试通过
+                String arg = Function.x + Function.ccount + Function.str;//这里的df.ccount，为求导阶数，目前一阶导数测试通过
 
                 Socket socket = new Socket("127.0.0.1", 9999);
                 System.out.println("Client start!");
@@ -435,7 +434,7 @@ public class Controller implements Initializable {
             return;
         }
 
-        iv = new ImageView(new Image(pic.toURI().toString()));
+        ImageView iv = new ImageView(new Image(pic.toURI().toString()));
 
         iv.setFitWidth(AP.getWidth());
         iv.setFitHeight(AP.getHeight());
