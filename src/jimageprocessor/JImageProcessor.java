@@ -208,11 +208,19 @@ public class JImageProcessor {
 
             StructExprRecog serOld = ser;
 
+            ser = ser.recifyF();
+
             System.out.println("raw , image " + strImageFile + " includes expression : " + ser.toString());
+
+            /*Here to add my new class to recify*/
 
             if (bFilter) {
                 ser = ExprFilter.filterRawSER(ser, null);
                 serOld = ser;
+            }
+            for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
+                StructExprRecog serThisChild = ser.mlistChildren.get(idx);
+                System.out.println(serThisChild.mnExprRecogType + ":  ...." + serThisChild.toString());
             }
             if (ser != null) {
                 //重点2
@@ -508,5 +516,6 @@ public class JImageProcessor {
             }
         }
         return;
-    }   
+    }
+
 }

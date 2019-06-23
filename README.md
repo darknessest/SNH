@@ -24,4 +24,6 @@ LH's work:
 LH's TODO:
 1. optimizing the recognising of function set and matrix
 2. optimizing the word recognise, like lim, log etc.
-3. rectify the obviously misrecog with Gramma analysis
+3. rectify the obviously misrecog with Gramma analysis.
+4. the div character.
+5. sometimes a character like \brace maybe recognised as not just one character, like {1,[}, we need to find them before 1.
