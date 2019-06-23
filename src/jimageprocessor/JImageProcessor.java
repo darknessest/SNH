@@ -4,7 +4,6 @@
  */
 package jimageprocessor;
 
-import com.cyzapps.imgmatrixproc.ImgMatrixOutput;
 import com.cyzapps.imgmatrixproc.ImgNoiseFilter;
 import com.cyzapps.imgmatrixproc.ImgThreshBiMgr;
 import com.cyzapps.imgproc.ImageMgr;
@@ -197,7 +196,7 @@ public class JImageProcessor {
         try {
 
             //重点1 初步解构加识别
-            ExprRecognizer.dml_cnt=0;
+            ExprRecognizer.dml_cnt = 0;
             StructExprRecog ser = ExprRecognizer.recognize(imgChop, null, -1, 0, 0);
             StructExprRecog serOld = ser; //保存上一步的结果，便于与本步对比
             System.out.println("\n1-RAW: image " + strImageFile + " includes expression :\n" + ser.toString());

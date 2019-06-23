@@ -143,18 +143,10 @@ public class Controller implements Initializable {
         if (!selectedFiles.isEmpty()) {
             selectedFiles.forEach(x -> PutText(x.getPath(), false, Color.BLACK, "Arial", 16));
 
-            iv = new ImageView(new Image(selectedFiles.get(currentPicIndex).toURI().toString()));
-            iv.setFitWidth(AP.getWidth());
-            iv.setFitHeight(AP.getHeight());
-            iv.setPreserveRatio(true);
-            iv.setSmooth(true);
-            iv.setCache(false);
-
-            AP.getChildren().clear();
-            AP.getChildren().add(iv);
+            // show in program
+            showImage(selectedFiles.get(currentPicIndex));
 
             SelectedImagePath = selectedFiles.get(currentPicIndex).getAbsolutePath();
-
             FileAddressField.setText(SelectedImagePath);
             fileNameLabel.setText(selectedFiles.get(currentPicIndex).getName());
         }
@@ -166,8 +158,12 @@ public class Controller implements Initializable {
             PutText("Please choose a picture(s)\n", false, Color.BLACK, "Arial", 16);
             return;
         }
+
+        String path = getSelectedImagePath();
+        System.out.println(path + " ");//+ pic);
+
         for (File x : selectedFiles) {
-            preprocessImage(x.getName(), selectedFiles.get(currentPicIndex).getParent(),
+            preprocessImage(x.getName(), x.getParent(),
                     "res" + File.separator + "prepresult", 100, true);
             PutText("Image " + x.getName() + " has been processed", false, Color.BLACK, "Arial", 16);
         }
@@ -181,6 +177,7 @@ public class Controller implements Initializable {
         }
         int i = 0;
         for (File x : selectedFiles) {
+//            System.out.println("## ADDING " + "res" + File.separator + "prepresult" + File.separator + x.getName() + ".bmp");
             results.add(recognizeMathExpr("res" + File.separator + "prepresult" + File.separator + x.getName() + ".bmp",
                     clm, mwm, true));
             PutText(i + ") The recognition result:" + "\n" + results.get(i++) + "\n", false, Color.RED, "Arial", 16);
@@ -248,6 +245,90 @@ public class Controller implements Initializable {
             PutText(i + ") ANSWER:\n" + temp + "", false, Color.BLACK, "Arial", 16);
             System.out.println(temp);
         }
+    }
+
+    @FXML
+    void RunAll() throws InterruptedException, IOException, SMErrProcessor.JSmartMathErrException, ErrProcessor.JFCALCExpErrException {
+
+        if (selectedFiles.isEmpty()) {
+            PutText("Please choose a picture(s)\n", false, Color.BLACK, "Arial", 16);
+            return;
+        }
+        int i = 0;
+        String calcA = null;
+        for (File x : selectedFiles) {
+
+            PutText(i++ + ")", false, Color.BLACK, "Menlo", 18);
+            //************************
+            //      PreProcess
+            //************************
+            preprocessImage(x.getName(), x.getParent(),
+                    "res" + File.separator + "prepresult", 100, true);
+            PutText("Image " + x.getName() + " has been processed",
+                    false, Color.BLACK, "Arial", 16);
+
+
+            //************************
+            //      RunProcess
+            //************************
+            String strExpressions = recognizeMathExpr("res" + File.separator + "prepresult" + File.separator + x.getName() + ".bmp",
+                    clm, mwm, true);
+            PutText("The recognition result:" + "\n" + strExpressions + "\n", false, Color.RED, "Arial", 16);
+
+
+            //************************
+            //      calculate
+            //************************
+            if (strExpressions.contains("\n"))//方程组
+            {
+                strExpressions = Cut(strExpressions);
+            } else if (strExpressions.contains("integrate") && strExpressions.contains("=="))//积分方程
+            {
+                String calcA1;
+                String[] strarraycup = strExpressions.split("==");
+                calcA1 = SmartCalcProcLib.calculate(strarraycup[0], false);
+                String temp = calcA1.replace(File.separator + "text", "");//改了\\
+                temp = temp.replace("\"", "");
+                temp = temp.replace("{", "(");
+                temp = temp.replace("}", ")");
+                System.out.println(temp);
+                temp = temp.replace("×", "*");
+                temp = temp.replace("^", "**");
+                strExpressions = temp + "==" + strarraycup[1];
+            }
+            if (strExpressions.indexOf("derivative") != -1) {//求导
+                Function df = new Function(strExpressions);
+                String arg = df.x + String.valueOf(df.ccount) + df.str;//这里的df.ccount，为求导阶数，目前一阶导数测试通过
+
+                Socket socket = new Socket("127.0.0.1", 9999);
+                System.out.println("Client start!");
+                PrintWriter out = new PrintWriter(socket.getOutputStream()); // 输出，to 服务器 socket
+                out.println("derivative:" + arg);
+                out.flush(); // 刷缓冲输出，to 服务器
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(
+                        socket.getInputStream())); // 输入， from 服务器 socket
+                calcA = in.readLine();
+                System.out.println("Client end!");
+                socket.close();
+                //boolean success = (new File(dir)).delete();
+
+            } else {
+                calcA = SmartCalcProcLib.calculate(strExpressions, false);
+            }
+
+            String temp = calcA.replace(File.separator + "text", "");
+            temp = temp.replace("\"", "");
+            temp = temp.replace("{", "(");
+            temp = temp.replace("}", ")");
+            if (temp.length() == 0)
+                temp = "I can't calculate it yet";
+            PutText("ANSWER:\n" + temp, false, Color.BLACK, "Arial", 16);
+            System.out.println(temp);
+
+        }
+
+
     }
 
     public String getRes() {
