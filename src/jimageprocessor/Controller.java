@@ -112,9 +112,6 @@ public class Controller implements Initializable {
 
         ExprRecognizer.setRecognitionMode(nTestMode0HandwritingRecogMode); //hand mode on
 
-        //*****************************
-        //      Buttons handlers
-        //*****************************
         prevPicButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -135,32 +132,24 @@ public class Controller implements Initializable {
     private void OpenFiles() {
         FileChooser fileChooser = new FileChooser();
 
-
         //Set extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
                 "image files: bmp, png, jpg",
                 "*.bmp", "*.png", "*.jpg"); // more file extensions can be added
-        // clear collection of files
 
         fileChooser.getExtensionFilters().addAll(extFilter);
 
-        List<File> tempListOfFiles = fileChooser.showOpenMultipleDialog(null);
-
-        if (!tempListOfFiles.isEmpty()) {
-            tempListOfFiles.forEach(x -> PutText(x.getPath(), false, Color.BLACK, "Arial", 16));
+        selectedFiles = fileChooser.showOpenMultipleDialog(null);
+        if (!selectedFiles.isEmpty()) {
+            selectedFiles.forEach(x -> PutText(x.getPath(), false, Color.BLACK, "Arial", 16));
 
             // show in program
-            showImage(tempListOfFiles.get(currentPicIndex));
+            showImage(selectedFiles.get(currentPicIndex));
 
-            SelectedImagePath = tempListOfFiles.get(currentPicIndex).getAbsolutePath();
+            SelectedImagePath = selectedFiles.get(currentPicIndex).getAbsolutePath();
             FileAddressField.setText(SelectedImagePath);
-            fileNameLabel.setText(tempListOfFiles.get(currentPicIndex).getName());
-
-            currentPicIndex = 0;
-            selectedFiles = tempListOfFiles;
-            results.clear();
+            fileNameLabel.setText(selectedFiles.get(currentPicIndex).getName());
         }
-
     }
 
     @FXML
@@ -186,26 +175,25 @@ public class Controller implements Initializable {
             PutText("Please choose a picture(s)\n", false, Color.BLACK, "Arial", 16);
             return;
         }
-
         int i = 0;
         for (File x : selectedFiles) {
+//            System.out.println("## ADDING " + "res" + File.separator + "prepresult" + File.separator + x.getName() + ".bmp");
             results.add(recognizeMathExpr("res" + File.separator + "prepresult" + File.separator + x.getName() + ".bmp",
                     clm, mwm, true));
-            PutText(selectedFiles.get(i).getName() + " recognition result:" + "\n" + results.get(i++) + "\n", false, Color.RED, "Arial", 16);
+            PutText(i + ") The recognition result:" + "\n" + results.get(i++) + "\n", false, Color.RED, "Arial", 16);
         }
-
     }
 
     @FXML
     void calculate() throws InterruptedException, SMErrProcessor.JSmartMathErrException, ErrProcessor.JFCALCExpErrException {
-        if (results.isEmpty()) {
+        if (getRes() == null) {
             PutText("There is no result yet\n", false, Color.BLACK, "Arial", 16);
             return;
         }
         String calcA = null;
         int i = 0;
-
         for (String strExpressions : results) {
+
             if (strExpressions.indexOf("\n") != -1)//方程组
             {
                 strExpressions = Cut(strExpressions);
@@ -254,7 +242,7 @@ public class Controller implements Initializable {
             temp = temp.replace("}", ")");
             if (temp.length() == 0)
                 temp = "I can't calculate it yet";
-            PutText(selectedFiles.get(i).getName() + " ANSWER:\n" + temp + "\n", false, Color.BLACK, "Arial", 16);
+            PutText(i + ") ANSWER:\n" + temp + "", false, Color.BLACK, "Arial", 16);
             System.out.println(temp);
         }
     }
@@ -285,7 +273,7 @@ public class Controller implements Initializable {
             //************************
             String strExpressions = recognizeMathExpr("res" + File.separator + "prepresult" + File.separator + x.getName() + ".bmp",
                     clm, mwm, true);
-            PutText("The recognition result:" + "\n" + strExpressions, false, Color.RED, "Arial", 16);
+            PutText("The recognition result:" + "\n" + strExpressions + "\n", false, Color.RED, "Arial", 16);
 
 
             //************************
@@ -323,6 +311,8 @@ public class Controller implements Initializable {
                 calcA = in.readLine();
                 System.out.println("Client end!");
                 socket.close();
+                //boolean success = (new File(dir)).delete();
+
             } else {
                 calcA = SmartCalcProcLib.calculate(strExpressions, false);
             }
@@ -333,14 +323,17 @@ public class Controller implements Initializable {
             temp = temp.replace("}", ")");
             if (temp.length() == 0)
                 temp = "I can't calculate it yet";
-            PutText("ANSWER:\n" + temp + "\n", false, Color.BLACK, "Arial", 16);
+            PutText("ANSWER:\n" + temp, false, Color.BLACK, "Arial", 16);
             System.out.println(temp);
+
         }
+
+
     }
 
-//    public String getRes() {
-//        return res;
-//    }
+    public String getRes() {
+        return res;
+    }
 
     //  This method can be used outside (in other files)
     //  to add text to the CommandFlow (right)
@@ -433,12 +426,6 @@ public class Controller implements Initializable {
     }
 
     private void showImage(File pic) {
-        if (pic == null) {
-            // clears image field
-            AP.getChildren().clear();
-            return;
-        }
-
         iv = new ImageView(new Image(pic.toURI().toString()));
 
         iv.setFitWidth(AP.getWidth());
