@@ -579,7 +579,7 @@ public class ExprSeperator {
         
         ImageChop chopDiv = new ImageChop();
         if (dAvgStrokeWidth < 3)    {   // line is too thin.
-            //todo #set LINE_DIV1
+            //#set LINE_DIV1
             chopDiv.setImageChop(imgChop2Cut.mbarrayImg, imgChop2Cut.mnLeft, nUpperMinCSTWIdx,
                                 imgChop2Cut.mnWidth, nChopThickness, imgChop2Cut.mbarrayOriginalImg,
                                 imgChop2Cut.mnX0InOriginalImg, imgChop2Cut.mnY0InOriginalImg,
@@ -609,7 +609,7 @@ public class ExprSeperator {
                     nNewBottom = (int)cutPathBottom.mp3Path[idx].getY();
                 }
             }
-            //todo #set LINE_DIV 2
+            //#set LINE_DIV 2
             chopDiv.setImageChop(imgChop2Cut.mbarrayImg, imgChop2Cut.mnLeft, nNewTop,
                                 imgChop2Cut.mnWidth, nNewBottom - nNewTop + 1, imgChop2Cut.mbarrayOriginalImg,
                                 imgChop2Cut.mnX0InOriginalImg, imgChop2Cut.mnY0InOriginalImg,
@@ -648,7 +648,7 @@ public class ExprSeperator {
         return imgChop;
     }
 
-    //todo 计算最坏情况下的分数线长度 changed.1
+    //计算最坏情况下的分数线长度
     public static int calcWorstCaseLnDivOrOnLen(int nChopWidth, int nChopHeight) {
         //return (int)(nChopWidth*ConstantsMgr.msdWorstCaseLineDivOnLenRatio);
         return (int)Math.max(nChopWidth * ConstantsMgr.msdWorstCaseLineDivOnLenRatio,
@@ -661,7 +661,7 @@ public class ExprSeperator {
                                                         nWorstCaseLineDivOrOnLen);
     }    
 
-    //todo 水平切的相关逻辑研究 .
+    //水平切
     //========================================================================================================
     // here assume the input is minimum container and barrayImg has been horizontally adjusted.
     // the output imgchops are also minimum container adjusted (except the blank div).
@@ -838,7 +838,7 @@ public class ExprSeperator {
             } else if (nHCutsStyle == UNDER_H_DIV_STYLE)    {
                 // under, insert a gap.
                 ImageChop chopGap = new ImageChop();
-                //todo 我先试试把这里的under_DIV 直接改成 LINE_DIV ---简单粗暴，直接奏效
+                //todo：dml_changed1 我先试试把这里的under_DIV 直接改成 LINE_DIV ---简单粗暴，直接奏效
                 chopGap.setImageChop(imgChop2Cut.mbarrayImg,
                         imgChop2Cut.mnLeft, imgChop2Cut.mapOriginalYIdx2This(chopLastNBD.getBottomP1InOriginalImg()), imgChop2Cut.mnWidth, nGap,
                         imgChop2Cut.mbarrayOriginalImg, imgChop2Cut.mnX0InOriginalImg, imgChop2Cut.mnY0InOriginalImg, ImageChop.TYPE_LINE_DIV);
@@ -1740,7 +1740,7 @@ public class ExprSeperator {
                 }
                 return MERGE_H_DIV_STYLE;   // have to merge because this is unders for several chars or the under cannot cover base. 
             } else  {
-                // TODO gap between cap and bottom is very narrow but font size is similar.
+                // gap between cap and bottom is very narrow but font size is similar.
                 // there are two possibilities:
                 // 1. two expressions are very close to each other, like
                 // a + b

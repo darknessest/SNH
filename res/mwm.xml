@@ -19,13 +19,16 @@
 		</LetterCandidates>
 	</MisrecogWord>
 	<MisrecogWord ShouldBe="sin" WordType="FUNCTION" >
+		<WordCandidate>91n</WordCandidate>
 		<LetterCandidates Index="0" UnitType="SMALL_S" >
 			<LetterCandidate>s</LetterCandidate>
 			<LetterCandidate>S</LetterCandidate>
-			<LetterCandidate Misrecog="true" >5</LetterCandidate>
+			<LetterCandidate>5</LetterCandidate>
+			<LetterCandidate Misrecog="true" >8</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="1" UnitType="SMALL_I" >
 			<LetterCandidate>i</LetterCandidate>
+			<LetterCandidate>1</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_N" >
 			<LetterCandidate>n</LetterCandidate>
@@ -119,6 +122,8 @@
 			<LetterCandidate>l</LetterCandidate>
 			<LetterCandidate>I</LetterCandidate>
 			<LetterCandidate>1</LetterCandidate>
+			<LetterCandidate>(</LetterCandidate>
+			<LetterCandidate>[</LetterCandidate>
 			<LetterCandidate>\arrowvert</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="1" UnitType="SMALL_I" >

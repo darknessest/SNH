@@ -434,14 +434,16 @@ public class ExprFilter {
                 serOutput = null;
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_LISTCUT: { // this type actually is not used.
+        }
+        case StructExprRecog.EXPRRECOGTYPE_LISTCUT: { // this type actually is not used.
             if (serParent == null && !isValidMathExpr(serInput)) {
                 serOutput = null;
             } else {
                 serOutput = serInput;
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_HBLANKCUT:
+        }
+        case StructExprRecog.EXPRRECOGTYPE_HBLANKCUT:
           case StructExprRecog.EXPRRECOGTYPE_MULTIEXPRS: {
             LinkedList<StructExprRecog> listChildren = new LinkedList<StructExprRecog>();
             LinkedList<Double> listMathPossibility = new LinkedList<Double>();
@@ -479,7 +481,8 @@ public class ExprFilter {
                 serOutput.setStructExprRecog(listNewChildren, StructExprRecog.EXPRRECOGTYPE_HBLANKCUT);
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_HLINECUT: {
+        }
+        case StructExprRecog.EXPRRECOGTYPE_HLINECUT: {
             StructExprRecog serNewFirst = filterRawSER(serInput.mlistChildren.getFirst(), serInput);
             StructExprRecog serNewLast = filterRawSER(serInput.mlistChildren.getLast(), serInput);
             if ((serParent == null && !isValidMathExpr(serInput.mlistChildren.getFirst()))
@@ -502,7 +505,8 @@ public class ExprFilter {
                 serOutput = serInput;
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_HCUTCAP: 
+        }
+        case StructExprRecog.EXPRRECOGTYPE_HCUTCAP:
           case StructExprRecog.EXPRRECOGTYPE_HCUTUNDER: 
           case StructExprRecog.EXPRRECOGTYPE_HCUTCAPUNDER: {
             StructExprRecog serPrinciple = serInput.getPrincipleSER(1);
@@ -628,7 +632,8 @@ public class ExprFilter {
     public static StructExprRecog filterRestructedSER(StructExprRecog serInput, StructExprRecog serParent, StructExprRecog serGrandParent) {
         StructExprRecog serOutput = null;
         switch (serInput.mnExprRecogType) {
-        case StructExprRecog.EXPRRECOGTYPE_ENUMTYPE: {
+            //ENUMTYPE
+            case StructExprRecog.EXPRRECOGTYPE_ENUMTYPE: {
             if (!serInput.isPossibleNumberChar() && !serInput.isLetterChar() && serInput.mType != UnitProtoType.Type.TYPE_INFINITE
                     && serInput.mType != UnitProtoType.Type.TYPE_BIG_PI) {  // big Pi is not recognized as a letter, but it can be misrecognized n.
                 if (serParent == null) {
@@ -685,11 +690,15 @@ public class ExprFilter {
                 serOutput = serInput;
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_LISTCUT: { // this type actually is not used.
+        }
+        //？？？
+        case StructExprRecog.EXPRRECOGTYPE_LISTCUT: { // this type actually is not used.
             serOutput = serInput;
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_HBLANKCUT:
-          case StructExprRecog.EXPRRECOGTYPE_MULTIEXPRS: {
+        }
+        //multiexprs 多表达式 方程组？
+        case StructExprRecog.EXPRRECOGTYPE_HBLANKCUT:
+            case StructExprRecog.EXPRRECOGTYPE_MULTIEXPRS: {
             LinkedList<StructExprRecog> listChildren = new LinkedList<StructExprRecog>();
             for (int idx = 0; idx < serInput.mlistChildren.size(); idx ++) {
                 StructExprRecog serNewChild = filterRestructedSER(serInput.mlistChildren.get(idx), serInput, serParent);
@@ -710,7 +719,9 @@ public class ExprFilter {
                 serOutput.setStructExprRecog(listNewChildren, serInput.mnExprRecogType);
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_HLINECUT: {
+        }
+        //分数
+        case StructExprRecog.EXPRRECOGTYPE_HLINECUT: {
             StructExprRecog serNewFirst = filterRestructedSER(serInput.mlistChildren.getFirst(), serInput, serParent);
             StructExprRecog serNewLast = filterRestructedSER(serInput.mlistChildren.getLast(), serInput, serParent);
             if (serNewFirst == null && serNewLast == null) {
@@ -728,7 +739,9 @@ public class ExprFilter {
                 serOutput.setStructExprRecog(listChildren, StructExprRecog.EXPRRECOGTYPE_HLINECUT);
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_HCUTCAP: 
+        }
+        //上划线 下划线 上下划线
+        case StructExprRecog.EXPRRECOGTYPE_HCUTCAP:
           case StructExprRecog.EXPRRECOGTYPE_HCUTUNDER: 
           case StructExprRecog.EXPRRECOGTYPE_HCUTCAPUNDER: {
             StructExprRecog serPrinciple = serInput.getPrincipleSER(1);
@@ -764,7 +777,10 @@ public class ExprFilter {
                 serOutput.setStructExprRecog(listChildren, StructExprRecog.EXPRRECOGTYPE_HCUTCAPUNDER);
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_VBLANKCUT: {
+        }
+
+        //竖直方向空白切割 大多数表达式是这种情况
+        case StructExprRecog.EXPRRECOGTYPE_VBLANKCUT: {
             LinkedList<StructExprRecog> listNewChildren = new LinkedList<StructExprRecog>();
             int idxLast = -1;
             for (int idx = 0; idx < serInput.mlistChildren.size(); idx ++) {
@@ -778,7 +794,9 @@ public class ExprFilter {
                             && ((serNewChild.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_VCUTUPPERNOTE
                                     && serNewChild.getPrincipleSER(4).isPossibleNumberChar())
                                 || serNewChild.isPossibleNumberChar())) {
-                        listNewChildren.add(serInput.mlistChildren.get(idxLast).mlistChildren.get(1));  // the lower note dot was removed by the filter but it is actually a decimal point.
+                        listNewChildren.add(serInput.mlistChildren.get(idxLast).mlistChildren.get(1));
+                        // the lower note dot was removed by the filter but it is actually a decimal point.
+                        //下标点移除
                     }
                     listNewChildren.add(serNewChild);
                     idxLast = idx;
@@ -787,21 +805,25 @@ public class ExprFilter {
             int idxFrom = 0;
             int idxTo = listNewChildren.size() - 1;
             if (serParent == null || serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_HBLANKCUT
-                    || serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_MULTIEXPRS) { // multiexprs may have dot points in the end of each expression.
+                    || serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_MULTIEXPRS) {
+                // multiexprs may have dot points in the end of each expression.
                 // step 1. look for close boundary from beginning and open boundary from end. Do not consider [ ] because they can be misrecognized 1.
+                //todo changed5 : 原来他也考虑了[]可能被识别成1 ,但是没想到() 也会 hhhhh
                 int idxFirstCloseBndNoMatch = idxFrom - 1, idxLastCloseBndNoMatch = idxFrom - 1;
                 int idxFirstOpenBndNoMatch = idxTo + 1, idxLastOpenBndNoMatch = idxTo + 1;
                 for (int idx = idxFrom; idx <= idxTo; idx ++) {
                     StructExprRecog ser = listNewChildren.get(idx).getPrincipleSER(4);
                     if (ser.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
-                            && (ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET 
+                            && (/*ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET */
                                 /*|| ser.mType == UnitProtoType.Type.TYPE_SQUARE_BRACKET*/
-                                || ser.mType == UnitProtoType.Type.TYPE_BRACE)) {
+                                 ser.mType == UnitProtoType.Type.TYPE_BRACE)) {
                         break;
-                    } else if (ser.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
-                            && (ser.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET 
+                    }
+                    //
+                    else if (ser.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
+                            && (//ser.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET
                                 /*|| ser.mType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET*/
-                                || ser.mType == UnitProtoType.Type.TYPE_CLOSE_BRACE)) {
+                                ser.mType == UnitProtoType.Type.TYPE_CLOSE_BRACE)) {
                         if (idxFirstCloseBndNoMatch == idxFrom - 1) {
                             idxFirstCloseBndNoMatch = idx;
                         }
@@ -825,6 +847,7 @@ public class ExprFilter {
                         idxLastOpenBndNoMatch = idx;
                     }
                 }
+
                 // now find out the major part
                 int nWidthB4UnMatchCloseBnd = 0, nWidthInBnd = 0, nWidthAfterMatchOpenBnd = 0;
                 if (idxFirstCloseBndNoMatch > idxFrom) {
@@ -852,27 +875,40 @@ public class ExprFilter {
                 }
 
                 // step 2. remove all the bi-opts from start and end
+                //todo dml_changed3: 句尾的dottimes认为是x，而不是直接删掉。
                 for (; idxFrom <= idxTo; idxFrom ++) {
                     StructExprRecog ser = listNewChildren.get(idxFrom).getPrincipleSER(15);
                     if (ser.isBiOptChar() && !ser.isPreUnOptChar()    // some opt chars can be both bi opt and preunopt.
                             && ser.mType != UnitProtoType.Type.TYPE_VERTICAL_LINE
                             && ser.mType != UnitProtoType.Type.TYPE_FORWARD_SLASH
                             && ser.mType != UnitProtoType.Type.TYPE_BACKWARD_SLASH
-                            && ser.mType != UnitProtoType.Type.TYPE_MULTIPLY) {   // vertical line, forward slash and backward slash can be actually misrecognized 1, multiply can be x.
+                            && ser.mType != UnitProtoType.Type.TYPE_MULTIPLY
+                            &&ser.mType!=UnitProtoType.Type.TYPE_DOT_MULTIPLY) {
+                        // vertical line, forward slash and backward slash can be actually misrecognized 1, multiply can be x.
                         continue;
                     } else {
+                        if(ser.mType==UnitProtoType.Type.TYPE_DOT_MULTIPLY){
+                            ser.mType=UnitProtoType.Type.TYPE_SMALL_X;
+                        }
                         break;
                     }
                 }
 
                 for (; idxTo >= idxFrom; idxTo --) {
                     StructExprRecog ser = listNewChildren.get(idxTo).getPrincipleSER(15);
-                    if (ser.isBiOptChar() && ser.mType != UnitProtoType.Type.TYPE_VERTICAL_LINE
+                    //这些是不要的
+                    if (ser.isBiOptChar()
+                            && ser.mType != UnitProtoType.Type.TYPE_VERTICAL_LINE
                             && ser.mType != UnitProtoType.Type.TYPE_FORWARD_SLASH
                             && ser.mType != UnitProtoType.Type.TYPE_BACKWARD_SLASH
-                            && ser.mType != UnitProtoType.Type.TYPE_MULTIPLY) {   // vertical line, forward slash and backward slash can be actually misrecognized 1, multiply can be x.
+                            && ser.mType != UnitProtoType.Type.TYPE_MULTIPLY
+                            && ser.mType != UnitProtoType.Type.TYPE_DOT_MULTIPLY) {
+                        // vertical line, forward slash and backward slash can be actually misrecognized 1, multiply can be x.
                         continue;
                     } else {
+                        if(ser.mType==UnitProtoType.Type.TYPE_DOT_MULTIPLY){
+                            ser.mType=UnitProtoType.Type.TYPE_SMALL_X;;
+                        }
                         break;
                     }
                 }
@@ -914,12 +950,16 @@ public class ExprFilter {
                 serOutput.setStructExprRecog(listNewNewChildren, StructExprRecog.EXPRRECOGTYPE_VBLANKCUT);
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_VCUTLEFTTOPNOTE: {
+        }
+        //左上角标
+        case StructExprRecog.EXPRRECOGTYPE_VCUTLEFTTOPNOTE: {
             StructExprRecog serPrinciple = serInput.getPrincipleSER(2);
             // here we assume after restruction all left top notes have been converted to 0C, 0F or roots. If any left top note left, simply ignore 
             serOutput = filterRestructedSER(serPrinciple, serInput, serParent);
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_VCUTUPPERNOTE: 
+        }
+        //上标，下标，上下标
+        case StructExprRecog.EXPRRECOGTYPE_VCUTUPPERNOTE:
           case StructExprRecog.EXPRRECOGTYPE_VCUTLOWERNOTE: 
           case StructExprRecog.EXPRRECOGTYPE_VCUTLUNOTES: {
             // actually should not be here because serInput is a raw ser
@@ -966,7 +1006,9 @@ public class ExprFilter {
                 serOutput.setStructExprRecog(listChildren, nSERType);
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_VCUTMATRIX: {  // each element is a column, each element is Hblankcut with same number (> 1) of rows
+        }
+        //矩阵类型
+        case StructExprRecog.EXPRRECOGTYPE_VCUTMATRIX: {  // each element is a column, each element is Hblankcut with same number (> 1) of rows
             LinkedList<LinkedList<StructExprRecog>> listNewChildren = new LinkedList<LinkedList<StructExprRecog>>();
             for (int idx = 0; idx < serInput.mlistChildren.size(); idx ++) {
                 int nNumOfElemInvalid = 0;
@@ -1030,7 +1072,9 @@ public class ExprFilter {
                 bInvalidMatrix = true;
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_GETROOT: { // two element, first is root level (default is Enum type sqrt or sqrt left etc.), second is the rooted expression.
+        }
+        //根号类型
+        case StructExprRecog.EXPRRECOGTYPE_GETROOT: { // two element, first is root level (default is Enum type sqrt or sqrt left etc.), second is the rooted expression.
             StructExprRecog serLeftTopNote = serInput.mlistChildren.getFirst();
             StructExprRecog serRootChar =  serInput.mlistChildren.getFirst();
             StructExprRecog serNewLeftTopNote = null;
@@ -1059,7 +1103,9 @@ public class ExprFilter {
                 serOutput.setStructExprRecog(listChildren, StructExprRecog.EXPRRECOGTYPE_GETROOT);
             }
             break;
-        } default: {
+        }
+        //空
+        default: {
             serOutput = null;
         }
         }
@@ -1116,8 +1162,6 @@ public class ExprFilter {
                     || ser.mType == UnitProtoType.Type.TYPE_NO_LARGER
                     || ser.mType == UnitProtoType.Type.TYPE_NO_SMALLER
                     || ser.mType == UnitProtoType.Type.TYPE_PERCENT
-                    || ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET
-                    || ser.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET
                     || ser.mType == UnitProtoType.Type.TYPE_SQUARE_BRACKET
                     || ser.mType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET
                     || ser.mType == UnitProtoType.Type.TYPE_BRACE
@@ -1132,6 +1176,9 @@ public class ExprFilter {
                     || ser.mType == UnitProtoType.Type.TYPE_BIG_S
                     || ser.mType == UnitProtoType.Type.TYPE_ONE
                     || ser.mType == UnitProtoType.Type.TYPE_VERTICAL_LINE
+                    //todo dml_changed4 : 将小括号放入易混数字系列，配合clm，mwm进行纠错
+                    || ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET
+                    || ser.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET
                     /*|| ser.mType == UnitProtoType.Type.TYPE_DOT
                     || ser.mType == UnitProtoType.Type.TYPE_DOT_MULTIPLY*/) {
                 // these could be misrecognized numbers. Dot is not included because noise chop in general includes a lot of dots so that it can be a punishment.

@@ -7,6 +7,7 @@ package com.cyzapps.mathrecog;
 import com.cyzapps.imgmatrixproc.ImgMatrixOutput;
 import com.cyzapps.mathrecog.UnitPrototypeMgr.UnitProtoType;
 import com.cyzapps.mathrecog.UnitRecognizer.UnitCandidate;
+import javafx.scene.media.MediaException;
 
 import java.io.*;
 import java.net.Socket;
@@ -469,20 +470,24 @@ public class ExprRecognizer {
                     //test3
                     System.out.println("[JAVA___RESULT]\t" + serReturnCand1.mType + " \t" + serReturnCand1.toString());
                     System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu +"\t"+similarty);
-                    //选择python的识别结果
-                    if (similarty >= 0.995&&getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_I&&getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_J) {
+                    //选择python的识别结果 >=0.995 不要i j
+                    //getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_I&&getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_J
+                    if (similarty >= 0.995) {
                         serReturn = serReturnCand1;
                         serReturn.mType = getTpye(resu);
                         serReturn.mdSimilarity = 0.0;
                         serReturn.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
-                        System.out.println("[FINAL__RESULT]\t" + "Choose python!");
+//                        System.out.println("[FINAL__RESULT]\t" + "Choose python!");
                     }
-                    //比较java那个识别效果更好，now we compare which one is better.
+                    //这里进行过度切分！然后，从java识别结果ser1和过度切分分析结果ser2中选一个
                     else {
                         serReturnCand2 = disconnect2Recog(imgChopsFrom, nCutMode, imgChopsFrom.mlistChops.indexOf(imgChopOriginal), dAvgStrokeWidth, serReturnCand1, new LinkedList<ImageChop>(), nStackLvl + 1);
                         serReturn = selectSERFromCands(serReturnCand1, serReturnCand2);
-                        System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString());
+                        //todo: dml_changed2 切分完选了个unknown类型，还不如直接不切选ser1---solve cos(1/2)中过分切割问题
+                        if(serReturn.mType== UnitProtoType.Type.TYPE_UNKNOWN)
+                            serReturn=serReturnCand1;
                     }
+                    System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString());
 
                 } else {
                     int nExtractedMajorIdx = ExprSeperator.getMajorChopFromSameOriginal(imgChopsExtracted);
@@ -513,7 +518,7 @@ public class ExprRecognizer {
             int i = 0;
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // 输入， from 服务器 socket
             while ((line = in.readLine()) != null) {
-                //todo 这里已经将所有符号都转化成小写了
+                //todo 这里已经将所有CNN识别结果都转化成小写了
                 line = line.toLowerCase();
                 //System.out.println(line);
                 if (i % 2 == 0)
@@ -1300,7 +1305,7 @@ public class ExprRecognizer {
         return darrayReturn;
     }
 
-    //分离来识别
+    //todo:分离来识别----过度切割方案在这里
     public static StructExprRecog disconnect2Recog(ImageChops imgChopsFrom, int nCutMode, int nThisIdx, double dAvgStrokeWidth, StructExprRecog serCand1, LinkedList<ImageChop> listCutChops, int nStackLvl) throws ExprRecognizeException, InterruptedException, IOException {
         if (nStackLvl >= MAX_RECOGNIZING_STACK_COUNT) {
             throw new ExprRecognizeException(TOO_DEEP_CALL_STACK);
@@ -1374,6 +1379,7 @@ public class ExprRecognizer {
 
     //从两个cands(候选）中选一个ser(结构化表达式）
     public static StructExprRecog selectSERFromCands(StructExprRecog serCand1, StructExprRecog serCand2) {
+        //如果都是字符序列，选一个相似度大的
         if (!(serCand1.isChildListType() ^ serCand2.isChildListType())) {
             return (serCand1.mdSimilarity >= serCand2.mdSimilarity) ? serCand1 : serCand2;
         } else {
