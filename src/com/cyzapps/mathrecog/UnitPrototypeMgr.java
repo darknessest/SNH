@@ -136,12 +136,16 @@ public class UnitPrototypeMgr {
             TYPE_EXCLAIMATION,
             TYPE_DOT,
             TYPE_STAR,
+            //小括号
             TYPE_ROUND_BRACKET,
             TYPE_CLOSE_ROUND_BRACKET,
+            //中括号
             TYPE_SQUARE_BRACKET,
             TYPE_CLOSE_SQUARE_BRACKET,
+            //大括号
             TYPE_BRACE,
             TYPE_CLOSE_BRACE,
+
             TYPE_VERTICAL_LINE,
             TYPE_WAVE,
             TYPE_LEFT_ARROW,

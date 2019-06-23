@@ -28,6 +28,7 @@ public class StructExprRecog {
     public final static int EXPRRECOGTYPE_HCUTCAPUNDER = 6;
     public final static int EXPRRECOGTYPE_VBLANKCUT = 10;
     public final static int EXPRRECOGTYPE_VCUTLEFTTOPNOTE = 11;    // first element is left top note, second element is base
+    //todo 指数以及上下标的定义在这里
     public final static int EXPRRECOGTYPE_VCUTUPPERNOTE = 12;   // first element is  base, second element is upper note
     public final static int EXPRRECOGTYPE_VCUTLOWERNOTE = 13;   // first element is base, second element is lower note
     public final static int EXPRRECOGTYPE_VCUTLUNOTES = 14;  // first element is base, second element is lower note, third element is upper note.
@@ -1142,7 +1143,6 @@ public class StructExprRecog {
                 }
             }
 
-            //todo \topunder  is here
             // step 4.2, identify cap under
             // now we need to handle the cap and/or under notes for \Sigma, \Pi and \Integrate
             // this is for the case that \topunder{infinite, \Sigma, n = 1} is misrecognized to
@@ -2768,6 +2768,7 @@ public class StructExprRecog {
         }
     }
 
+    //除法不能作分母的
     public static boolean isHDivCannotBeBaseAnchorSER(StructExprRecog ser) {
         StructExprRecog[] serarrayNoLnDe = new StructExprRecog[3];
         if (ser.mnExprRecogType == EXPRRECOGTYPE_HCUTCAP || ser.mnExprRecogType == EXPRRECOGTYPE_HCUTCAPUNDER || ser.mnExprRecogType == EXPRRECOGTYPE_HCUTUNDER) {
@@ -3302,6 +3303,7 @@ public class StructExprRecog {
         return darrayMetrics;
     }
 
+    //开括号 绝对值
     public static boolean isBoundChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_ROUND_BRACKET || unitType == UnitProtoType.Type.TYPE_SQUARE_BRACKET
                 || unitType == UnitProtoType.Type.TYPE_BRACE || unitType == UnitProtoType.Type.TYPE_VERTICAL_LINE) {
@@ -3309,7 +3311,6 @@ public class StructExprRecog {
         }
         return false;
     }
-
     public boolean isBoundChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isBoundChar(mType)) {
             return true;
@@ -3317,6 +3318,7 @@ public class StructExprRecog {
         return false;
     }
 
+    //闭括号 绝对值
     public static boolean isCloseBoundChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET || unitType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET
                 || unitType == UnitProtoType.Type.TYPE_CLOSE_BRACE || unitType == UnitProtoType.Type.TYPE_VERTICAL_LINE) {
@@ -3324,7 +3326,6 @@ public class StructExprRecog {
         }
         return false;
     }
-
     public boolean isCloseBoundChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isCloseBoundChar(mType)) {
             return true;
@@ -3332,6 +3333,7 @@ public class StructExprRecog {
         return false;
     }
 
+    //纯数字
     public static boolean isNumberChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_ONE || unitType == UnitProtoType.Type.TYPE_TWO
                 || unitType == UnitProtoType.Type.TYPE_THREE || unitType == UnitProtoType.Type.TYPE_FOUR
@@ -3342,7 +3344,6 @@ public class StructExprRecog {
         }
         return false;
     }
-
     public boolean isNumberChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isNumberChar(mType)) {
             return true;
@@ -3350,6 +3351,7 @@ public class StructExprRecog {
         return false;
     }
 
+    //可能是竖线的
     public static boolean isPossibleVLnChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_ONE
                 || unitType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET || unitType == UnitProtoType.Type.TYPE_SQUARE_BRACKET
@@ -3359,7 +3361,6 @@ public class StructExprRecog {
         }
         return false;
     }
-
     public boolean isPossibleVLnChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isPossibleVLnChar(mType)) {
             return true;
@@ -3367,6 +3368,7 @@ public class StructExprRecog {
         return false;
     }
 
+    //todo 可能是数字的
     public static boolean isPossibleNumberChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_ONE || unitType == UnitProtoType.Type.TYPE_TWO
                 || unitType == UnitProtoType.Type.TYPE_THREE || unitType == UnitProtoType.Type.TYPE_FOUR
@@ -3378,12 +3380,12 @@ public class StructExprRecog {
                 || unitType == UnitProtoType.Type.TYPE_VERTICAL_LINE || unitType == UnitProtoType.Type.TYPE_SMALL_Z
                 || unitType == UnitProtoType.Type.TYPE_BIG_Z || unitType == UnitProtoType.Type.TYPE_BIG_I
                 || unitType == UnitProtoType.Type.TYPE_SQUARE_BRACKET || unitType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET
-                || unitType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET) {    // open round bracket is very unlikely to be 1.
+                || unitType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET) {
+            // open round bracket is very unlikely to be 1.
             return true;
         }
         return false;
     }
-
     public boolean isPossibleNumberChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isPossibleNumberChar(mType)) {
             return true;
@@ -3391,6 +3393,7 @@ public class StructExprRecog {
         return false;
     }
 
+    //数字和小数点
     public static boolean isNumericChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_ONE || unitType == UnitProtoType.Type.TYPE_TWO
                 || unitType == UnitProtoType.Type.TYPE_THREE || unitType == UnitProtoType.Type.TYPE_FOUR
@@ -3402,7 +3405,6 @@ public class StructExprRecog {
         }
         return false;
     }
-
     public boolean isNumericChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isNumericChar(mType)) {
             return true;
@@ -3410,6 +3412,7 @@ public class StructExprRecog {
         return false;
     }
 
+    //字母
     public static boolean isLetterChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_SMALL_A || unitType == UnitProtoType.Type.TYPE_SMALL_B
                 || unitType == UnitProtoType.Type.TYPE_SMALL_C || unitType == UnitProtoType.Type.TYPE_SMALL_D
@@ -3455,7 +3458,6 @@ public class StructExprRecog {
         }
         return false;
     }
-
     public boolean isLetterChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isLetterChar(mType)) {
             return true;
@@ -3463,13 +3465,13 @@ public class StructExprRecog {
         return false;
     }
 
+    //积分号
     public static boolean isIntegTypeChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_INTEGRATE || unitType == UnitProtoType.Type.TYPE_INTEGRATE_CIRCLE) {
             return true;
         }
         return false;
     }
-
     public boolean isIntegTypeChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isIntegTypeChar(mType)) {
             return true;
@@ -3477,6 +3479,7 @@ public class StructExprRecog {
         return false;
     }
 
+    //各种根号
     public static boolean isSqrtTypeChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_SQRT_LEFT || unitType == UnitProtoType.Type.TYPE_SQRT_SHORT
                 || unitType == UnitProtoType.Type.TYPE_SQRT_MEDIUM || unitType == UnitProtoType.Type.TYPE_SQRT_LONG
@@ -3485,7 +3488,6 @@ public class StructExprRecog {
         }
         return false;
     }
-
     public boolean isSqrtTypeChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isSqrtTypeChar(mType)) {
             return true;
@@ -3493,13 +3495,13 @@ public class StructExprRecog {
         return false;
     }
 
+    //求和符号
     public static boolean isSIGMAPITypeChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_BIG_SIGMA || unitType == UnitProtoType.Type.TYPE_BIG_PI) {
             return true;
         }
         return false;
     }
-
     public boolean isSIGMAPITypeChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isSIGMAPITypeChar(mType)) {
             return true;
@@ -3507,6 +3509,7 @@ public class StructExprRecog {
         return false;
     }
 
+    //判断是不是运算符
     public static boolean isBiOptChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_ADD || unitType == UnitProtoType.Type.TYPE_SUBTRACT
                 || unitType == UnitProtoType.Type.TYPE_PLUS_MINUS || unitType == UnitProtoType.Type.TYPE_MULTIPLY || unitType == UnitProtoType.Type.TYPE_DOT_MULTIPLY
@@ -3523,7 +3526,6 @@ public class StructExprRecog {
         }
         return false;
     }
-
     public boolean isBiOptChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isBiOptChar(mType)) {
             return true;
@@ -3531,6 +3533,7 @@ public class StructExprRecog {
         return false;
     }
 
+    //字符前修饰符 + - ~
     public static boolean isPreUnOptChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_ADD || unitType == UnitProtoType.Type.TYPE_SUBTRACT
                 || unitType == UnitProtoType.Type.TYPE_PLUS_MINUS || unitType == UnitProtoType.Type.TYPE_WAVE
@@ -3539,7 +3542,6 @@ public class StructExprRecog {
         }
         return false;
     }
-
     public boolean isPreUnOptChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isPreUnOptChar(mType)) {
             return true;
@@ -3547,13 +3549,13 @@ public class StructExprRecog {
         return false;
     }
 
+    //字符后修饰符 %
     public static boolean isPostUnOptChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_PERCENT || unitType == UnitProtoType.Type.TYPE_EXCLAIMATION) {
             return true;
         }
         return false;
     }
-
     public boolean isPostUnOptChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isPostUnOptChar(mType)) {
             return true;
@@ -3561,6 +3563,7 @@ public class StructExprRecog {
         return false;
     }
 
+    //比较运算符 > <
     public static boolean isCompareOptChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_EQUAL
                 || unitType == UnitProtoType.Type.TYPE_EQUAL_ALWAYS
@@ -3573,7 +3576,6 @@ public class StructExprRecog {
         }
         return false;
     }
-
     public boolean isCompareOptChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isCompareOptChar(mType)) {
             return true;
@@ -3581,6 +3583,7 @@ public class StructExprRecog {
         return false;
     }
 
+    //前钱符 ￥ $
     public static boolean isPreUnitChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_DOLLAR || unitType == UnitProtoType.Type.TYPE_EURO
                 || unitType == UnitProtoType.Type.TYPE_YUAN || unitType == UnitProtoType.Type.TYPE_POUND
@@ -3589,7 +3592,6 @@ public class StructExprRecog {
         }
         return false;
     }
-
     public boolean isPreUnitChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isPreUnitChar(mType)) {
             return true;
@@ -3597,13 +3599,13 @@ public class StructExprRecog {
         return false;
     }
 
+    //摄氏度 华摄度
     public static boolean isPostUnitChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_CELCIUS || unitType == UnitProtoType.Type.TYPE_FAHRENHEIT) {
             return true;
         }
         return false;
     }
-
     public boolean isPostUnitChar() {
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isPostUnitChar(mType)) {
             return true;
@@ -3611,6 +3613,7 @@ public class StructExprRecog {
         return false;
     }
 
+    //todo changed5.2 配合（的纠正逻辑，将他变成1
     public static void rectifyMisRecogNumLetter(CharLearningMgr clm, StructExprRecog ser) {
         if (ser.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && !ser.isLetterChar() && !ser.isNumberChar()) {
             // this letter might be miss recognized, look for another candidate.
@@ -3681,7 +3684,7 @@ public class StructExprRecog {
         }
     }
 
-    //错误字符一轮修正
+    //错误字符一轮修正----主要是纠正数字和字母
     public void rectifyMisRecogChars1stRnd(CharLearningMgr clm) {
         // some characters might be misrecognized, so rectify them
         switch (mnExprRecogType) {
@@ -3700,6 +3703,7 @@ public class StructExprRecog {
             case EXPRRECOGTYPE_VCUTMATRIX: {
                 for (int idx = 0; idx < mlistChildren.size(); idx++) {
                     StructExprRecog serThisChild = mlistChildren.get(idx);
+//                    System.out.println(idx+"\t"+serThisChild.getExprRecogType()+"\t"+serThisChild.mType+"\t"+serThisChild.toString());
                     rectifyMisRecogNumLetter(clm, serThisChild);
                 }
                 break;
@@ -3729,10 +3733,13 @@ public class StructExprRecog {
                 }
                 break;
             }
+            //大部分在这里！！！
             case EXPRRECOGTYPE_VBLANKCUT: {
+                //对字符序列中的每一个字符：
                 for (int idx = 0; idx < mlistChildren.size(); idx++) {
                     StructExprRecog serThisChild = mlistChildren.get(idx);
                     StructExprRecog serThisChildPrinciple = serThisChild.getPrincipleSER(4); // get principle from upper or lower notes.
+                    //System.out.print(serThisChild.mType+"\t");
                     if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && serThisChild.mType == UnitProtoType.Type.TYPE_BRACE
                             && idx < (mlistChildren.size() - 1) && mlistChildren.get(idx + 1).mnExprRecogType != EXPRRECOGTYPE_HBLANKCUT
                             && mlistChildren.get(idx + 1).mnExprRecogType != EXPRRECOGTYPE_MULTIEXPRS
@@ -3756,6 +3763,8 @@ public class StructExprRecog {
                         }
                     }
 
+                    //todo 这块贼六！！！！
+                    //第一个字符不是数字、不是字母……那么可能识别错了
                     if (idx == 0) {
                         if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
                                 && !serThisChild.isLetterChar() && !serThisChild.isNumericChar() && !serThisChild.isBoundChar()
@@ -3774,7 +3783,9 @@ public class StructExprRecog {
                                 }
                             }
                         }
-                    } else if (idx == mlistChildren.size() - 1) {
+                    }
+                    //最后一个字符
+                    else if (idx == mlistChildren.size() - 1) {
                         if (serThisChildPrinciple.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
                                 && !serThisChildPrinciple.isLetterChar() && !serThisChildPrinciple.isNumberChar() && !serThisChildPrinciple.isCloseBoundChar()
                                 && !serThisChildPrinciple.isPostUnOptChar() && !serThisChildPrinciple.isPostUnitChar()) {
@@ -3791,11 +3802,16 @@ public class StructExprRecog {
                                 }
                             }
                         }
-                    } else {
+                    }
+                    //剩下的都在这呢
+                    else {
+                        //前一个后一个
                         StructExprRecog serPrevChild = mlistChildren.get(idx - 1);
                         StructExprRecog serNextChild = mlistChildren.get(idx + 1);
+                        //123都是ENUMTYPE
                         if (serPrevChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
                                 && serNextChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE) {
+                            //这个有待细细研究
                             if (!serPrevChild.isLetterChar() && !serPrevChild.isNumericChar()
                                     && !serPrevChild.isCloseBoundChar() && !serPrevChild.isPostUnitChar()
                                     && !serNextChild.isLetterChar() && !serNextChild.isNumericChar()
@@ -3813,7 +3829,9 @@ public class StructExprRecog {
                                         break;
                                     }
                                 }
-                            } else if ((serThisChild.mType == UnitProtoType.Type.TYPE_SMALL_X || serThisChild.mType == UnitProtoType.Type.TYPE_BIG_X)
+                            }
+                            //乘号根据字符大小纠错
+                            else if ((serThisChild.mType == UnitProtoType.Type.TYPE_SMALL_X || serThisChild.mType == UnitProtoType.Type.TYPE_BIG_X)
                                     && serPrevChild.isPossibleNumberChar() && serNextChild.getPrincipleSER(4).isPossibleNumberChar()
                                     && (serNextChild.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
                                     || serNextChild.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_VCUTUPPERNOTE)
@@ -3823,7 +3841,9 @@ public class StructExprRecog {
                                     && (serThisChild.mnTop - serNextChild.getPrincipleSER(4).mnTop) >= serThisChild.mnHeight * ConstantsMgr.msdCrosMultiplyLowerThanNeighbor) {
                                 // cross multiply may be misrecognized as x or X. But corss multiply generally is shorter and lower than its left and right neighbours.
                                 serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_MULTIPLY, serThisChild.mstrFont);
-                            } else if (serPrevChild.isNumericChar() && serThisChild.isLetterChar() && serNextChild.isNumericChar()) {
+                            }
+                            //数字字母数字不可
+                            else if (serPrevChild.isNumericChar() && serThisChild.isLetterChar() && serNextChild.isNumericChar()) {
                                 // this letter might be miss recognized, look for another candidate. this is for the case like 3S4
                                 LinkedList<CharCandidate> listCands = clm.findCharCandidates(serThisChild.mType, serThisChild.mstrFont);
                                 for (int idx1 = 0; idx1 < listCands.size(); idx1++) {
@@ -3834,19 +3854,84 @@ public class StructExprRecog {
                                         break;
                                     }
                                 }
-                            } else if (serPrevChild.isBiOptChar() && !serPrevChild.isPossibleNumberChar() && !serPrevChild.isPostUnOptChar() && serNextChild.isNumericChar()
+                            }
+                            //todo dml_changed6: 数字数字字母不可
+                            else if (serPrevChild.isNumericChar() && serThisChild.isNumericChar() && serNextChild.isLetterChar()) {
+                                // this letter might be miss recognized, look for another candidate. this is for the case like 3S4
+                                LinkedList<CharCandidate> listCands = clm.findCharCandidates(serNextChild.mType, serNextChild.mstrFont);
+                                for (int idx1 = 0; idx1 < listCands.size(); idx1++) {
+                                    if (isNumberChar(listCands.get(idx1).mType)) {
+                                        // ok, change it to the new char
+                                        serNextChild.changeSEREnumType(listCands.get(idx1).mType,
+                                                (listCands.get(idx1).mstrFont.length() == 0) ? serNextChild.mstrFont : listCands.get(idx1).mstrFont);
+                                        break;
+                                    }
+                                }
+                            }
+                            //todo dml_changed5.2 括号不匹配不可---初级纠错，可进一步完善括号匹配机制
+                            else if (serThisChild.isCloseBoundChar()||serThisChild.isBoundChar()) {
+                                boolean dmlMatch=false;
+                                StructExprRecog serDmlChild=null;
+                                //这里是闭括号，去前面找开括号
+                                if(serThisChild.isCloseBoundChar()){
+                                    for(int i=0;i<idx;++i){
+                                        serDmlChild = mlistChildren.get(i);
+                                        if(serDmlChild.isBoundChar()){
+                                            dmlMatch=true;
+                                            break;
+                                        }
+                                    }
+                                    if(!dmlMatch){
+                                        LinkedList<CharCandidate> listCands = clm.findCharCandidates(serThisChild.mType,serThisChild.mstrFont);
+                                        for (int idx1 = 0; idx1 < listCands.size(); idx1++) {
+                                            if (isNumberChar(listCands.get(idx1).mType)|| isLetterChar(listCands.get(idx1).mType)) {
+                                                // ok, change it to the new char
+                                                serThisChild.changeSEREnumType(listCands.get(idx1).mType,
+                                                        (listCands.get(idx1).mstrFont.length() == 0) ? serThisChild.mstrFont : listCands.get(idx1).mstrFont);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                //这里是开括号，去后面找闭括号
+                                else{
+                                    dmlMatch=false;
+                                    for(int i=idx+1;i<mlistChildren.size();++i){
+                                        serDmlChild = mlistChildren.get(i);
+                                        if(serDmlChild.isCloseBoundChar()){
+                                            dmlMatch=true;
+                                            break;
+                                        }
+                                    }
+                                    if(!dmlMatch){
+                                        LinkedList<CharCandidate> listCands = clm.findCharCandidates(serDmlChild.mType, serDmlChild.mstrFont);
+                                        for (int idx1 = 0; idx1 < listCands.size(); idx1++) {
+                                            if (isNumberChar(listCands.get(idx1).mType)) {
+                                                // ok, change it to the new char
+                                                serDmlChild.changeSEREnumType(listCands.get(idx1).mType,
+                                                        (listCands.get(idx1).mstrFont.length() == 0) ? serDmlChild.mstrFont : listCands.get(idx1).mstrFont);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            //括号前不能直接接运算符
+                            else if (serPrevChild.isBiOptChar() && !serPrevChild.isPossibleNumberChar() && !serPrevChild.isPostUnOptChar() && serNextChild.isNumericChar()
                                     && !serThisChild.isNumberChar() && !serThisChild.isLetterChar() && !serThisChild.isBoundChar()) {
                                 // this is for the case like +]9
                                 LinkedList<CharCandidate> listCands = clm.findCharCandidates(serThisChild.mType, serThisChild.mstrFont);
                                 for (int idx1 = 0; idx1 < listCands.size(); idx1++) {
-                                    if (isNumberChar(listCands.get(idx1).mType) || isLetterChar(listCands.get(idx1).mType) || isBoundChar(listCands.get(idx1).mType)) {
+                                    if (isNumberChar(listCands.get(idx1).mType) || isLetterChar(listCands.get(idx1).mType)) {
                                         // ok, change it to the new char
                                         serThisChild.changeSEREnumType(listCands.get(idx1).mType,
                                                 (listCands.get(idx1).mstrFont.length() == 0) ? serThisChild.mstrFont : listCands.get(idx1).mstrFont);
                                         break;
                                     }
                                 }
-                            } else if (serThisChild.mType == UnitProtoType.Type.TYPE_MULTIPLY
+                            }
+                            //等号前的乘号 变成x
+                            else if (serThisChild.mType == UnitProtoType.Type.TYPE_MULTIPLY
                                     && ((serPrevChild.isBiOptChar() && !serPrevChild.isPossibleNumberChar() /* && !serPrevChild.isLetterChar()*/)   // | can be misrecognized number 1.
                                     || (serNextChild.isBiOptChar() && !serNextChild.isPossibleNumberChar() /* && !serNextChild.isLetterChar()*/))) {
                                 // convert like ...\multiply=... to ...x=....
@@ -3947,9 +4032,8 @@ public class StructExprRecog {
         }
     }
 
-    //错误字符二轮修正
+    //错误字符二轮修正----rectify miss-recognized chars in the begnning or end, process the brackets and braces.
     public void rectifyMisRecogChars2ndRnd() {
-        // rectify miss-recognized chars in the begnning or end, process the brackets and braces.
         if (mnExprRecogType == EXPRRECOGTYPE_VBLANKCUT) {
             LinkedList<StructExprRecog> listBoundingChars = new LinkedList<StructExprRecog>();
             LinkedList<Integer> listBoundingCharIndices = new LinkedList<Integer>();
@@ -4169,7 +4253,7 @@ public class StructExprRecog {
         }
     }
 
-    //错误识别函数名修正
+    //todo ：lim 错误字符三轮修正----函数名修正
     public void rectifyMisRecogWords(MisrecogWordMgr mwm) throws InterruptedException {
         if (mnExprRecogType == EXPRRECOGTYPE_VBLANKCUT) {
             int idx = 0;

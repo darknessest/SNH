@@ -2,6 +2,12 @@
 	<CharCandSet Type="CLOSE_SQUARE_BRACKET" Font="">
 		<CharCand Type="ONE" Font="" MissRecogTimes="" />
 	</CharCandSet>
+	<CharCandSet Type="CLOSE_ROUND_BRACKET" Font="">
+		<CharCand Type="ONE" Font="" MissRecogTimes="" />
+	</CharCandSet>
+	<CharCandSet Type="ROUND_BRACKET" Font="">
+		<CharCand Type="ONE" Font="" MissRecogTimes="" />
+	</CharCandSet>
 	<CharCandSet Type="SMALL_L" Font="">
 		<CharCand Type="ONE" Font="" MissRecogTimes="" />
 	</CharCandSet>
@@ -66,11 +72,9 @@
 		<CharCand Type="MULTIPLY" Font="" MissRecogTimes="" />
 	</CharCandSet>
 	<CharCandSet Type="SMALL_X" Font="">
-		<CharCand Type="BIG_X" Font="" MissRecogTimes="" />
 		<CharCand Type="MULTIPLY" Font="" MissRecogTimes="" />
 	</CharCandSet>
 	<CharCandSet Type="MULTIPLY" Font="">
-		<CharCand Type="BIG_X" Font="" MissRecogTimes="" />
 		<CharCand Type="SMALL_X" Font="" MissRecogTimes="" />
 	</CharCandSet>
 	<CharCandSet Type="SMALL_A" Font="">

@@ -32,7 +32,8 @@ class CNN:
         model.add(Flatten())
         model.add(Dense(512))
         model.add(Activation("relu"))
-        #new
+
+        #加入dropout
         model.add(Dropout(0.5))
 
         # Using Softmax Classifier for Linear Classification

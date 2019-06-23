@@ -203,29 +203,29 @@ public class JImageProcessor {
 
             //todo 这块的代码结构可以进一步优化，反复调用了过滤程序
 
-            //调用过滤（filter)程序
             if (bFilter) {
                 ser = ExprFilter.filterRawSER(ser, null);
                 serOld = ser;
             }
-
             if (ser != null) {
                 //重点2 字符串重构
                 ser = ser.restruct();
                 System.out.println("\n2-RESTRUCT: image " + strImageFile + " includes expression :\n" + ser.toString());
                 serOld = ser;
-
+                //重点2.5 过滤时加入表达式尾去掉dottimes逻辑，换做X比较好
                 if (bFilter) {
                     ser = ExprFilter.filterRestructedSER(ser, null, null);
                     serOld = ser;
                 }
-
+                System.out.println("\n2.5-FILTERED: image " + strImageFile + " includes expression :\n" + ser.toString()+"\t"+ser.getExprRecogType());
                 if (ser != null) {
                     //重点3 错误识别一轮二轮修正，错误识别函数名修正
                     ser.rectifyMisRecogChars1stRnd(clm);
+                    System.out.println("\n3-RECTIFY_1: image " + strImageFile + " includes expression :\n" + ser.toString());
                     ser.rectifyMisRecogChars2ndRnd();
+                    System.out.println("3-RECTIFY_2: image " + strImageFile + " includes expression :\n" + ser.toString());
                     ser.rectifyMisRecogWords(mwm);
-                    System.out.println("\n3-RECTIFY: image " + strImageFile + " includes expression :\n" + ser.toString());
+                    System.out.println("3-RECTIFY_3: image " + strImageFile + " includes expression :\n" + ser.toString());
 
                     //重点4 最终结果（结构化表达式） 翻译成可计算的数学表达式
                     SerMFPTransFlags smtFlags = new SerMFPTransFlags();
