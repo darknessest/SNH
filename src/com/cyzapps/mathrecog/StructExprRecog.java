@@ -46,7 +46,7 @@ public class StructExprRecog {
     public final static int VGAP_CNT_IDX = 7;
     public final static int TOTAL_IDX_CNT = 8;
 
-    protected int mnExprRecogType = EXPRRECOGTYPE_ENUMTYPE;
+    public int mnExprRecogType = EXPRRECOGTYPE_ENUMTYPE;
 
     // 0 means UnitProtoType,
     // 1 means a list of StructuredExprRecog children，but unknown cut mode.
@@ -70,10 +70,10 @@ public class StructExprRecog {
     // 21 means multi expressions,
     // 22 root.
 
-    protected UnitProtoType.Type mType = UnitProtoType.Type.TYPE_UNKNOWN;
+    public UnitProtoType.Type mType = UnitProtoType.Type.TYPE_UNKNOWN;
     public final static String UNKNOWN_FONT_TYPE = "unknown";
     public String mstrFont = UNKNOWN_FONT_TYPE;
-    protected LinkedList<StructExprRecog> mlistChildren = new LinkedList<StructExprRecog>();
+    public LinkedList<StructExprRecog> mlistChildren = new LinkedList<StructExprRecog>();
 
     private byte[][] mbarrayBiValues = new byte[0][0];    // bivalue matrix, not that this is the original matrix.
     // minimum container
@@ -577,9 +577,7 @@ public class StructExprRecog {
                 ImageChop imgChop4SER = ExprSeperator.mergeImgChopsWithSameOriginal(listParts);
                 serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_DIVIDE, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, dSimilarity);
             }
-
             else if (bIsDivide) {
-            } else if (bIsDivide) {
                 // is actually an h line cut, i.e. div.
                 serReturn.setStructExprRecog(listCuts, EXPRRECOGTYPE_HLINECUT);
             } else {
@@ -4807,6 +4805,7 @@ public class StructExprRecog {
             int sta = 0;
             StructExprRecog preSon = null;
             if(ispossibleEqual(this)){
+                /*
                 for(StructExprRecog son : mlistChildren){
                     if(son.mType == UnitProtoType.Type.TYPE_SUBTRACT && sta == 0){
                         sta = 1;
@@ -4816,7 +4815,7 @@ public class StructExprRecog {
                         System.out.println(son.mnWidth + "====" + preSon.mnWidth);
                         System.out.println(Math.abs((Math.abs(preSon.mnWidth-son.mnWidth))/(preSon.mnWidth+0.01) - 0));
                         if(Math.abs((son.mnWidth)/(preSon.mnWidth+0.01) - 1) <= 0.4) {
-                            /*Here we change to substract to euqal*/
+                            //Here we change to substract to euqal
                             double similarity = son.getSimilarity() > preSon.getSimilarity() ? son.getSimilarity() : preSon.getSimilarity();
                             LinkedList<ImageChop> listParts = new LinkedList<ImageChop>();
                             ImageChop imgChop1 = preSon.getImageChop(false);
@@ -4834,7 +4833,7 @@ public class StructExprRecog {
                     }else{
                         sta = 0;
                     }
-                }
+                }*/
             }
 
         } else if(mnExprRecogType == EXPRRECOGTYPE_MULTIEXPRS){
