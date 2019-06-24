@@ -511,7 +511,7 @@ public class StructExprRecog {
                 || mnExprRecogType == EXPRRECOGTYPE_HCUTCAPUNDER || mnExprRecogType == EXPRRECOGTYPE_HCUTUNDER
                 || mnExprRecogType == EXPRRECOGTYPE_HLINECUT || mnExprRecogType == EXPRRECOGTYPE_MULTIEXPRS
                 || mnExprRecogType == EXPRRECOGTYPE_GETROOT || mnExprRecogType == EXPRRECOGTYPE_VCUTMATRIX) {
-            // TODO assume horizontal cut is always clear before call restruct, i.e. hblank, hcap, hunder, hcapunder are not confused.
+            // assume horizontal cut is always clear before call restruct, i.e. hblank, hcap, hunder, hcapunder are not confused.
             //  there is a special case for HBlankCut, Under and cap cut (handwriting divide may miss recognized).
             StructExprRecog[] serarrayNoLnDe = new StructExprRecog[3];
             boolean bIsDivide = isActuallyHLnDivSER(this, serarrayNoLnDe);  //TODO need to do it here as well as in vertical restruct
@@ -3635,7 +3635,7 @@ public class StructExprRecog {
         return false;
     }
 
-    //todo changed5.2 配合（的纠正逻辑，将他变成1
+    //错误识别的数字和字母纠正
     public static void rectifyMisRecogNumLetter(CharLearningMgr clm, StructExprRecog ser) {
         if (ser.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && !ser.isLetterChar() && !ser.isNumberChar()) {
             // this letter might be miss recognized, look for another candidate.
@@ -3706,7 +3706,7 @@ public class StructExprRecog {
         }
     }
 
-    //错误字符一轮修正----主要是纠正数字和字母
+    //todo : 错误字符一轮修正----主要是纠正数字和字母
     public void rectifyMisRecogChars1stRnd(CharLearningMgr clm) {
         // some characters might be misrecognized, so rectify them
         switch (mnExprRecogType) {
@@ -3798,7 +3798,7 @@ public class StructExprRecog {
                     }
 
                     //todo 这块贼六！！！！
-                    //第一个字符不是数字、不是字母……那么可能识别错了
+                    //第一个字符不是数字、不是字母等……那么可能识别错了
                     if (idx == 0) {
                         if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
                                 && !serThisChild.isLetterChar() && !serThisChild.isNumericChar() && !serThisChild.isBoundChar()
@@ -3915,16 +3915,8 @@ public class StructExprRecog {
                                             break;
                                         }
                                     }
-                                    if(!dmlMatch){
-                                        LinkedList<CharCandidate> listCands = clm.findCharCandidates(serThisChild.mType,serThisChild.mstrFont);
-                                        for (int idx1 = 0; idx1 < listCands.size(); idx1++) {
-                                            if (isNumberChar(listCands.get(idx1).mType)|| isLetterChar(listCands.get(idx1).mType)) {
-                                                // ok, change it to the new char
-                                                serThisChild.changeSEREnumType(listCands.get(idx1).mType,
-                                                        (listCands.get(idx1).mstrFont.length() == 0) ? serThisChild.mstrFont : listCands.get(idx1).mstrFont);
-                                                break;
-                                            }
-                                        }
+                                    if(!dmlMatch){//不纠错了，直接改成1吧，因为别的地反可能也有用到clm进行修改的
+                                        serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE,"");
                                     }
                                 }
                                 //这里是开括号，去后面找闭括号
@@ -3937,16 +3929,8 @@ public class StructExprRecog {
                                             break;
                                         }
                                     }
-                                    if(!dmlMatch){
-                                        LinkedList<CharCandidate> listCands = clm.findCharCandidates(serDmlChild.mType, serDmlChild.mstrFont);
-                                        for (int idx1 = 0; idx1 < listCands.size(); idx1++) {
-                                            if (isNumberChar(listCands.get(idx1).mType)) {
-                                                // ok, change it to the new char
-                                                serDmlChild.changeSEREnumType(listCands.get(idx1).mType,
-                                                        (listCands.get(idx1).mstrFont.length() == 0) ? serDmlChild.mstrFont : listCands.get(idx1).mstrFont);
-                                                break;
-                                            }
-                                        }
+                                    if(!dmlMatch){//不纠错了，直接改成1吧，因为别的地反可能也有用到clm进行修改的
+                                        serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE,"");
                                     }
                                 }
                             }
@@ -4287,7 +4271,7 @@ public class StructExprRecog {
         }
     }
 
-    //todo ：lim 错误字符三轮修正----函数名修正
+    //todo ：函数名修正
     public void rectifyMisRecogWords(MisrecogWordMgr mwm) throws InterruptedException {
         if (mnExprRecogType == EXPRRECOGTYPE_VBLANKCUT) {
             int idx = 0;
