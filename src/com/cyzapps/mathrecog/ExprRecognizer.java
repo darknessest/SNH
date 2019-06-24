@@ -464,14 +464,17 @@ public class ExprRecognizer {
                     //String dml_dir = "E:\\测试数据" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
                     //ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
 
-                    usePy();
+                    //todo add some rule to not use or trust py's result by LH
+                    if(!shouldnotUsePy(serReturnCand1))
+                        usePy();
 
                     //test3
                     System.out.println("[JAVA___RESULT]\t" + serReturnCand1.mType + " \t" + serReturnCand1.toString());
                     System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu +"\t"+similarty);
+                    UnitProtoType.Type cType = getTpye((resu));
                     //选择python的识别结果 >=0.995 不要i j
                     //getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_I&&getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_J
-                    if (similarty >= 0.995) {
+                    if (similarty >= 0.995 && !shouldnotUsePy(serReturnCand1) && !shouldnotTrustPy(cType)) {
                         serReturn = serReturnCand1;
                         serReturn.mType = correctPY_YX(getTpye(resu),serReturnCand1.mType,getTpye(resu));
                         //serReturn.mType = getTpye(resu);
@@ -503,6 +506,28 @@ public class ExprRecognizer {
 
     public static String resu;
     public static double similarty;
+
+    public static boolean shouldnotUsePy(StructExprRecog ser){
+        /*Some case wo shoule not use py, Because use py may let to misunderstood and to save time*/
+        /*UnitProtoType.Type.TYPE_VERTICAL_LINE
+        UnitProtoType.Type.TYPE_SUBTRACT
+        UnitProtoType.Type.TYPE_EMPTY
+        UnitProtoType.Type.TYPE_DOT
+        UnitProtoType.Type.TYPE_ONE
+        //those character is pre-Recognised by java
+        */
+        if(ser.mType == UnitProtoType.Type.TYPE_DOT || ser.mType == UnitProtoType.Type.TYPE_ONE || ser.mType ==  UnitProtoType.Type.TYPE_VERTICAL_LINE
+                || ser.mType == UnitProtoType.Type.TYPE_SUBTRACT || ser.mType == UnitProtoType.Type.TYPE_EMPTY)
+            return true;
+        return false;
+    }
+
+    public static boolean shouldnotTrustPy(UnitProtoType.Type cType){
+        /*We do not trust the result of python because it should not get a result of 'i' or 'j' ect.*/
+        if(cType != UnitProtoType.Type.TYPE_SMALL_I && cType != UnitProtoType.Type.TYPE_SMALL_J )
+            return false;
+        return true;
+    }
 
 
     public static UnitProtoType.Type correctPY_YX(UnitProtoType.Type pythonType, UnitProtoType.Type javaType,UnitProtoType.Type returnType)
