@@ -206,6 +206,7 @@ public class JImageProcessor {
 
             if (bFilter) {
                 ser = ExprFilter.filterRawSER(ser, null);
+                //System.out.println("\n1.5-FILTERED: image " + strImageFile + " includes expression :\n" + ser.toString()+"\t"+ser.getExprRecogType());
                 serOld = ser;
             }
             if (ser != null) {
@@ -216,9 +217,10 @@ public class JImageProcessor {
                 //重点2.5 过滤时加入表达式尾去掉dottimes逻辑，换做X比较好
                 if (bFilter) {
                     ser = ExprFilter.filterRestructedSER(ser, null, null);
+                    System.out.println("\n2.5-FILTERED: image " + strImageFile + " includes expression :\n" + ser.toString()+"\t\tEXPR_TYPE: "+ser.getExprRecogType());
                     serOld = ser;
                 }
-                System.out.println("\n2.5-FILTERED: image " + strImageFile + " includes expression :\n" + ser.toString()+"\t"+ser.getExprRecogType());
+
                 if (ser != null) {
                     //重点3 错误识别一轮二轮修正，错误识别函数名修正
                     ser.rectifyMisRecogChars1stRnd(clm);

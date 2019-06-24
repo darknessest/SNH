@@ -814,16 +814,16 @@ public class ExprFilter {
                 for (int idx = idxFrom; idx <= idxTo; idx ++) {
                     StructExprRecog ser = listNewChildren.get(idx).getPrincipleSER(4);
                     if (ser.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
-                            && (/*ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET */
+                            && (//ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET||
                                 /*|| ser.mType == UnitProtoType.Type.TYPE_SQUARE_BRACKET*/
                                  ser.mType == UnitProtoType.Type.TYPE_BRACE)) {
                         break;
                     }
                     //
                     else if (ser.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
-                            && (//ser.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET
+                            && (//ser.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET||
                                 /*|| ser.mType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET*/
-                                ser.mType == UnitProtoType.Type.TYPE_CLOSE_BRACE)) {
+                                ser.mType == UnitProtoType.Type.TYPE_CLOSE_BRACE)){
                         if (idxFirstCloseBndNoMatch == idxFrom - 1) {
                             idxFirstCloseBndNoMatch = idx;
                         }
