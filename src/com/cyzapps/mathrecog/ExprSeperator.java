@@ -579,6 +579,7 @@ public class ExprSeperator {
         
         ImageChop chopDiv = new ImageChop();
         if (dAvgStrokeWidth < 3)    {   // line is too thin.
+            //#set LINE_DIV1
             chopDiv.setImageChop(imgChop2Cut.mbarrayImg, imgChop2Cut.mnLeft, nUpperMinCSTWIdx,
                                 imgChop2Cut.mnWidth, nChopThickness, imgChop2Cut.mbarrayOriginalImg,
                                 imgChop2Cut.mnX0InOriginalImg, imgChop2Cut.mnY0InOriginalImg,
@@ -608,6 +609,7 @@ public class ExprSeperator {
                     nNewBottom = (int)cutPathBottom.mp3Path[idx].getY();
                 }
             }
+            //#set LINE_DIV 2
             chopDiv.setImageChop(imgChop2Cut.mbarrayImg, imgChop2Cut.mnLeft, nNewTop,
                                 imgChop2Cut.mnWidth, nNewBottom - nNewTop + 1, imgChop2Cut.mbarrayOriginalImg,
                                 imgChop2Cut.mnX0InOriginalImg, imgChop2Cut.mnY0InOriginalImg,
@@ -646,10 +648,12 @@ public class ExprSeperator {
         return imgChop;
     }
 
+    //计算最坏情况下的分数线长度
     public static int calcWorstCaseLnDivOrOnLen(int nChopWidth, int nChopHeight) {
+        //return (int)(nChopWidth*ConstantsMgr.msdWorstCaseLineDivOnLenRatio);
         return (int)Math.max(nChopWidth * ConstantsMgr.msdWorstCaseLineDivOnLenRatio,
-                                (nChopWidth - Math.max(2.0 * ConstantsMgr.msnMinNormalCharWidthInUnit, 
-                                                        nChopHeight * ConstantsMgr.msdHeightSkewRatio)));  // Line div width should be long enough
+                                (nChopWidth - Math.max(2.0 * ConstantsMgr.msnMinNormalCharWidthInUnit,
+                                                        nChopHeight * ConstantsMgr.msdHeightSkewRatio)));  //  Line div width should be long enough
     }
 
     public static int calcWorstCaseLnDiv1RowOnLen(double dAvgStrokeWidth, int nWorstCaseLineDivOrOnLen) {
@@ -657,7 +661,7 @@ public class ExprSeperator {
                                                         nWorstCaseLineDivOrOnLen);
     }    
 
-    //水平切和竖直切
+    //水平切
     //========================================================================================================
     // here assume the input is minimum container and barrayImg has been horizontally adjusted.
     // the output imgchops are also minimum container adjusted (except the blank div).
@@ -670,6 +674,7 @@ public class ExprSeperator {
         int nMaxLnCutHeight = (int)Math.min(
                 Math.max(2 * dAvgStrokeWidth - 1, Math.ceil(imgChop2Cut.mnWidth * ConstantsMgr.msdMaxHorizontalSlope) + Math.ceil(dAvgStrokeWidth)),
                 imgChop2Cut.mnWidth * ConstantsMgr.msdCharWOverHMaxSkewRatio / ConstantsMgr.msdExtendableCharWOverHThresh); // should be like a line, not a point
+
         int nWorstCaseLineDivOrOnLen = calcWorstCaseLnDivOrOnLen(imgChop2Cut.mnWidth, imgChop2Cut.mnHeight);  // Line div width should be long enough
         // allow at most 3 disconnects in one line div (including front and end disconnects)
         // longer line means more possible disconnects, thicker line means less possible disconnects.
@@ -691,6 +696,7 @@ public class ExprSeperator {
         int nBlankDivStartRow = imgChop2Cut.getTopInOriginalImg();
         int nImg2CutBottomP1InOriginal = imgChop2Cut.getBottomP1InOriginalImg();    // it is faster to store the value.
         int nImg2CutRightP1 = imgChop2Cut.getRightPlus1();
+
         for (int idx1 = imgChop2Cut.getTopInOriginalImg(); idx1 < nImg2CutBottomP1InOriginal; idx1 ++)    {
             int nIdx1InThis = imgChop2Cut.mapOriginalYIdx2This(idx1);
             int nIdx1Confined = imgChop2Cut.mapOriginalYIdx2Confined(idx1);
@@ -698,7 +704,8 @@ public class ExprSeperator {
                 narrayRowOnCount[nIdx1Confined] += imgChop2Cut.mbarrayImg[idx][nIdx1InThis];
             }
             
-            if (narrayRowOnCount[imgChop2Cut.mapOriginalYIdx2Confined(idx1)] == 0)   {   // could be a blank div. need to check blank line first.
+            if (narrayRowOnCount[imgChop2Cut.mapOriginalYIdx2Confined(idx1)] == 0)   {
+                // could be a blank div. need to check blank line first.
                 // assume that for a blank div, there must be a line which has no On point. We should not
                 // allow any on point exist, otherwise, number 7 may be cutted into two  parts by "blank"
                 // div.
@@ -831,9 +838,10 @@ public class ExprSeperator {
             } else if (nHCutsStyle == UNDER_H_DIV_STYLE)    {
                 // under, insert a gap.
                 ImageChop chopGap = new ImageChop();
+                //todo：dml_changed1 我先试试把这里的under_DIV 直接改成 LINE_DIV ---简单粗暴，直接奏效
                 chopGap.setImageChop(imgChop2Cut.mbarrayImg,
                         imgChop2Cut.mnLeft, imgChop2Cut.mapOriginalYIdx2This(chopLastNBD.getBottomP1InOriginalImg()), imgChop2Cut.mnWidth, nGap,
-                        imgChop2Cut.mbarrayOriginalImg, imgChop2Cut.mnX0InOriginalImg, imgChop2Cut.mnY0InOriginalImg, ImageChop.TYPE_UNDER_DIV);
+                        imgChop2Cut.mbarrayOriginalImg, imgChop2Cut.mnX0InOriginalImg, imgChop2Cut.mnY0InOriginalImg, ImageChop.TYPE_LINE_DIV);
                 imgChopsProc.mlistChops.add(chopGap);
                 imgChopsProc.mlistChops.add(imgChops.mlistChops.get(idx));
             } else if (nHCutsStyle == CAP_H_DIV_STYLE)    {
@@ -859,7 +867,8 @@ public class ExprSeperator {
         
         return imgChopsProc;
     }
-    
+
+    //竖直切
     // here, we assume that the barrayImg has been preprocessed, i.e. the units are not necessarily one
     // pixel, but a minimum identible area (nStep * nStep) and the barrayImg is in the minimum container.
     // This function return a imagechops set includes all the chops with minimum container. If cannot be
@@ -1521,7 +1530,8 @@ public class ExprSeperator {
     public final static int UNDER_H_DIV_STYLE = 2;
     public final static int CAP_H_DIV_STYLE = 3;
     public final static int MERGE_H_DIV_STYLE = -1;
-    
+
+    //判断水平切的类型
     public static int identHCutsStyle(LinkedList<ImageChop> listChops, int idxThis, ImageChop chopLastProc, double dNotMergeWidthThresh, double dAvgStrokeWidth, double dMaxEstCharWidth, double dMaxEstCharHeight) {
         ImageChop chopTop = listChops.get(idxThis - 1), chopBottom = listChops.get(idxThis);
         /*if (chopTop != chopLastProc && chopTop.mnHeight <= ConstantsMgr.msdVeryThinOverlappedHeightThresh * dAvgStrokeWidth) {
@@ -1554,7 +1564,8 @@ public class ExprSeperator {
         if (nGap > ConstantsMgr.msdExpressionGap * dBaseAvgCharHeight)   {
             return BLANK_H_DIV_STYLE;
         } else if ((idxThis > 1 && idxThis < listChops.size() - 1)
-                && ((listChops.get(idxThis - 2).mnChopType == ImageChop.TYPE_UNKNOWN && chopTop.mnChopType == ImageChop.TYPE_LINE_DIV
+                && ((listChops.get(idxThis - 2).mnChopType == ImageChop.TYPE_UNKNOWN
+                        && chopTop.mnChopType == ImageChop.TYPE_LINE_DIV
                         && chopBottom.mnChopType == ImageChop.TYPE_UNKNOWN
                         && (chopTop.getTopInOriginalImg() - listChops.get(idxThis - 2).getBottomP1InOriginalImg()) <= ConstantsMgr.msdExpressionGap * dBaseAvgCharHeight
                         && (chopBottom.getTopInOriginalImg() - chopTop.getBottomP1InOriginalImg()) <= ConstantsMgr.msdExpressionGap * dBaseAvgCharHeight)

@@ -11,11 +11,15 @@ import com.cyzapps.mathrecog.ExprRecognizer;
 import com.cyzapps.mathrecog.ImageChop;
 import com.cyzapps.mathrecog.MisrecogWordMgr;
 import com.cyzapps.uptloadermgr.UPTJavaLoaderMgr;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -28,13 +32,14 @@ import java.io.*;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.cyzapps.SmartCalc.Cut;
 import static jimageprocessor.JImageProcessor.recognizeMathExpr;
-import static jimageprocessor.JImageProcessor.preprocessImage;
 
 public class Controller implements Initializable {
     @FXML
@@ -43,11 +48,17 @@ public class Controller implements Initializable {
     TextFlow CommandFlow;
     @FXML
     AnchorPane AP;
+    @FXML
+    Label fileNameLabel;
+    @FXML
+    Button prevPicButton, nextPicButton;
 
     private String SelectedImagePath = null;
-    private String res = null;
     private CharLearningMgr clm;
     private MisrecogWordMgr mwm;
+    private int currentPicIndex = 0;
+    private List<File> selectedFiles;
+    private ArrayList<String> results;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -57,6 +68,7 @@ public class Controller implements Initializable {
         boolean bLoadPrintChars = false;
         boolean bLoadSPrintChars = true;
         boolean bLoadSHandwritingChars = true;
+        results = new ArrayList<>();
 
         clm = new CharLearningMgr();
         FileInputStream fis = null;
@@ -95,97 +107,206 @@ public class Controller implements Initializable {
         UPTJavaLoaderMgr.load(bLoadPrintChars, bLoadSPrintChars, bLoadSHandwritingChars);
 
         ExprRecognizer.setRecognitionMode(nTestMode0HandwritingRecogMode); //hand mode on
+
+        //*****************************
+        //      Buttons handlers
+        //*****************************
+        prevPicButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (currentPicIndex > 0 && !selectedFiles.isEmpty())
+                    showImage(selectedFiles.get(--currentPicIndex));
+            }
+        });
+        nextPicButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (currentPicIndex < selectedFiles.size() - 1 && !selectedFiles.isEmpty())
+                    showImage(selectedFiles.get(++currentPicIndex));
+            }
+        });
     }
 
     @FXML
-    private void OpenImage() {
+    private void OpenFiles() {
         FileChooser fileChooser = new FileChooser();
 
-        //Set extension filter
+        // Set extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
                 "image files: bmp, png, jpg",
                 "*.bmp", "*.png", "*.jpg"); // more file extensions can be added
+        // clear collection of files
 
-        fileChooser.getExtensionFilters().add(extFilter);
+        fileChooser.getExtensionFilters().addAll(extFilter);
 
-        File selectedFile = fileChooser.showOpenDialog(null);
+        List<File> tempListOfFiles = fileChooser.showOpenMultipleDialog(null);
 
-        if (selectedFile != null) {
-            ImageView iv = new ImageView(new Image(selectedFile.toURI().toString()));
-            iv.setFitWidth(400);
-            iv.setFitHeight(250);
-            iv.setPreserveRatio(true);
-            iv.setSmooth(true);
-            iv.setCache(false);
+        if (!tempListOfFiles.isEmpty()) {
+            tempListOfFiles.forEach(x -> PutText(x.getPath(), false, Color.BLACK, "Arial", 16));
+            currentPicIndex = 0;
 
-            AP.getChildren().clear();
-            AP.getChildren().add(iv);
+            // show in program
+            showImage(tempListOfFiles.get(currentPicIndex));
 
-            SelectedImagePath = selectedFile.getAbsolutePath();
+            SelectedImagePath = tempListOfFiles.get(currentPicIndex).getAbsolutePath();
             FileAddressField.setText(SelectedImagePath);
-            //TODO PutText 只有第一次调用是正常的，之后均有延迟，（注释掉第一次条用的代码，则只有第二次调用的是正常的）
-            PutText(getSelectedImagePath() + " has been opened\n", false, Color.BLACK, "Arial", 16);
+            fileNameLabel.setText(tempListOfFiles.get(currentPicIndex).getName());
+
+
+            selectedFiles = tempListOfFiles;
+            results.clear();
         }
     }
 
     @FXML
     void PreProcess() throws InterruptedException {
-        if (getSelectedImagePath() == null) {
-            PutText("Please choose a picture or a folder\n", false, Color.BLACK, "Arial", 16);
+        if (selectedFiles.isEmpty()) {
+            PutText("Please choose a picture(s)\n", false, Color.BLACK, "Arial", 16);
             return;
         }
+
         String path = getSelectedImagePath();
         System.out.println(path + " ");//+ pic);
-        int nPixelDiv = 100;
-        String oldfolder = path.substring(0, path.lastIndexOf(File.separator));
-        String pic = path.replace(path.substring(0, path.lastIndexOf(File.separator)), "");
-        System.out.println(oldfolder + " " + pic.substring(1, pic.length()));
-        String newFolder = "res" + File.separator + "prepresult";
-        preprocessImage(pic.substring(1, pic.length()), oldfolder, newFolder, nPixelDiv, true);
-        SelectedImagePath = newFolder + File.separator + pic.substring(1, pic.length()) + ".bmp";
-        PutText("PreProcess image path: " + SelectedImagePath + "\n", false, Color.BLACK, "Arial", 16);
+
+        for (File x : selectedFiles) {
+            preprocessImage(x.getName(), x.getParent(),
+                    "res" + File.separator + "prepresult", 100, true);
+            PutText("Image " + x.getName() + " has been processed", false, Color.BLACK, "Arial", 16);
+        }
     }
 
     @FXML
     void RunProcess() throws InterruptedException, IOException {
         if (getSelectedImagePath() == null) {
-            PutText("Please choose a picture or a folder\n", false, Color.BLACK, "Arial", 16);
+            PutText("Please choose a picture(s)\n", false, Color.BLACK, "Arial", 16);
             return;
         }
-        String path = getSelectedImagePath();
-        res = recognizeMathExpr(path, clm, mwm, true);
-        PutText("The recognition result:" + "\n" + res + "\n", false, Color.RED, "Arial", 16);
+
+        int i = 0;
+        for (File x : selectedFiles) {
+            results.add(recognizeMathExpr("res" + File.separator + "prepresult" + File.separator + x.getName() + ".bmp",
+                    clm, mwm, true));
+            PutText(selectedFiles.get(i).getName() + " recognition result:" + "\n" + results.get(i++) + "\n", false, Color.RED, "Arial", 16);
+        }
+
     }
 
     @FXML
     void calculate() throws InterruptedException, SMErrProcessor.JSmartMathErrException, ErrProcessor.JFCALCExpErrException {
-        if (getRes() == null) {
+        if (results.isEmpty()) {
             PutText("There is no result yet\n", false, Color.BLACK, "Arial", 16);
             return;
         }
         String calcA = null;
-        String strExpressions = res;
-        if (strExpressions.indexOf("\n") != -1)//方程组
-        {
-            strExpressions = Cut(strExpressions);
-        } else if (strExpressions.indexOf("integrate") != -1 && strExpressions.indexOf("==") != -1)//积分方程
-        {
-            String calcA1;
-            String[] strarraycup = strExpressions.split("==");
-            calcA1 = SmartCalcProcLib.calculate(strarraycup[0], false);
-            String temp = calcA1.replace(File.separator + "text", "");//改了\\
+        int i = 0;
+
+        for (String strExpressions : results) {
+            if (strExpressions.indexOf("\n") != -1)//方程组
+            {
+                strExpressions = Cut(strExpressions);
+            } else if (strExpressions.indexOf("integrate") != -1 && strExpressions.indexOf("==") != -1)//积分方程
+            {
+                String calcA1;
+                String[] strarraycup = strExpressions.split("==");
+                calcA1 = SmartCalcProcLib.calculate(strarraycup[0], false);
+                String temp = calcA1.replace(File.separator + "text", "");//改了\\
+                temp = temp.replace("\"", "");
+                temp = temp.replace("{", "(");
+                temp = temp.replace("}", ")");
+                System.out.println(temp);
+                temp = temp.replace("×", "*");
+                temp = temp.replace("^", "**");
+                strExpressions = temp + "==" + strarraycup[1];
+            }
+            if (strExpressions.indexOf("derivative") != -1) {//求导
+                Function df = new Function(strExpressions);
+                String arg = Function.x + Function.ccount + Function.str;//这里的df.ccount，为求导阶数，目前一阶导数测试通过
+                try {
+                    Socket socket = new Socket("127.0.0.1", 9999);
+                    System.out.println("Client start!");
+                    PrintWriter out = new PrintWriter(socket.getOutputStream()); // 输出，to 服务器 socket
+                    out.println("derivative:" + arg);
+                    out.flush(); // 刷缓冲输出，to 服务器
+
+                    BufferedReader in = new BufferedReader(new InputStreamReader(
+                            socket.getInputStream())); // 输入， from 服务器 socket
+                    calcA = in.readLine();
+                    System.out.println("Client end!");
+                    socket.close();
+                    //boolean success = (new File(dir)).delete();
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                calcA = SmartCalcProcLib.calculate(strExpressions, false);
+            }
+
+            String temp = calcA.replace(File.separator + "text", "");
             temp = temp.replace("\"", "");
             temp = temp.replace("{", "(");
             temp = temp.replace("}", ")");
+            if (temp.length() == 0)
+                temp = "I can't calculate it yet";
+            PutText(selectedFiles.get(i).getName() + " ANSWER:\n" + temp + "\n", false, Color.BLACK, "Arial", 16);
             System.out.println(temp);
-            temp = temp.replace("×", "*");
-            temp = temp.replace("^", "**");
-            strExpressions = temp + "==" + strarraycup[1];
         }
-        if (strExpressions.indexOf("derivative") != -1) {//求导
-            Function df = new Function(strExpressions);
-            String arg = df.x + String.valueOf(df.ccount) + df.str;//这里的df.ccount，为求导阶数，目前一阶导数测试通过
-            try {
+    }
+
+    @FXML
+    void RunAll() throws InterruptedException, IOException, SMErrProcessor.JSmartMathErrException, ErrProcessor.JFCALCExpErrException {
+
+        if (selectedFiles.isEmpty()) {
+            PutText("Please choose a picture(s)\n", false, Color.BLACK, "Arial", 16);
+            return;
+        }
+        int i = 0;
+        String calcA = null;
+        for (File x : selectedFiles) {
+
+            PutText(i++ + ")", false, Color.BLACK, "Menlo", 18);
+            //************************
+            //      PreProcess
+            //************************
+            preprocessImage(x.getName(), x.getParent(),
+                    "res" + File.separator + "prepresult", 100, true);
+            PutText("Image " + x.getName() + " has been processed",
+                    false, Color.BLACK, "Arial", 16);
+
+
+            //************************
+            //      RunProcess
+            //************************
+            String strExpressions = recognizeMathExpr("res" + File.separator + "prepresult" + File.separator + x.getName() + ".bmp",
+                    clm, mwm, true);
+            PutText("The recognition result:" + "\n" + strExpressions, false, Color.RED, "Arial", 16);
+
+
+            //************************
+            //      calculate
+            //************************
+            if (strExpressions.contains("\n"))//方程组
+            {
+                strExpressions = Cut(strExpressions);
+            } else if (strExpressions.contains("integrate") && strExpressions.contains("=="))//积分方程
+            {
+                String calcA1;
+                String[] strarraycup = strExpressions.split("==");
+                calcA1 = SmartCalcProcLib.calculate(strarraycup[0], false);
+                String temp = calcA1.replace(File.separator + "text", "");//改了\\
+                temp = temp.replace("\"", "");
+                temp = temp.replace("{", "(");
+                temp = temp.replace("}", ")");
+                System.out.println(temp);
+                temp = temp.replace("×", "*");
+                temp = temp.replace("^", "**");
+                strExpressions = temp + "==" + strarraycup[1];
+            }
+            if (strExpressions.contains("derivative")) {//求导
+                Function df = new Function(strExpressions);
+                String arg = Function.x + Function.ccount + Function.str;//这里的df.ccount，为求导阶数，目前一阶导数测试通过
+
                 Socket socket = new Socket("127.0.0.1", 9999);
                 System.out.println("Client start!");
                 PrintWriter out = new PrintWriter(socket.getOutputStream()); // 输出，to 服务器 socket
@@ -197,29 +318,24 @@ public class Controller implements Initializable {
                 calcA = in.readLine();
                 System.out.println("Client end!");
                 socket.close();
-                //boolean success = (new File(dir)).delete();
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } else {
+                calcA = SmartCalcProcLib.calculate(strExpressions, false);
             }
-        } else {
-            calcA = SmartCalcProcLib.calculate(strExpressions, false);
+
+            String temp = calcA.replace(File.separator + "text", "");
+            temp = temp.replace("\"", "");
+            temp = temp.replace("{", "(");
+            temp = temp.replace("}", ")");
+            if (temp.length() == 0)
+                temp = "I can't calculate it yet";
+            PutText("ANSWER:\n" + temp + "\n", false, Color.BLACK, "Arial", 16);
+            System.out.println(temp);
         }
-
-        String temp = calcA.replace(File.separator + "text", "");
-        temp = temp.replace("\"", "");
-        temp = temp.replace("{", "(");
-        temp = temp.replace("}", ")");
-        if (temp.length() == 0)
-            temp = "I can't calculate it yet";
-        PutText("ANSWER:\n" + temp + "\n\n", false, Color.BLACK, "Arial", 16);
-        System.out.println(temp);
     }
 
-    public String getRes() {
-        return res;
-    }
+//    public String getRes() {
+//        return res;
+//    }
 
     //  This method can be used outside (in other files)
     //  to add text to the CommandFlow (right)
@@ -238,7 +354,7 @@ public class Controller implements Initializable {
     // Returns path to the opened image
     // TODO 如果在别的文档不能用这个函数，就可以删掉
     // 注意函数自动增加 '\n'
-    public String getSelectedImagePath() {
+    private String getSelectedImagePath() {
         return SelectedImagePath;
     }
 
@@ -270,4 +386,68 @@ public class Controller implements Initializable {
         }
     }
 
+    public static byte[][] preprocessImage(String strImageFile, String strSrcFolder, String strDestFolder, int nPixelDiv, boolean bFilterSmooth) throws InterruptedException {
+        System.out.println("Now processing image file " + strImageFile);
+        if (bFilterSmooth) {
+            BufferedImage image = ImageMgr.readImg(strSrcFolder + File.separator + strImageFile);
+            int[][] grayMatrix = ImageMgr.convertImg2GrayMatrix(image);
+            BufferedImage image_grayed = ImageMgr.convertGrayMatrix2Img(grayMatrix);
+            ImageMgr.saveImg(image_grayed, "mr_grayed.bmp");
+
+            grayMatrix = ImgNoiseFilter.filterNoiseNbAvg4Gray(grayMatrix, 1);
+            BufferedImage image_filtered = ImageMgr.convertGrayMatrix2Img(grayMatrix);
+            ImageMgr.saveImg(image_filtered, "mr_filtered.bmp");
+
+            int nWHMax = Math.max(grayMatrix.length, grayMatrix[0].length);
+            int nEstimatedStrokeWidth = (int) Math.ceil((double) nWHMax / (double) nPixelDiv);
+            byte[][] biMatrix = ImgThreshBiMgr.convertGray2Bi2ndD(grayMatrix, (int) Math.max(3.0, nEstimatedStrokeWidth / 2.0));  // selected value was 6.
+            BufferedImage image_bilized1 = ImageMgr.convertBiMatrix2Img(biMatrix);
+            ImageMgr.saveImg(image_bilized1, "mr_bilized1.bmp");
+            ImageChop imgChop = new ImageChop();
+            imgChop.setImageChop(biMatrix, 0, 0, biMatrix.length, biMatrix[0].length, ImageChop.TYPE_UNKNOWN);
+            double dAvgStrokeWidth = imgChop.calcAvgStrokeWidth();
+
+            int nFilterR = (int) Math.ceil((dAvgStrokeWidth / 2.0 - 1) / 2.0);
+            biMatrix = ImgNoiseFilter.filterNoiseNbAvg4Bi(biMatrix, nFilterR, 1);
+            biMatrix = ImgNoiseFilter.filterNoiseNbAvg4Bi(biMatrix, nFilterR, 2);
+            imgChop.setImageChop(biMatrix, 0, 0, biMatrix.length, biMatrix[0].length, ImageChop.TYPE_UNKNOWN);
+            BufferedImage image_smoothed1 = ImageMgr.convertBiMatrix2Img(imgChop.mbarrayImg);
+            ImageMgr.saveImg(image_smoothed1, "mr_smoothed1.bmp");
+
+            biMatrix = ImgNoiseFilter.filterNoisePoints4Bi(biMatrix, (int) dAvgStrokeWidth);
+            imgChop.setImageChop(biMatrix, 0, 0, biMatrix.length, biMatrix[0].length, ImageChop.TYPE_UNKNOWN);
+            BufferedImage image_smoothed2 = ImageMgr.convertBiMatrix2Img(imgChop.mbarrayImg);
+            ImageMgr.saveImg(image_smoothed2, "mr_smoothed2.bmp");
+            ImageMgr.saveImg(image_smoothed2, strDestFolder + File.separator + strImageFile + ".bmp");
+            return biMatrix;
+        } else {
+            BufferedImage image = ImageMgr.readImg(strSrcFolder + File.separator + strImageFile);
+            byte[][] biMatrix = ImageMgr.convertImg2BiMatrix(image);
+            return biMatrix;
+        }
+    }
+
+    private void showImage(File pic) {
+        if (pic == null) {
+            // clears image field
+            AP.getChildren().clear();
+            return;
+        }
+
+        ImageView iv = new ImageView(new Image(pic.toURI().toString()));
+
+        iv.setFitWidth(AP.getWidth());
+        iv.setFitHeight(AP.getHeight());
+        iv.setPreserveRatio(true);
+        iv.setSmooth(true);
+        iv.setCache(false);
+
+        SelectedImagePath = pic.getAbsolutePath();
+
+        AP.getChildren().clear();
+        AP.getChildren().add(iv);
+
+        FileAddressField.setText(SelectedImagePath);
+        fileNameLabel.setText(pic.getName());
+    }
 }

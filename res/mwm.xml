@@ -11,7 +11,6 @@
 			<LetterCandidate>o</LetterCandidate>
 			<LetterCandidate>O</LetterCandidate>
 			<LetterCandidate>0</LetterCandidate>
-			<LetterCandidate Misrecog="true" >D</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_S" >
 			<LetterCandidate>s</LetterCandidate>
@@ -20,16 +19,16 @@
 		</LetterCandidates>
 	</MisrecogWord>
 	<MisrecogWord ShouldBe="sin" WordType="FUNCTION" >
+		<WordCandidate>91n</WordCandidate>
 		<LetterCandidates Index="0" UnitType="SMALL_S" >
 			<LetterCandidate>s</LetterCandidate>
 			<LetterCandidate>S</LetterCandidate>
-			<LetterCandidate Misrecog="true" >5</LetterCandidate>
+			<LetterCandidate>5</LetterCandidate>
+			<LetterCandidate Misrecog="true" >8</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="1" UnitType="SMALL_I" >
 			<LetterCandidate>i</LetterCandidate>
-			<LetterCandidate Misrecog="true" >I</LetterCandidate>
-			<LetterCandidate Misrecog="true" >1</LetterCandidate>
-			<LetterCandidate Misrecog="true" >|</LetterCandidate>
+			<LetterCandidate>1</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_N" >
 			<LetterCandidate>n</LetterCandidate>
@@ -73,7 +72,6 @@
 			<LetterCandidate>o</LetterCandidate>
 			<LetterCandidate>O</LetterCandidate>
 			<LetterCandidate>0</LetterCandidate>
-			<LetterCandidate Misrecog="true" >D</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_G" >
 			<LetterCandidate>g</LetterCandidate>
@@ -94,7 +92,6 @@
 			<LetterCandidate>a</LetterCandidate>
 			<LetterCandidate Misrecog="true" >O</LetterCandidate>
 			<LetterCandidate Misrecog="true" >o</LetterCandidate>
-			<LetterCandidate Misrecog="true" >α</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_N" >
 			<LetterCandidate>n</LetterCandidate>
@@ -125,6 +122,8 @@
 			<LetterCandidate>l</LetterCandidate>
 			<LetterCandidate>I</LetterCandidate>
 			<LetterCandidate>1</LetterCandidate>
+			<LetterCandidate>(</LetterCandidate>
+			<LetterCandidate>[</LetterCandidate>
 			<LetterCandidate>\arrowvert</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="1" UnitType="SMALL_I" >
