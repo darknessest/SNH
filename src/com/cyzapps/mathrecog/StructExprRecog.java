@@ -555,6 +555,30 @@ public class StructExprRecog {
                 listParts.add(imgChopBottom);
                 ImageChop imgChop4SER = ExprSeperator.mergeImgChopsWithSameOriginal(listParts);   // need not to shrink imgChop4SER because it has been min container.
                 serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_ADD, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, dSimilarity);
+            }
+
+            /*Here we add our rule to convert topunder{.,/,.} to div*/
+            else if(listCuts.getFirst().mType == UnitProtoType.Type.TYPE_DOT
+                    &&listCuts.getLast().mType ==  UnitProtoType.Type.TYPE_DOT
+                    &&listCuts.get(1).mType == UnitProtoType.Type.TYPE_SUBTRACT){
+
+                double dSimilarity = (listCuts.getFirst().getArea() * listCuts.getFirst().mdSimilarity
+                        + listCuts.get(1).getArea() * listCuts.get(1).mdSimilarity
+                        + listCuts.getLast().getArea() * listCuts.getLast().mdSimilarity)
+                        / (listCuts.getFirst().getArea() + listCuts.get(1).getArea() + listCuts.getLast().getArea());  // total area should not be zero here.
+                System.out.println("Now we change it");
+                LinkedList<ImageChop> listParts = new LinkedList<ImageChop>();
+                ImageChop imgChopTop = listCuts.getFirst().getImageChop(false);
+                listParts.add(imgChopTop);
+                ImageChop imgChopHLn = listCuts.get(1).getImageChop(false);
+                listParts.add(imgChopHLn);
+                ImageChop imgChopBottom = listCuts.getLast().getImageChop(false);
+                listParts.add(imgChopBottom);
+                ImageChop imgChop4SER = ExprSeperator.mergeImgChopsWithSameOriginal(listParts);
+                serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_DIVIDE, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, dSimilarity);
+            }
+
+            else if (bIsDivide) {
             } else if (bIsDivide) {
                 // is actually an h line cut, i.e. div.
                 serReturn.setStructExprRecog(listCuts, EXPRRECOGTYPE_HLINECUT);
@@ -3738,6 +3762,18 @@ public class StructExprRecog {
                 //对字符序列中的每一个字符：
                 for (int idx = 0; idx < mlistChildren.size(); idx++) {
                     StructExprRecog serThisChild = mlistChildren.get(idx);
+
+                    /*If we find a 't' and the second letter after it is n, then we think the letter after 't' should be a*/
+                    if(serThisChild.mType == UnitProtoType.Type.TYPE_SMALL_T){
+                        if((idx + 2) < mlistChildren.size() && mlistChildren.get(idx+2).mType == UnitProtoType.Type.TYPE_SMALL_N){
+                            mlistChildren.get(idx+1).mType = UnitProtoType.Type.TYPE_SMALL_A;
+                            mlistChildren.get(idx+1).mstrFont = "";
+                            mlistChildren.get(idx+1).mdSimilarity = 0.0;
+
+                            mlistChildren.get(idx+1).mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
+                        }
+                    }
+
                     StructExprRecog serThisChildPrinciple = serThisChild.getPrincipleSER(4); // get principle from upper or lower notes.
                     //System.out.print(serThisChild.mType+"\t");
                     if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && serThisChild.mType == UnitProtoType.Type.TYPE_BRACE
@@ -4611,5 +4647,319 @@ public class StructExprRecog {
             }
             System.out.println("]");
         }
+    }
+
+    public boolean isPossibleZero(UnitProtoType.Type type){
+        if(type == UnitProtoType.Type.TYPE_BIG_O || type == UnitProtoType.Type.TYPE_SMALL_O
+                || type == UnitProtoType.Type.TYPE_BIG_D || type == UnitProtoType.Type.TYPE_SMALL_A
+                ||type == UnitProtoType.Type.TYPE_SMALL_ALPHA )
+            return true;
+
+        return false;
+    }
+
+    public boolean isPossibleDot(UnitProtoType.Type type){
+        if(type == UnitProtoType.Type.TYPE_SUBTRACT || type == UnitProtoType.Type.TYPE_BACKWARD_SLASH
+                || type == UnitProtoType.Type.TYPE_DOT || type == UnitProtoType.Type.TYPE_DOT_MULTIPLY)
+            return true;
+
+        return false;
+    }
+
+    public boolean isPossibleTheStartOfMatrixOrMutiExpr(UnitProtoType.Type type){
+        /*Or is possible one*/
+
+        /*
+        the code of isPossibleVLnChar.
+        if (type == UnitProtoType.Type.TYPE_ONE
+                || type == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET || type == UnitProtoType.Type.TYPE_SQUARE_BRACKET
+                || type == UnitProtoType.Type.TYPE_SMALL_I_WITHOUT_DOT || type == UnitProtoType.Type.TYPE_SMALL_L
+                || type == UnitProtoType.Type.TYPE_VERTICAL_LINE || type == UnitProtoType.Type.TYPE_BIG_I)    {    // open round bracket is very unlikely to be 1.
+            return true;
+        }
+        return false;
+        */
+        /*To indentify the type which is likely be the start of Matrix or MutiExpr*/
+        if(type == UnitProtoType.Type.TYPE_ONE || type == UnitProtoType.Type.TYPE_LEFT_ARROW
+                || type == UnitProtoType.Type.TYPE_SMALL_L || type == UnitProtoType.Type.TYPE_SMALL_F
+                ||type == UnitProtoType.Type.TYPE_SMALL_I_WITHOUT_DOT || type == UnitProtoType.Type.TYPE_BIG_I
+                || type == UnitProtoType.Type.TYPE_VERTICAL_LINE || type == UnitProtoType.Type.TYPE_SMALL_L
+                || type == UnitProtoType.Type.TYPE_SQUARE_BRACKET || type == UnitProtoType.Type.TYPE_ROUND_BRACKET)
+            return true;
+
+        return false;
+    }
+
+    public boolean isPossibleTheEndOfMatrix(UnitProtoType.Type type){
+        /*To indentify the type which is likely be the end of Matrix*/
+        if(type == UnitProtoType.Type.TYPE_ONE || type == UnitProtoType.Type.TYPE_LEFT_ARROW
+                || type == UnitProtoType.Type.TYPE_SMALL_L
+                ||type == UnitProtoType.Type.TYPE_SMALL_I_WITHOUT_DOT || type == UnitProtoType.Type.TYPE_BIG_I
+                || type == UnitProtoType.Type.TYPE_VERTICAL_LINE || type == UnitProtoType.Type.TYPE_SMALL_L
+                || type == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET || type == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET)
+            return true;
+        return false;
+    }
+
+    public boolean ispossibleEqual(StructExprRecog sers){
+        if(sers.mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT){
+            for(StructExprRecog son : sers.mlistChildren){
+                if(son.mType != UnitProtoType.Type.TYPE_SUBTRACT && son.mType != UnitProtoType.Type.TYPE_EQUAL)
+                    return false;
+            }
+        }else
+            return false;
+        System.out.println("Is possible equal!!!");
+        return true;
+    }
+
+    public enum status{NORMAL, FUNCTIONSET, MATRIX}; //never use since now.
+
+    /*EXPRRECOGTYPE_HBLANKCUT = 2;
+    public final static int EXPRRECOGTYPE_HLINECUT = 3;
+    public final static int EXPRRECOGTYPE_HCUTCAP = 4;
+    public final static int EXPRRECOGTYPE_HCUTUNDER = 5;
+    public final static int EXPRRECOGTYPE_HCUTCAPUNDER = 6;
+    public final static int EXPRRECOGTYPE_VBLANKCUT = 10;
+    public final static int EXPRRECOGTYPE_VCUTLEFTTOPNOTE = 11;    // first element is left top note, second element is base
+    public final static int EXPRRECOGTYPE_VCUTUPPERNOTE = 12;   // first element is  base, second element is upper note
+    public final static int EXPRRECOGTYPE_VCUTLOWERNOTE = 13;   // first element is base, second element is lower note
+    public final static int EXPRRECOGTYPE_VCUTLUNOTES = 14;  // first element is base, second element is lower note, third element is upper note.
+    public final static int EXPRRECOGTYPE_VCUTMATRIX = 20; */
+
+    public void recifysigleVertialLine(StructExprRecog sers){
+        if(sers.mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT){
+            LinkedList<StructExprRecog>newSon = new LinkedList<>();
+            for(StructExprRecog son : sers.mlistChildren){
+                if(son.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE){
+                    newSon.add(son);
+                }else if(son.mnExprRecogType == EXPRRECOGTYPE_HCUTCAP || son.mnExprRecogType == EXPRRECOGTYPE_HCUTUNDER){
+                    newSon.add(son.mlistChildren.getFirst());
+                    newSon.add(son.mlistChildren.getLast());
+                }else if(son.mnExprRecogType == EXPRRECOGTYPE_HCUTCAPUNDER){
+                    newSon.add(son.mlistChildren.getFirst());
+                    newSon.add(son.mlistChildren.get(1));
+                    newSon.add(son.mlistChildren.getLast());
+                }else if(son.mnExprRecogType == EXPRRECOGTYPE_VCUTUPPERNOTE){
+                    newSon.add(son.mlistChildren.getLast());
+                    newSon.add(son.mlistChildren.getFirst());
+                }else if(son.mnExprRecogType == EXPRRECOGTYPE_VCUTLOWERNOTE){
+                    newSon.add(son.mlistChildren.getFirst());
+                    newSon.add(son.mlistChildren.getLast());
+                    System.out.println("change!!!!!!!!!!");
+                }else if(son.mnExprRecogType == EXPRRECOGTYPE_VBLANKCUT){
+                    newSon.add(son.mlistChildren.getFirst());
+                    newSon.add(son.mlistChildren.getLast());
+                    System.out.println("change!!!!!!!!!!");
+                }else{
+                    newSon.add(son);
+                }
+            }
+            if(newSon.size()!=0) {
+                sers.mlistChildren.clear();
+                sers.mlistChildren.addAll(newSon);
+            }
+            for(StructExprRecog son : sers.mlistChildren){
+                if(son.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE){
+                    if(isPossibleTheStartOfMatrixOrMutiExpr(son.mType)){
+                        son.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+                    }else if(isPossibleZero(son.mType)){
+                        son.changeSEREnumType(UnitProtoType.Type.TYPE_ZERO, "");
+                    }
+                }
+            }
+        }
+    }
+    /*
+     else if(listCuts.getFirst().mType == UnitProtoType.Type.TYPE_DOT
+                    &&listCuts.getLast().mType ==  UnitProtoType.Type.TYPE_DOT
+                    &&listCuts.get(1).mType == UnitProtoType.Type.TYPE_SUBTRACT){
+
+        double dSimilarity = (listCuts.getFirst().getArea() * listCuts.getFirst().mdSimilarity
+                + listCuts.get(1).getArea() * listCuts.get(1).mdSimilarity
+                + listCuts.getLast().getArea() * listCuts.getLast().mdSimilarity)
+                / (listCuts.getFirst().getArea() + listCuts.get(1).getArea() + listCuts.getLast().getArea());  // total area should not be zero here.
+        System.out.println("Now we change it");
+        LinkedList<ImageChop> listParts = new LinkedList<ImageChop>();
+        ImageChop imgChopTop = listCuts.getFirst().getImageChop(false);
+        listParts.add(imgChopTop);
+        ImageChop imgChopHLn = listCuts.get(1).getImageChop(false);
+        listParts.add(imgChopHLn);
+        ImageChop imgChopBottom = listCuts.getLast().getImageChop(false);
+        listParts.add(imgChopBottom);
+        ImageChop imgChop4SER = ExprSeperator.mergeImgChopsWithSameOriginal(listParts);
+        serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_DIVIDE, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, dSimilarity);
+    }*/
+
+    public StructExprRecog recifyF(){
+        /*1. optimizing the recognising of function set and matrix*/
+
+        if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE)   {
+            /* but after some test, i do like to remove it.*/
+            return this;
+
+        } else if (mlistChildren.size() == 0) {
+
+            return null;
+
+        } else if (mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT)  {
+            // horizontally cut by blank div, every child is equal. similar to multiexprs
+            int sta = 0;
+            StructExprRecog preSon = null;
+            if(ispossibleEqual(this)){
+                for(StructExprRecog son : mlistChildren){
+                    if(son.mType == UnitProtoType.Type.TYPE_SUBTRACT && sta == 0){
+                        sta = 1;
+                        preSon = son;
+                    }
+                    else if(son.mType == UnitProtoType.Type.TYPE_SUBTRACT && sta == 1){
+                        System.out.println(son.mnWidth + "====" + preSon.mnWidth);
+                        System.out.println(Math.abs((Math.abs(preSon.mnWidth-son.mnWidth))/(preSon.mnWidth+0.01) - 0));
+                        if(Math.abs((son.mnWidth)/(preSon.mnWidth+0.01) - 1) <= 0.4) {
+                            /*Here we change to substract to euqal*/
+                            double similarity = son.getSimilarity() > preSon.getSimilarity() ? son.getSimilarity() : preSon.getSimilarity();
+                            LinkedList<ImageChop> listParts = new LinkedList<ImageChop>();
+                            ImageChop imgChop1 = preSon.getImageChop(false);
+                            listParts.add(imgChop1);
+                            ImageChop imgChop2 = son.getImageChop(false);
+                            listParts.add(imgChop2);
+                            ImageChop imgChop4SER = ExprSeperator.mergeImgChopsWithSameOriginal(listParts);
+                            son.setStructExprRecog(UnitProtoType.Type.TYPE_EQUAL, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, similarity);
+                            mlistChildren.remove(preSon);
+                            if (mlistChildren.size() == 1) {
+                                this.setStructExprRecog(UnitProtoType.Type.TYPE_EQUAL, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, similarity);
+                            }
+                            sta = 0;
+                        }
+                    }else{
+                        sta = 0;
+                    }
+                }
+            }
+
+        } else if(mnExprRecogType == EXPRRECOGTYPE_MULTIEXPRS){
+
+
+        }else if (mnExprRecogType == EXPRRECOGTYPE_HLINECUT)    {
+            // horizontally cut by line div, and assume there are three children, the middle one is divide.
+            /*If the upper or under is possible be dot, the whole expr maybe div, we should consider it width*/
+            StructExprRecog strNumerator = mlistChildren.getFirst();
+            StructExprRecog strDenominator = mlistChildren.getLast();
+            if(isPossibleDot(strDenominator.mType) && isPossibleDot(strNumerator.mType)){
+                if((this.mnWidth/strDenominator.mnWidth > 1.3) && (this.mnWidth/strNumerator.mnWidth > 1.3)){
+                    /*it should be div*/
+                    double similarity = 0.0;
+                    this.setStructExprRecog(UnitProtoType.Type.TYPE_DIVIDE, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, this.getImageChop(false), similarity);
+                }
+            }
+        } else if (mnExprRecogType == EXPRRECOGTYPE_HCUTCAP)  {
+
+
+        } else if (mnExprRecogType == EXPRRECOGTYPE_HCUTUNDER)  {
+
+
+        } else if (mnExprRecogType == EXPRRECOGTYPE_HCUTCAPUNDER)  {
+
+
+        } else if (mnExprRecogType == EXPRRECOGTYPE_VBLANKCUT)  {
+            /*If we find a 't' and the second letter after it is n, then we think the letter after 't' should be a*/
+
+            StructExprRecog curSer, preSer, afterSer, startofM = null;
+            int startidx = -1;
+            status S = status.NORMAL; /*0 means normal expr, 1 means possibly function set, 2 means possibly Matrix*/
+            for(int idx = 1; idx < mlistChildren.size()-1; idx++){
+                curSer = mlistChildren.get(idx);
+                preSer = mlistChildren.get(idx - 1);
+                afterSer = mlistChildren.get(idx + 1);
+                if(preSer.mType == UnitProtoType.Type.TYPE_SQUARE_BRACKET || preSer.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET){
+                    startofM = preSer;
+                    startidx = idx - 1;
+                }
+                else if(preSer.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET || preSer.mType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET){
+                    startofM = null;
+                    startidx = -1;
+                }
+                /*a special rule for the t*n*/
+                if(preSer.mType == UnitProtoType.Type.TYPE_SMALL_T){
+                    if( afterSer.mType == UnitProtoType.Type.TYPE_SMALL_N){
+                        curSer.mType = UnitProtoType.Type.TYPE_SMALL_A;
+                        curSer.mstrFont = "";
+                        curSer.mdSimilarity = 0.0;
+                        curSer.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
+                        System.out.println("RECIFY------change one t*n to tan!!!");
+                    }
+                }
+
+                if(curSer.mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT && preSer.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE &&  isPossibleTheStartOfMatrixOrMutiExpr(preSer.mType)){
+                    LinkedList<StructExprRecog> grandson = new LinkedList<>();
+                    grandson.addAll(curSer.mlistChildren);
+                    int totalHeight = 0;
+                    for(int idx2 = 0; idx2 < grandson.size(); ++idx2){
+                        StructExprRecog curGrandson = grandson.get(idx2);
+                        totalHeight += curGrandson.mnHeight;
+                    }
+                    if(totalHeight <= preSer.mnHeight) {
+                        preSer.changeSEREnumType(UnitProtoType.Type.TYPE_BRACE, "");
+                        System.out.println("RECIFY------find one brace!!!");
+                        startofM = preSer;
+                        startidx = idx - 1;
+                    }
+                }else if(curSer.mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT && afterSer.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isPossibleTheEndOfMatrix(afterSer.mType) && !ispossibleEqual(curSer)) {
+                    LinkedList<StructExprRecog> grandson = new LinkedList<>();
+                    grandson.addAll(curSer.mlistChildren);
+                    int totalHeight = 0;
+                    for (int idx2 = 0; idx2 < grandson.size(); ++idx2) {
+                        StructExprRecog curGrandson = grandson.get(idx2);
+                        totalHeight += curGrandson.mnHeight;
+                    }
+                    if (totalHeight <= afterSer.mnHeight) {
+                        afterSer.changeSEREnumType(UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET, "");
+                        /*but how should we do when starofM == null*/
+                        if (startofM != null) {
+                            startofM.changeSEREnumType(UnitProtoType.Type.TYPE_SQUARE_BRACKET, "");
+                            System.out.println("RECIFY------find one close brace!!!");
+
+                            /*Then I want to add some rule to recify the item of the Matrix. each item of a
+                            * matrix should must be a unit type*/
+
+                            for(int cidx = startidx + 1; cidx <= idx; ++cidx){
+                                recifysigleVertialLine(mlistChildren.get(cidx));
+                            }
+
+                            startofM = null;
+                            startidx = -1;
+                        }
+                    }
+                }
+
+            }
+
+        }else if(mnExprRecogType == EXPRRECOGTYPE_LISTCUT){
+            /*I don't know what is list cut means.*/
+
+        } else if (mnExprRecogType == EXPRRECOGTYPE_VCUTLEFTTOPNOTE)  {
+
+        } else if (mnExprRecogType == EXPRRECOGTYPE_VCUTLOWERNOTE)    {
+
+        } else if (mnExprRecogType == EXPRRECOGTYPE_VCUTUPPERNOTE)    {
+
+        } else if (mnExprRecogType == EXPRRECOGTYPE_VCUTLUNOTES)    {
+
+        } else if (mnExprRecogType == EXPRRECOGTYPE_VCUTMATRIX)    {
+            // horizontally cut by blank div, every child is equal.
+
+
+        } else if (mnExprRecogType == EXPRRECOGTYPE_GETROOT)  {
+
+        } else  {
+
+        }
+        if(mnExprRecogType != EXPRRECOGTYPE_ENUMTYPE){
+            for(StructExprRecog son : mlistChildren){
+                son = son.recifyF();
+            }
+        }
+
+        return this;
     }
 }

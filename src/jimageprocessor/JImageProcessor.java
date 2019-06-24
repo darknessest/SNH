@@ -202,10 +202,21 @@ public class JImageProcessor {
             System.out.println("\n1-RAW: image " + strImageFile + " includes expression :\n" + ser.toString());
 
             //todo 这块的代码结构可以进一步优化，反复调用了过滤程序
+            StructExprRecog serOld = ser;
+
+            ser = ser.recifyF();
+
+            System.out.println("raw , image " + strImageFile + " includes expression : " + ser.toString());
+
+            /*Here to add my new class to recify*/
 
             if (bFilter) {
                 ser = ExprFilter.filterRawSER(ser, null);
                 serOld = ser;
+            }
+            for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
+                StructExprRecog serThisChild = ser.mlistChildren.get(idx);
+                System.out.println(serThisChild.mnExprRecogType + ":  ...." + serThisChild.toString());
             }
             if (ser != null) {
                 //重点2 字符串重构
@@ -497,5 +508,5 @@ public class JImageProcessor {
             }
         }
         return;
-    }
+    }   
 }
