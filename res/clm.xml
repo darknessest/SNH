@@ -92,4 +92,7 @@
 	<CharCandSet Type="SMALL_D" Font="">
 		<CharCand Type="FOUR" Font="" MissRecogTimes="" />
 	</CharCandSet>
+	<CharCandSet Type="BIG_B" Font="">
+		<CharCand Type="EIGHT" Font="" MissRecogTimes="" />
+	</CharCandSet>
 </CCSetsList>

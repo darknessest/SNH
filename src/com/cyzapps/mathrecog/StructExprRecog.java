@@ -3889,15 +3889,15 @@ public class StructExprRecog {
                                     }
                                 }
                             }
-                            //todo dml_changed6: 数字数字字母不可
-                            else if (serPrevChild.isNumericChar() && serThisChild.isNumericChar() && serNextChild.isLetterChar()) {
+                            //todo dml_changed6: 字母数字数字不可
+                            else if (serPrevChild.isLetterChar() && serThisChild.isNumericChar() && serNextChild.isNumericChar()) {
                                 // this letter might be miss recognized, look for another candidate. this is for the case like 3S4
-                                LinkedList<CharCandidate> listCands = clm.findCharCandidates(serNextChild.mType, serNextChild.mstrFont);
+                                LinkedList<CharCandidate> listCands = clm.findCharCandidates(serPrevChild.mType, serPrevChild.mstrFont);
                                 for (int idx1 = 0; idx1 < listCands.size(); idx1++) {
                                     if (isNumberChar(listCands.get(idx1).mType)) {
                                         // ok, change it to the new char
-                                        serNextChild.changeSEREnumType(listCands.get(idx1).mType,
-                                                (listCands.get(idx1).mstrFont.length() == 0) ? serNextChild.mstrFont : listCands.get(idx1).mstrFont);
+                                        serPrevChild.changeSEREnumType(listCands.get(idx1).mType,
+                                                (listCands.get(idx1).mstrFont.length() == 0) ? serPrevChild.mstrFont : listCands.get(idx1).mstrFont);
                                         break;
                                     }
                                 }

@@ -205,11 +205,8 @@ public class JImageProcessor {
 
             //todo Here is LH's recify
             ser = ser.recifyF();
-
-            System.out.println("raw , image " + strImageFile + " includes expression : " + ser.toString());
-
+            System.out.println("\n1.5-XZRECIFY：\n" + ser.toString());
             /*Here to add my new class to recify*/
-
             if (bFilter) {
                 ser = ExprFilter.filterRawSER(ser, null);
                 //System.out.println("\n1.5-FILTERED: image " + strImageFile + " includes expression :\n" + ser.toString()+"\t"+ser.getExprRecogType());
@@ -217,28 +214,30 @@ public class JImageProcessor {
             }
             for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
                 StructExprRecog serThisChild = ser.mlistChildren.get(idx);
-                System.out.println(serThisChild.mnExprRecogType + ":  ...." + serThisChild.toString());
+                System.out.print("EXPR_TYPE: "+serThisChild.mnExprRecogType + "\tM_TYPE: ");
+                System.out.printf("%28s",serThisChild.mType);
+                System.out.println("\t\t"+serThisChild.toString());
             }
             if (ser != null) {
                 //重点2 字符串重构
                 ser = ser.restruct();
-                System.out.println("\n2-RESTRUCT: image " + strImageFile + " includes expression :\n" + ser.toString());
+                System.out.println("\n2-RESTRUCT:\n" + ser.toString());
                 serOld = ser;
                 //重点2.5 过滤时加入表达式尾去掉dottimes逻辑，换做X比较好
                 if (bFilter) {
                     ser = ExprFilter.filterRestructedSER(ser, null, null);
-                    System.out.println("\n2.5-FILTERED: image " + strImageFile + " includes expression :\n" + ser.toString()+"\t\tEXPR_TYPE: "+ser.getExprRecogType());
+                    System.out.println("\n2.5-FILTERED:\n" + ser.toString()+"\t\tEXPR_TYPE: "+ser.getExprRecogType());
                     serOld = ser;
                 }
 
                 if (ser != null) {
                     //重点3 错误识别一轮二轮修正，错误识别函数名修正
                     ser.rectifyMisRecogChars1stRnd(clm);
-                    System.out.println("\n3-RECTIFY_1: image " + strImageFile + " includes expression :\n" + ser.toString());
+                    System.out.println("\n3-RECTIFY_1:\n" + ser.toString());
                     ser.rectifyMisRecogChars2ndRnd();
-                    System.out.println("3-RECTIFY_2: image " + strImageFile + " includes expression :\n" + ser.toString());
+                    System.out.println("3-RECTIFY_2:\n" + ser.toString());
                     ser.rectifyMisRecogWords(mwm);
-                    System.out.println("3-RECTIFY_3: image " + strImageFile + " includes expression :\n" + ser.toString());
+                    System.out.println("3-RECTIFY_3:\n" + ser.toString());
 
                     //重点4 最终结果（结构化表达式） 翻译成可计算的数学表达式
                     SerMFPTransFlags smtFlags = new SerMFPTransFlags();
@@ -260,9 +259,9 @@ public class JImageProcessor {
             e.printStackTrace();
         }
         long endTime = System.nanoTime();
-        System.out.println("\n4-FINAL_RESULT: image " + strImageFile + " includes expression :\n" + strOutput);
+        System.out.println("\n4-FINAL_RESULT:\n" + strOutput);
 
-        System.out.println(String.format("\nTOTAL TIME : Recognize %s takes %s\n", strImageFile, toString(endTime - startTime)));
+        System.out.println(String.format("\nTOTAL_TIME: Recognize %s takes %s\n", strImageFile, toString(endTime - startTime)));
         return strOutput;
     }
 
