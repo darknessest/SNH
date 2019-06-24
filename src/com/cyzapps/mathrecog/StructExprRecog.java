@@ -556,7 +556,7 @@ public class StructExprRecog {
                 ImageChop imgChop4SER = ExprSeperator.mergeImgChopsWithSameOriginal(listParts);   // need not to shrink imgChop4SER because it has been min container.
                 serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_ADD, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, dSimilarity);
             }
-
+            //todo: This is a fool rule by LH and will be delete later
             /*Here we add our rule to convert topunder{.,/,.} to div*/
             else if(listCuts.getFirst().mType == UnitProtoType.Type.TYPE_DOT
                     &&listCuts.getLast().mType ==  UnitProtoType.Type.TYPE_DOT
@@ -4646,6 +4646,8 @@ public class StructExprRecog {
             System.out.println("]");
         }
     }
+
+    //todo LH's change:
 
     public boolean isPossibleZero(UnitProtoType.Type type){
         if(type == UnitProtoType.Type.TYPE_BIG_O || type == UnitProtoType.Type.TYPE_SMALL_O

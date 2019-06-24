@@ -203,6 +203,7 @@ public class JImageProcessor {
 
             //todo 这块的代码结构可以进一步优化，反复调用了过滤程序
 
+            //todo Here is LH's recify
             ser = ser.recifyF();
 
             System.out.println("raw , image " + strImageFile + " includes expression : " + ser.toString());
