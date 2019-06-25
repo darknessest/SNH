@@ -4,8 +4,9 @@
 请标记为exclude 下个文件夹：.idea, venv
 最好把之前版本的 .idea 拷到这个项目
 
-### 通知：请每次都检查TODO表
-做好某个TODO任务，请删掉TODO注释，并且在commit message记录
+### 通知：
+现在lulu模型没有一些符号，请等待新版本出来
+
 
 &_&:【补充运行须知】
 在python下新建data文件夹
