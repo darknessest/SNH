@@ -387,6 +387,7 @@ public class Controller implements Initializable {
     }
 
     public static byte[][] preprocessImage(String strImageFile, String strSrcFolder, String strDestFolder, int nPixelDiv, boolean bFilterSmooth) throws InterruptedException {
+        System.out.println("===========================================================================");
         System.out.println("Now processing image file " + strImageFile);
         if (bFilterSmooth) {
             BufferedImage image = ImageMgr.readImg(strSrcFolder + File.separator + strImageFile);

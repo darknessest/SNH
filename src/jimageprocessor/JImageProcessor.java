@@ -205,7 +205,7 @@ public class JImageProcessor {
 
             //todo Here is LH's recify
             ser = ser.recifyF();
-            System.out.println("\n1.5-XZRECIFY：\n" + ser.toString());
+            System.out.println("\n1.5-XZRECIFY：\n" + ser.toString()+"\tEXPR_TYPE: "+ser.mnExprRecogType);
             /*Here to add my new class to recify*/
             if (bFilter) {
                 ser = ExprFilter.filterRawSER(ser, null);

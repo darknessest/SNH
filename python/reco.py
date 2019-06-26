@@ -90,7 +90,11 @@ if __name__ == "__main__":
         recvData = str(newSocket.recv(1024), encoding='utf-8')
         # print(recvData)
         if (recvData.find("derivative") != -1):
-            calculDiff(recvData.split(':')[1])
+            try:
+                calculDiff(recvData.split(':')[1])
+            except:
+                print("I can't calculate it yet!")
+
         else:
             # here we can put our code
             for file in os.listdir(path):

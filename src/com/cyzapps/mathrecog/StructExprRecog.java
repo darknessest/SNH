@@ -496,23 +496,31 @@ public class StructExprRecog {
         if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException();
         }
+        // basic element return this to save computing time and space
         if (mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE) {
-            return this;    // basic element return this to save computing time and space
-        } else if (mlistChildren.size() == 0) {
+            return this;
+        }
+        else if (mlistChildren.size() == 0) {
             StructExprRecog ser = new StructExprRecog(mbarrayBiValues);
             ser.setSERPlace(this);
             ser.setSimilarity(0);   // type unknown, similarity is 0.
             return ser;
-        } else if (mlistChildren.size() == 1 && mnExprRecogType != EXPRRECOGTYPE_VCUTMATRIX) {
-            // if a matrix, we cannot convert [x] -> x (e.g. 2 * [2 + 3] -> 2 * 2 + 3 is wrong).
+        }
+        // if a matrix, we cannot convert [x] -> x (e.g. 2 * [2 + 3] -> 2 * 2 + 3 is wrong).
+        else if (mlistChildren.size() == 1 && mnExprRecogType != EXPRRECOGTYPE_VCUTMATRIX) {
             StructExprRecog ser = mlistChildren.getFirst().restruct();
             return ser;
-        } else if (mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT || mnExprRecogType == EXPRRECOGTYPE_HCUTCAP
-                || mnExprRecogType == EXPRRECOGTYPE_HCUTCAPUNDER || mnExprRecogType == EXPRRECOGTYPE_HCUTUNDER
-                || mnExprRecogType == EXPRRECOGTYPE_HLINECUT || mnExprRecogType == EXPRRECOGTYPE_MULTIEXPRS
-                || mnExprRecogType == EXPRRECOGTYPE_GETROOT || mnExprRecogType == EXPRRECOGTYPE_VCUTMATRIX) {
-            // assume horizontal cut is always clear before call restruct, i.e. hblank, hcap, hunder, hcapunder are not confused.
-            //  there is a special case for HBlankCut, Under and cap cut (handwriting divide may miss recognized).
+        }
+        // assume horizontal cut is always clear before call restruct, i.e. hblank, hcap, hunder, hcapunder are not confused.
+        //  there is a special case for HBlankCut, Under and cap cut (handwriting divide may miss recognized).
+        else if (mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT
+                || mnExprRecogType == EXPRRECOGTYPE_HCUTCAP
+                || mnExprRecogType == EXPRRECOGTYPE_HCUTCAPUNDER
+                || mnExprRecogType == EXPRRECOGTYPE_HCUTUNDER
+                || mnExprRecogType == EXPRRECOGTYPE_HLINECUT
+                || mnExprRecogType == EXPRRECOGTYPE_MULTIEXPRS
+                || mnExprRecogType == EXPRRECOGTYPE_GETROOT
+                || mnExprRecogType == EXPRRECOGTYPE_VCUTMATRIX) {
             StructExprRecog[] serarrayNoLnDe = new StructExprRecog[3];
             boolean bIsDivide = isActuallyHLnDivSER(this, serarrayNoLnDe);  //TODO need to do it here as well as in vertical restruct
 
@@ -589,7 +597,9 @@ public class StructExprRecog {
             }
 
             return serReturn;
-        } else { // listcut, vblankcut, vcutlefttop, vcutlower, vcutupper, vcutlowerupper
+        }
+        else {
+            // listcut, vblankcut, vcutlefttop, vcutlower, vcutupper, vcutlowerupper
             // the children are vertically cut. if cut mode is LISTCUT, also treated as vertically cut.
             // make the following assumptions for horizontally cut children
             // 1. the h-cut modes have been clear (i.e. normal horizontally cut, cap, undercore etc)
@@ -677,6 +687,8 @@ public class StructExprRecog {
                 }
             }
 
+            //todo 分析上下标
+
             // step 2: identify upper notes or lower notes, This is raw upper lower identification procedure. h-cut
             // children are not analyzed.
             LinkedList<Integer> listCharLevel = new LinkedList<Integer>();
@@ -740,9 +752,11 @@ public class StructExprRecog {
                     // to see if it could be upper lower note or lower upper note.
                     if (listCharLevel.getLast() == 1 && ser.getBottom() <= bluCI.mdUpperNoteLBoundThresh) {
                         thisCharLevel = 1;
-                    } else if (listCharLevel.getLast() == -1 && ser.mnTop >= bluCI.mdLowerNoteUBoundThresh) {
+                    }
+                    else if (listCharLevel.getLast() == -1 && ser.mnTop >= bluCI.mdLowerNoteUBoundThresh) {
                         thisCharLevel = -1;
-                    } else if (listMergeVCutChildren.get(idx - 1).mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_HBLANKCUT
+                    }
+                    else if (listMergeVCutChildren.get(idx - 1).mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_HBLANKCUT
                             && listMergeVCutChildren.get(idx - 1).mlistChildren.size() > 1) {   // hblankcut type.
                         // first of all, find out which h-blank-div child is closest to it.
                         int nMinDistance = Integer.MAX_VALUE;

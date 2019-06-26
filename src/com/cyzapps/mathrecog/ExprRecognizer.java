@@ -474,7 +474,7 @@ public class ExprRecognizer {
                     UnitProtoType.Type cType = getTpye((resu));
                     //选择python的识别结果 >=0.995 不要i j
                     //getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_I&&getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_J
-                    if (similarty >= 0.995 && !shouldnotUsePy(serReturnCand1) && !shouldnotTrustPy(cType)) {
+                    if ((similarty >= 0.995||cType==serReturnCand1.mType)&& !shouldnotUsePy(serReturnCand1) && !shouldnotTrustPy(cType)) {
                         serReturn = serReturnCand1;
                         serReturn.mType = correctPY_YX(getTpye(resu),serReturnCand1.mType,getTpye(resu));
                         //serReturn.mType = getTpye(resu);
@@ -488,8 +488,9 @@ public class ExprRecognizer {
                         serReturnCand2 = disconnect2Recog(imgChopsFrom, nCutMode, imgChopsFrom.mlistChops.indexOf(imgChopOriginal), dAvgStrokeWidth, serReturnCand1, new LinkedList<ImageChop>(), nStackLvl + 1);
                         serReturn = selectSERFromCands(serReturnCand1, serReturnCand2);
                         //todo: dml_changed2 切分完选了个unknown类型，还不如直接不切选ser1---solve cos(1/2)中过分切割问题
-                        if(serReturn.mType== UnitProtoType.Type.TYPE_UNKNOWN)
-                            serReturn=serReturnCand1;
+                        // 如果这样的话，所有过度切分都将无效
+//                        if(serReturn.mType== UnitProtoType.Type.TYPE_UNKNOWN)
+//                            serReturn=serReturnCand1;
                     }
                     System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString());
 
