@@ -6,7 +6,6 @@
 
 ### 通知：模型的新版本出来了
 
-
 &_&:【补充运行须知】
 在python下新建data文件夹
 在res下新建prepresult文件夹
@@ -23,3 +22,9 @@ LH's TODO:
 3. rectify the obviously misrecog with Gramma analysis.
 4. the div character.
 5. sometimes a character like \brace maybe recognised as not just one character, like {1,[}, we need to find them before 1.
+
+【模型特点总结】
+1、指数和底数大小要合适。
+2、积分内部函数位置要适中(积分号写的大一点)。
+3、尽量避免黏连（过度切分机制还有待研究）。
+总体上来说要写的尽量结构清晰。
