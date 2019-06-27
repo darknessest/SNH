@@ -461,8 +461,8 @@ public class ExprRecognizer {
                     String dir = "python" + File.separator + "data" + File.separator + String.format("%03d", 1) + ".jpg";
                     ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
                     //分析图片用的，可注释这两行
-                    //String dml_dir = "E:\\测试数据" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
-                    //ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
+                    String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
+                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
 
                     //todo add some rule to not use or trust py's result by LH
                     if(!shouldnotUsePy(serReturnCand1))
@@ -472,25 +472,17 @@ public class ExprRecognizer {
                     System.out.println("[JAVA___RESULT]\t" + serReturnCand1.mType + " \t" + serReturnCand1.toString());
                     System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu +"\t"+similarty);
                     UnitProtoType.Type cType = getTpye((resu));
-                    //选择python的识别结果 >=0.995 不要i j
-                    //getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_I&&getTpye(resu)!=UnitProtoType.Type.TYPE_SMALL_J
                     if ((similarty >= 0.995||cType==serReturnCand1.mType)&& !shouldnotUsePy(serReturnCand1) && !shouldnotTrustPy(cType)) {
                         serReturn = serReturnCand1;
                         serReturn.mType = correctPY_YX(getTpye(resu),serReturnCand1.mType,getTpye(resu));
-                        //serReturn.mType = getTpye(resu);
                         serReturn.mdSimilarity = 0.0;
                         serReturn.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
-//                        System.out.println("[FINAL__RESULT]\t" + "Choose python!");
                     }
-                    //这里进行过度切分！然后，从java识别结果ser1和过度切分分析结果ser2中选一个
+                    //这里进行过度切分！(过度切分并没有用cnn来识别）然后，从java识别结果ser1和过度切分分析结果ser2中选一个
                     else {
                         serReturnCand1.mType = correctPY_YX(getTpye(resu),serReturnCand1.mType,serReturnCand1.mType);
                         serReturnCand2 = disconnect2Recog(imgChopsFrom, nCutMode, imgChopsFrom.mlistChops.indexOf(imgChopOriginal), dAvgStrokeWidth, serReturnCand1, new LinkedList<ImageChop>(), nStackLvl + 1);
                         serReturn = selectSERFromCands(serReturnCand1, serReturnCand2);
-                        //todo: dml_changed2 切分完选了个unknown类型，还不如直接不切选ser1---solve cos(1/2)中过分切割问题
-                        // 如果这样的话，所有过度切分都将无效
-//                        if(serReturn.mType== UnitProtoType.Type.TYPE_UNKNOWN)
-//                            serReturn=serReturnCand1;
                     }
                     System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString());
 
@@ -529,7 +521,6 @@ public class ExprRecognizer {
             return false;
         return true;
     }
-
 
     public static UnitProtoType.Type correctPY_YX(UnitProtoType.Type pythonType, UnitProtoType.Type javaType,UnitProtoType.Type returnType)
     {

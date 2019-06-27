@@ -204,7 +204,8 @@ public class ExprFilter {
             narray[2] = nLastMaxHCuts;
             listStandardHeights.add(narray);
             int nLastStandardHeightsIdx = 0;
-            for (int idx = idxFrom + 1; idx <= idxTo; idx ++) { // abnormally large char in the very beginning has been filtered off.
+            for (int idx = idxFrom + 1; idx <= idxTo; idx ++) {
+                // abnormally large char in the very beginning has been filtered off.
                 StructExprRecog serThisChild = listChildren.get(idx);
                 StructExprRecog serLastChild = listChildren.get(idx - 1);                
                 int nMaxHCuts = 1;
@@ -288,7 +289,8 @@ public class ExprFilter {
         }
         if (listValidExprRanges.size() == 0) {
             serOutput = null;
-        } else if (listValidExprRanges.size() == 1) {
+        }
+        else if (listValidExprRanges.size() == 1) {
             if (listValidExprRanges.getFirst()[0] == 0 && listValidExprRanges.getFirst()[1] == serInput.mlistChildren.size() - 1) {
                 serOutput = serInput;   // means no noise point is removed.
             } else if (listValidExprRanges.getFirst()[0] == listValidExprRanges.getFirst()[1]) {
@@ -301,7 +303,8 @@ public class ExprFilter {
                 serOutput = new StructExprRecog(serInput.getBiArray());
                 serOutput.setStructExprRecog(listNewChildren, StructExprRecog.EXPRRECOGTYPE_VBLANKCUT);
             }
-        } else {
+        }
+        else {
             int nAllLeft = serInput.mnLeft;
             int nAllRightP1 = serInput.getRightPlus1();
             int nLeftPRight = nAllLeft + nAllRightP1;
@@ -442,7 +445,8 @@ public class ExprFilter {
                 serOutput = serInput;
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_HBLANKCUT:
+        }
+        case StructExprRecog.EXPRRECOGTYPE_HBLANKCUT:
           case StructExprRecog.EXPRRECOGTYPE_MULTIEXPRS: {
             LinkedList<StructExprRecog> listChildren = new LinkedList<StructExprRecog>();
             LinkedList<Double> listMathPossibility = new LinkedList<Double>();
@@ -480,7 +484,8 @@ public class ExprFilter {
                 serOutput.setStructExprRecog(listNewChildren, StructExprRecog.EXPRRECOGTYPE_HBLANKCUT);
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_HLINECUT: {
+        }
+        case StructExprRecog.EXPRRECOGTYPE_HLINECUT: {
             StructExprRecog serNewFirst = filterRawSER(serInput.mlistChildren.getFirst(), serInput);
             StructExprRecog serNewLast = filterRawSER(serInput.mlistChildren.getLast(), serInput);
             if ((serParent == null && !isValidMathExpr(serInput.mlistChildren.getFirst()))
@@ -503,7 +508,8 @@ public class ExprFilter {
                 serOutput = serInput;
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_HCUTCAP: 
+        }
+        case StructExprRecog.EXPRRECOGTYPE_HCUTCAP:
           case StructExprRecog.EXPRRECOGTYPE_HCUTUNDER: 
           case StructExprRecog.EXPRRECOGTYPE_HCUTCAPUNDER: {
             StructExprRecog serPrinciple = serInput.getPrincipleSER(1);
@@ -513,10 +519,12 @@ public class ExprFilter {
                 serOutput = serInput;
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_VBLANKCUT: {
+        }
+        case StructExprRecog.EXPRRECOGTYPE_VBLANKCUT: {
             serOutput = filterVBlankCutRawSER(serInput, serParent);
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_VCUTLEFTTOPNOTE: {
+        }
+        case StructExprRecog.EXPRRECOGTYPE_VCUTLEFTTOPNOTE: {
             // actually should not be here because serInput is a raw ser
             StructExprRecog serPrinciple = serInput.getPrincipleSER(2);
             if ((serParent == null && (!isValidMathExpr(serInput) || !isValidMathExpr(serPrinciple)))
@@ -541,7 +549,8 @@ public class ExprFilter {
                 serOutput = serInput;
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_VCUTUPPERNOTE: 
+        }
+        case StructExprRecog.EXPRRECOGTYPE_VCUTUPPERNOTE:
           case StructExprRecog.EXPRRECOGTYPE_VCUTLOWERNOTE: 
           case StructExprRecog.EXPRRECOGTYPE_VCUTLUNOTES: {
             // actually should not be here because serInput is a raw ser
@@ -574,7 +583,8 @@ public class ExprFilter {
                 serOutput = serInput;
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_VCUTMATRIX: {  // each element is a column, each element is Hblankcut with same number (> 1) of rows
+        }
+        case StructExprRecog.EXPRRECOGTYPE_VCUTMATRIX: {  // each element is a column, each element is Hblankcut with same number (> 1) of rows
             serOutput = serInput;   // actually should not be here coz serInput is a raw ser.
             for (int idx  = 0; idx < serInput.mlistChildren.size(); idx ++) {
                 StructExprRecog serChild = serInput.mlistChildren.get(idx);
@@ -587,7 +597,8 @@ public class ExprFilter {
                 }
             }
             break;
-        } case StructExprRecog.EXPRRECOGTYPE_GETROOT: { // two element, first is root level (default is Enum type sqrt or sqrt left etc.), second is the rooted expression.
+        }
+        case StructExprRecog.EXPRRECOGTYPE_GETROOT: { // two element, first is root level (default is Enum type sqrt or sqrt left etc.), second is the rooted expression.
             if (serParent == null && (!isValidMathExpr(serInput.mlistChildren.getLast()) || !isValidMathExpr(serInput))) {
                 serOutput = null;   // similarity seems not valid.
             }else {
@@ -616,7 +627,8 @@ public class ExprFilter {
                 }
             }
             break;
-        } default: {
+        }
+        default: {
             serOutput = null;
         }
         }
@@ -805,7 +817,7 @@ public class ExprFilter {
                     || serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_MULTIEXPRS) {
                 // multiexprs may have dot points in the end of each expression.
                 // step 1. look for close boundary from beginning and open boundary from end. Do not consider [ ] because they can be misrecognized 1.
-                //todo changed5 : 原来他也考虑了[]可能被识别成1 ,但是没想到() 也会 hhhhh
+                //todo dml_changed5 : 原来他也考虑了[]可能被识别成1 ,但是没想到() 也会 hhhhh
                 int idxFirstCloseBndNoMatch = idxFrom - 1, idxLastCloseBndNoMatch = idxFrom - 1;
                 int idxFirstOpenBndNoMatch = idxTo + 1, idxLastOpenBndNoMatch = idxTo + 1;
                 for (int idx = idxFrom; idx <= idxTo; idx ++) {
