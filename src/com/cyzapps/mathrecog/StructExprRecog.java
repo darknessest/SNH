@@ -1337,6 +1337,8 @@ public class StructExprRecog {
 
             // step 4.3 : todo at last, trying to rectify some miss-identified char levels
             for (int idx = 0; idx < listBaseULIdentified.size(); idx++) {
+                //分析中间结果之用
+                System.out.println(listBaseULIdentified.get(idx).mnExprRecogType+"\t"+listBaseULIdentified.get(idx).toString()+"\t"+listCharLevel.get(idx));
                 if (listBaseULIdentified.get(idx).mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
                         && (listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_EQUAL
                         || listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_EQUAL_ALWAYS)
@@ -1399,8 +1401,8 @@ public class StructExprRecog {
                 // need not to consider a case like \topunder{infinite, \Sigma, n = 1} is misrecognized to
                 // \topunder{infinite, \Sigma, n^=}_1. This kind of situation has been processed.
 
-                //todo dml_changed7: 我先粗暴的认为dx不可能作为指数，后续可加入更高级的纠错逻辑（比如根据切块中心坐标进行纠错）。
-                if (listBaseULIdentified.get(idx).mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && listCharLevel.get(idx) == 1) {
+                if (listBaseULIdentified.get(idx).mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && listCharLevel.get(idx) !=0) {
+                    //todo dml_changed7: 先粗暴的认为dx不可能作为指数，后续可加入更高级的纠错逻辑（比如根据切块中心坐标进行纠错）。
                     if (listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_SMALL_D
                             && ((idx < listBaseULIdentified.size() - 1) && listBaseULIdentified.get(idx + 1).mType == UnitProtoType.Type.TYPE_SMALL_X)) {
                         listCharLevel.set(idx, 0);
@@ -1409,7 +1411,19 @@ public class StructExprRecog {
                             && ((idx > 0) && listBaseULIdentified.get(idx - 1).mType == UnitProtoType.Type.TYPE_SMALL_D)) {
                         listCharLevel.set(idx, 0);
                     }
+
+                    //todo dml_changed8：分数不能直接带指数，除非有括号。
+                    if(idx>0&&listBaseULIdentified.get(idx-1).mnExprRecogType == EXPRRECOGTYPE_HLINECUT) {
+                        listCharLevel.set(idx, 0);
+                    }
                 }
+
+                //todo dml_changed9: 针对积分内容自动丢弃的问题----实验证明这个逻辑太暴力了，期待更优美的方案
+//                if(listBaseULIdentified.get(idx).mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && listCharLevel.get(idx)!=0){
+//                    if(idx>=3&&listCharLevel.get(idx-1)!=0&&listCharLevel.get(idx-2)!=0){
+//                        listCharLevel.set(idx, 0);
+//                    }
+//                }
             }
 
             // step 5, since different levels have been well-sorted, we merge them.

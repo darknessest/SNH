@@ -469,8 +469,8 @@ public class ExprRecognizer {
                         usePy();
 
                     //test3
-                    System.out.println("[JAVA___RESULT]\t" + serReturnCand1.mType + " \t" + serReturnCand1.toString());
-                    System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu +"\t"+similarty);
+                    //System.out.println("[JAVA___RESULT]\t" + serReturnCand1.mType + " \t" + serReturnCand1.toString());
+                    //System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu +"\t"+similarty);
                     UnitProtoType.Type cType = getTpye((resu));
                     if ((similarty >= 0.995||cType==serReturnCand1.mType)&& !shouldnotUsePy(serReturnCand1) && !shouldnotTrustPy(cType)) {
                         serReturn = serReturnCand1;
@@ -484,7 +484,7 @@ public class ExprRecognizer {
                         serReturnCand2 = disconnect2Recog(imgChopsFrom, nCutMode, imgChopsFrom.mlistChops.indexOf(imgChopOriginal), dAvgStrokeWidth, serReturnCand1, new LinkedList<ImageChop>(), nStackLvl + 1);
                         serReturn = selectSERFromCands(serReturnCand1, serReturnCand2);
                     }
-                    System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString());
+                    //System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString());
 
                 } else {
                     int nExtractedMajorIdx = ExprSeperator.getMajorChopFromSameOriginal(imgChopsExtracted);
@@ -556,14 +556,14 @@ public class ExprRecognizer {
     }
 
     public static void usePy() {
-        System.out.println("\nHello,ready to use python");
+        //System.out.println("\nHello,ready to use python");
         String line = null;
         resu = new String();
         similarty = 1;
         try {
             int count = 0;
             Socket socket = new Socket("127.0.0.1", 9999);
-            System.out.println("Client start!");
+            //System.out.println("Client start!");
             PrintWriter out = new PrintWriter(socket.getOutputStream()); // 输出，to 服务器 socket
             out.println("Client request! :-) ");
             out.flush(); // 刷缓冲输出，to 服务器
@@ -581,7 +581,7 @@ public class ExprRecognizer {
                 }
                 i++;
             }
-            System.out.println("Client end!");
+            //System.out.println("Client end!");
             socket.close();
         } catch (UnknownHostException e) {
             e.printStackTrace();
