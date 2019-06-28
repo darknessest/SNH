@@ -654,10 +654,13 @@ public class ExprRecognizer {
             case "rightarrow"://YX:这里的趋近改了
                 rety = UnitProtoType.getmningTypeValue("\\rightarrow");
                 break;
-            case "sigma":
-                rety = UnitProtoType.getmningTypeValue("\\sigma");
+                //WTF!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            case "sum":
+                rety = UnitProtoType.getmningTypeValue("\\Sigma");
                 break;
-            //case "sum": rety = UnitProtoType.getmningTypeValue("\\infinite"); break;
+//            case "sigma":
+//                rety = UnitProtoType.getmningTypeValue("\\sigma");
+//                break;
             case "theta":
                 rety = UnitProtoType.getmningTypeValue("\\theta");
                 break;
