@@ -199,25 +199,23 @@ public class JImageProcessor {
             ExprRecognizer.dml_cnt = 0;
             StructExprRecog ser = ExprRecognizer.recognize(imgChop, null, -1, 0, 0);
             StructExprRecog serOld = ser; //保存上一步的结果，便于与本步对比
-            System.out.println("\n1-RAW: image " + strImageFile + " includes expression :\n" + ser.toString());
-
-            //todo 这块的代码结构可以进一步优化，反复调用了过滤程序
+            System.out.println("\n1-RAW: image " + strImageFile + " includes expression :\n" + ser.toString()+"\tEXPR_TYPE:\t"+ser.getExprRecogType());
 
             //todo Here is LH's recify
-            ser = ser.recifyF();
-            System.out.println("\n1.5-XZRECIFY：\n" + ser.toString()+"\tEXPR_TYPE: "+ser.mnExprRecogType);
+//            ser = ser.recifyF();
+//            System.out.println("\n1.5-XZRECIFY：\n" + ser.toString()+"\tEXPR_TYPE: "+ser.mnExprRecogType);
             /*Here to add my new class to recify*/
             if (bFilter) {
                 ser = ExprFilter.filterRawSER(ser, null);
-                //System.out.println("\n1.5-FILTERED: image " + strImageFile + " includes expression :\n" + ser.toString()+"\t"+ser.getExprRecogType());
+                System.out.println("\n1.5-FILTERED:\n" + ser.toString()+"\tEXPR_TYPE:\t"+ser.getExprRecogType()+"\n");
                 serOld = ser;
             }
-            for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
-                StructExprRecog serThisChild = ser.mlistChildren.get(idx);
-                System.out.print("EXPR_TYPE: "+serThisChild.mnExprRecogType + "\tM_TYPE: ");
-                System.out.printf("%28s",serThisChild.mType);
-                System.out.println("\t\t"+serThisChild.toString());
-            }
+//            for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
+//                StructExprRecog serThisChild = ser.mlistChildren.get(idx);
+//                System.out.print("EXPR_TYPE: "+serThisChild.mnExprRecogType + "\tM_TYPE: ");
+//                System.out.printf("%28s",serThisChild.mType);
+//                System.out.println("\t\t"+serThisChild.toString());
+//            }
             if (ser != null) {
                 //重点2 字符串重构
                 ser = ser.restruct();

@@ -121,7 +121,7 @@ public class BLUCharIdentifier {
         mserBase = bluCharIdentifier.mserBase;
         mnBaseStylePosition = bluCharIdentifier.mnBaseStylePosition;            
     }
-
+//todo 计算这个ser的level
     public int calcCharLevel(StructExprRecog serThis)   {
         int nThisCharLevel = 0;
         int nThisTop = serThis.mnTop, nThisBottom = serThis.getBottom();
