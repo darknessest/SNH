@@ -1424,6 +1424,10 @@ public class StructExprRecog {
 //                        listCharLevel.set(idx, 0);
 //                    }
 //                }
+                //todo dml_changed10: 累乘的间接解决---如果是最大的，类型确实small_pi，则改为big_pi
+                if(idx==nBiggestChildIdx&&listBaseULIdentified.get(idx).mType ==UnitProtoType.Type.TYPE_SMALL_PI){
+                    listBaseULIdentified.get(idx).setUnitType(UnitProtoType.Type.TYPE_BIG_PI);
+                }
             }
 
             // step 5, since different levels have been well-sorted, we merge them.
