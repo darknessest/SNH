@@ -465,12 +465,12 @@ public class ExprRecognizer {
                     ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
 
                     //todo add some rule to not use or trust py's result by LH
-                    if(!shouldnotUsePy(serReturnCand1))
+                    //if(!shouldnotUsePy(serReturnCand1))
                         usePy();
 
                     //test3
-                    //System.out.println("[JAVA___RESULT]\t" + serReturnCand1.mType + " \t" + serReturnCand1.toString());
-                    //System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu +"\t"+similarty);
+                    System.out.println("[JAVA___RESULT]\t" + serReturnCand1.mType + " \t" + serReturnCand1.toString());
+                    System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu +"\t"+similarty);
                     UnitProtoType.Type cType = getTpye((resu));
                     if ((similarty >= 0.995||cType==serReturnCand1.mType)&& !shouldnotUsePy(serReturnCand1) && !shouldnotTrustPy(cType)) {
                         serReturn = serReturnCand1;
@@ -484,7 +484,7 @@ public class ExprRecognizer {
                         serReturnCand2 = disconnect2Recog(imgChopsFrom, nCutMode, imgChopsFrom.mlistChops.indexOf(imgChopOriginal), dAvgStrokeWidth, serReturnCand1, new LinkedList<ImageChop>(), nStackLvl + 1);
                         serReturn = selectSERFromCands(serReturnCand1, serReturnCand2);
                     }
-                    //System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString());
+                    System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString()+"\n");
 
                 } else {
                     int nExtractedMajorIdx = ExprSeperator.getMajorChopFromSameOriginal(imgChopsExtracted);

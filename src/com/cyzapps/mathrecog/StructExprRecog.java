@@ -1338,7 +1338,7 @@ public class StructExprRecog {
             // step 4.3 : todo at last, trying to rectify some miss-identified char levels
             for (int idx = 0; idx < listBaseULIdentified.size(); idx++) {
                 //分析中间结果之用
-                System.out.println(listBaseULIdentified.get(idx).mnExprRecogType+"\t"+listBaseULIdentified.get(idx).toString()+"\t"+listCharLevel.get(idx));
+                //System.out.println(listBaseULIdentified.get(idx).mnExprRecogType+"\t"+listBaseULIdentified.get(idx).toString()+"\t"+listCharLevel.get(idx));
                 if (listBaseULIdentified.get(idx).mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
                         && (listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_EQUAL
                         || listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_EQUAL_ALWAYS)
