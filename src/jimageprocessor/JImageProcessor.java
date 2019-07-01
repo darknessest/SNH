@@ -210,12 +210,12 @@ public class JImageProcessor {
                 //System.out.println("\n1.5-FILTERED:\n" + ser.toString()+"\tEXPR_TYPE:\t"+ser.getExprRecogType()+"\n");
                 serOld = ser;
             }
-//            for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
-//                StructExprRecog serThisChild = ser.mlistChildren.get(idx);
-//                System.out.print("EXPR_TYPE: "+serThisChild.mnExprRecogType + "\tM_TYPE: ");
-//                System.out.printf("%28s",serThisChild.mType);
-//                System.out.println("\t\t"+serThisChild.toString());
-//            }
+            for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
+                StructExprRecog serThisChild = ser.mlistChildren.get(idx);
+                System.out.print("EXPR_TYPE: "+serThisChild.mnExprRecogType + "\tM_TYPE: ");
+                System.out.printf("%28s",serThisChild.mType);
+                System.out.println("\t\t"+serThisChild.toString());
+            }
             if (ser != null) {
                 //重点2 字符串重构
                 ser = ser.restruct();

@@ -794,6 +794,7 @@ public class ExprFilter {
             int idxLast = -1;
             for (int idx = 0; idx < serInput.mlistChildren.size(); idx ++) {
                 StructExprRecog serNewChild = filterRestructedSER(serInput.mlistChildren.get(idx), serInput, serParent);
+
                 if (serNewChild != null) {
                     if (listNewChildren.size() > 0 && listNewChildren.getLast().isPossibleNumberChar()
                             && (serInput.mlistChildren.get(idxLast).mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_VCUTLOWERNOTE

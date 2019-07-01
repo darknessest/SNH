@@ -461,11 +461,11 @@ public class ExprRecognizer {
                     String dir = "python" + File.separator + "data" + File.separator + String.format("%03d", 1) + ".jpg";
                     ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
                     //分析图片用的，可注释这两行
-                    String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
-                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
+                    //String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
+                    //ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
 
                     //todo add some rule to not use or trust py's result by LH
-                    //if(!shouldnotUsePy(serReturnCand1))
+                    if(!shouldnotUsePy(serReturnCand1))
                         usePy();
 
                     //test3
@@ -484,7 +484,7 @@ public class ExprRecognizer {
                         serReturnCand2 = disconnect2Recog(imgChopsFrom, nCutMode, imgChopsFrom.mlistChops.indexOf(imgChopOriginal), dAvgStrokeWidth, serReturnCand1, new LinkedList<ImageChop>(), nStackLvl + 1);
                         serReturn = selectSERFromCands(serReturnCand1, serReturnCand2);
                     }
-                    System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString()+"\n");
+                    System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString());
 
                 } else {
                     int nExtractedMajorIdx = ExprSeperator.getMajorChopFromSameOriginal(imgChopsExtracted);
@@ -524,6 +524,10 @@ public class ExprRecognizer {
 
     public static UnitProtoType.Type correctPY_YX(UnitProtoType.Type pythonType, UnitProtoType.Type javaType,UnitProtoType.Type returnType)
     {
+        UnitProtoType unitProtoTypeP = new UnitProtoType();
+        unitProtoTypeP.mnUnitType = pythonType;
+        UnitProtoType unitProtoTypeJ = new UnitProtoType();
+        unitProtoTypeJ.mnUnitType = javaType;
         if(pythonType==UnitProtoType.Type.TYPE_UNKNOWN && javaType==UnitProtoType.Type.TYPE_BIG_S)
         {//python:{ java:s 则：int
             return UnitProtoType.Type.TYPE_INFINITE;
@@ -551,6 +555,10 @@ public class ExprRecognizer {
         else if(pythonType==UnitProtoType.Type.TYPE_SMALL_B && javaType==UnitProtoType.Type.TYPE_SIX)
         {//python:b java:6 则：6
             return UnitProtoType.Type.TYPE_SIX;
+        }
+        //todo this is a rule for the java type is A but the python is a
+        else if(pythonType.toString().equals(javaType.toString().toLowerCase())){
+            return javaType;
         }
         return returnType;
     }
