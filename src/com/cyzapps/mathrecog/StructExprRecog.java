@@ -4740,7 +4740,8 @@ public class StructExprRecog {
                 || type == UnitProtoType.Type.TYPE_SMALL_L || type == UnitProtoType.Type.TYPE_SMALL_F
                 || type == UnitProtoType.Type.TYPE_SMALL_I_WITHOUT_DOT || type == UnitProtoType.Type.TYPE_BIG_I
                 || type == UnitProtoType.Type.TYPE_VERTICAL_LINE || type == UnitProtoType.Type.TYPE_SMALL_L
-                || type == UnitProtoType.Type.TYPE_SQUARE_BRACKET || type == UnitProtoType.Type.TYPE_ROUND_BRACKET)
+                || type == UnitProtoType.Type.TYPE_SQUARE_BRACKET || type == UnitProtoType.Type.TYPE_ROUND_BRACKET
+                || type == UnitProtoType.Type.TYPE_BACKWARD_SLASH || type == UnitProtoType.Type.TYPE_FORWARD_SLASH)
             return true;
 
         return false;
@@ -4751,7 +4752,8 @@ public class StructExprRecog {
         if (type == UnitProtoType.Type.TYPE_ONE || type == UnitProtoType.Type.TYPE_LEFT_ARROW
                 || type == UnitProtoType.Type.TYPE_SMALL_I_WITHOUT_DOT || type == UnitProtoType.Type.TYPE_BIG_I
                 || type == UnitProtoType.Type.TYPE_VERTICAL_LINE || type == UnitProtoType.Type.TYPE_SMALL_L
-                || type == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET || type == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET)
+                || type == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET || type == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET
+                || type == UnitProtoType.Type.TYPE_CLOSE_BRACE)
             return true;
         return false;
     }
@@ -4866,6 +4868,9 @@ public class StructExprRecog {
 
     public void bigger(){
         mnTop -= mnHeight*0.15;
+        if(mnTop < 0){
+            mnTop = 1;
+        }
         mnHeight = (int)(mnHeight*1.3);
     }
 
@@ -5047,7 +5052,7 @@ public class StructExprRecog {
                             startofM = preSer;
                             startidx = idx - 1;
 
-                            lastBhblank = null;
+                            //lastBhblank = null;
                             firstBhblank = null;
                         }
                     }
@@ -5064,11 +5069,11 @@ public class StructExprRecog {
                         afterSer.changeSEREnumType(UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET, "");
                         afterSer.bigger();
                         lastBhblank = null;
-                        firstBhblank = null;
+                        //firstBhblank = null;
                         /*but how should we do when starofM == null*/
                         if (startofM != null) {
                             startofM.changeSEREnumType(UnitProtoType.Type.TYPE_SQUARE_BRACKET, "");
-
+                            startofM.bigger();
                             System.out.println("RECIFY------find one close brace!!!");
 
                             /*Then I want to add some rule to recify the item of the Matrix. each item of a
