@@ -207,15 +207,15 @@ public class JImageProcessor {
 
             if (bFilter) {
                 ser = ExprFilter.filterRawSER(ser, null);
-                //System.out.println("\n1.5-FILTERED:\n" + ser.toString()+"\tEXPR_TYPE:\t"+ser.getExprRecogType()+"\n");
+                System.out.println("\n1.6-FILTERED:\n" + ser.toString()+"\tEXPR_TYPE:\t"+ser.getExprRecogType()+"\n");
                 serOld = ser;
             }
-            for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
-                StructExprRecog serThisChild = ser.mlistChildren.get(idx);
-                System.out.print("EXPR_TYPE: "+serThisChild.mnExprRecogType + "\tM_TYPE: ");
-                System.out.printf("%28s",serThisChild.mType);
-                System.out.println("\t\t"+serThisChild.toString());
-            }
+//            for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
+//                StructExprRecog serThisChild = ser.mlistChildren.get(idx);
+//                System.out.print("EXPR_TYPE: "+serThisChild.mnExprRecogType + "\tM_TYPE: ");
+//                System.out.printf("%28s",serThisChild.mType);
+//                System.out.println("\t\t"+serThisChild.toString());
+//            }
             if (ser != null) {
                 //重点2 字符串重构
                 ser = ser.restruct();
@@ -224,7 +224,7 @@ public class JImageProcessor {
                 //重点2.5 过滤时加入表达式尾去掉dottimes逻辑，换做X比较好
                 if (bFilter) {
                     ser = ExprFilter.filterRestructedSER(ser, null, null);
-                    //System.out.println("\n2.5-FILTERED:\n" + ser.toString()+"\t\tEXPR_TYPE: "+ser.getExprRecogType());
+                    System.out.println("\n2.5-FILTERED:\n" + ser.toString()+"\t\tEXPR_TYPE: "+ser.getExprRecogType());
                     serOld = ser;
                 }
 

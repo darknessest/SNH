@@ -60,13 +60,13 @@ if __name__ == "__main__":
     i = 0
 
     model_labels = []
-    with open("85W_tags.txt") as file:  # change labels file name  E:\\CoreMath\SNH\python\Pretre\
+    with open("labels_yuxi.txt") as file:  # change labels file name  E:\\CoreMath\SNH\python\Pretre\
         for line in file:
             line = line.strip().split()[0]
             model_labels.append(line)
 
     clf = CNN.build(width=32, height=32, depth=1, total_classes=len(model_labels), input_shape=(32, 32, 1),
-                    Saved_Weights_Path='cnn_weights_85W_biggertrainset_d=-5_m=0.8.hdf5')  # change model file name
+                    Saved_Weights_Path='cnn_weights_yuxi_update3.hdf5')  # change model file name
 
     # for file in sorted(os.listdir(path)):
     # if not file.startswith("."):
@@ -94,6 +94,7 @@ if __name__ == "__main__":
                 calculDiff(recvData.split(':')[1])
             except:
                 print("I can't calculate it yet!")
+                newSocket.send(bytes(str("I can't calculate it yet!"), encoding='utf-8'))
 
         else:
             # here we can put our code

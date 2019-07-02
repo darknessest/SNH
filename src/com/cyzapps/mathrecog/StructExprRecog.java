@@ -3964,7 +3964,7 @@ public class StructExprRecog {
                                     }
                                 }
                             }
-                            //todo dml_changed5.2 括号不匹配不可---初级纠错，可进一步完善括号匹配机制
+                            //todo dml_changed5.2 括号不匹配的话就进行改正
                             else if (serThisChild.isCloseBoundChar() || serThisChild.isBoundChar()) {
                                 boolean dmlMatch = false;
                                 StructExprRecog serDmlChild = null;
@@ -3977,7 +3977,7 @@ public class StructExprRecog {
                                             break;
                                         }
                                     }
-                                    if (!dmlMatch) {//不纠错了，直接改成1吧，因为别的地反可能也有用到clm进行修改的
+                                    if (!dmlMatch) {
                                         serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
                                     }
                                 }
@@ -4863,11 +4863,11 @@ public class StructExprRecog {
         ImageChop imgChop4SER = ExprSeperator.mergeImgChopsWithSameOriginal(listParts);
         serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_DIVIDE, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, dSimilarity);
     }*/
-
-    public void bigger(){
-        mnTop -= mnHeight*0.15;
-        mnHeight = (int)(mnHeight*1.3);
-    }
+//
+//    public void bigger(){
+//        mnTop -= mnHeight*0.15;
+//        mnHeight = (int)(mnHeight*1.3);
+//    }
 
     public StructExprRecog recifyF() {
         /*1. optimizing the recognising of function set and matrix*/
@@ -5041,9 +5041,12 @@ public class StructExprRecog {
                             totalHeight += curGrandson.mnHeight;
                         }
                         if (totalHeight <= preSer.mnHeight) {
-                            preSer.changeSEREnumType(UnitProtoType.Type.TYPE_BRACE, "");
+                            if(mlistChildren.indexOf(preSer) == 0)
+                                preSer.changeSEREnumType(UnitProtoType.Type.TYPE_BRACE, "");
+                            else
+                                preSer.changeSEREnumType(UnitProtoType.Type.TYPE_SQUARE_BRACKET, "");
                             System.out.println("RECIFY------find one brace!!!");
-                            preSer.bigger();
+                            //preSer.bigger();
                             startofM = preSer;
                             startidx = idx - 1;
 
@@ -5062,7 +5065,7 @@ public class StructExprRecog {
                     }
                     if (totalHeight <= afterSer.mnHeight) {
                         afterSer.changeSEREnumType(UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET, "");
-                        afterSer.bigger();
+                        //afterSer.bigger();
                         lastBhblank = null;
                         firstBhblank = null;
                         /*but how should we do when starofM == null*/
@@ -5075,7 +5078,7 @@ public class StructExprRecog {
                              * matrix should must be a unit type*/
 
                             for (int cidx = startidx + 1; cidx <= idx; ++cidx) {
-                                recifysigleVertialLine(mlistChildren.get(cidx));
+                                //recifysigleVertialLine(mlistChildren.get(cidx));
                             }
 
                             startofM = null;

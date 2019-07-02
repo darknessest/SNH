@@ -818,7 +818,7 @@ public class ExprFilter {
                     || serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_MULTIEXPRS) {
                 // multiexprs may have dot points in the end of each expression.
                 // step 1. look for close boundary from beginning and open boundary from end. Do not consider [ ] because they can be misrecognized 1.
-                //todo dml_changed5 : 原来他也考虑了[]可能被识别成1 ,但是没想到() 也会 hhhhh
+                //todo dml_changed5 : 考虑到[]()可能被识别成1,注释掉相应的判断
                 int idxFirstCloseBndNoMatch = idxFrom - 1, idxLastCloseBndNoMatch = idxFrom - 1;
                 int idxFirstOpenBndNoMatch = idxTo + 1, idxLastOpenBndNoMatch = idxTo + 1;
                 for (int idx = idxFrom; idx <= idxTo; idx ++) {
@@ -843,7 +843,7 @@ public class ExprFilter {
                 for (int idx = idxTo; idx >= idxFrom; idx --) {
                     StructExprRecog ser = listNewChildren.get(idx).getPrincipleSER(4);
                     if (ser.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
-                            && (ser.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET 
+                            && (ser.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET
                                 /*|| ser.mType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET*/
                                 || ser.mType == UnitProtoType.Type.TYPE_CLOSE_BRACE)) {
                         break;
