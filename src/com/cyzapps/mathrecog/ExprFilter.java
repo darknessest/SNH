@@ -848,7 +848,7 @@ public class ExprFilter {
                                 || ser.mType == UnitProtoType.Type.TYPE_CLOSE_BRACE)) {
                         break;
                     } else if (ser.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
-                            && (ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET 
+                           &&(ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET
                                 /*|| ser.mType == UnitProtoType.Type.TYPE_SQUARE_BRACKET*/
                                 /*|| ser.mType == UnitProtoType.Type.TYPE_BRACE*/)) {   // brace can be starting of a group of expressions.
                         if (idxFirstOpenBndNoMatch == idxTo + 1) {

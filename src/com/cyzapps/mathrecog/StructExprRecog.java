@@ -4910,18 +4910,20 @@ public class StructExprRecog {
                             //mlistChildren.remove(preSon);
                             S.add(son);
                             S.remove(preSon);
-                            if (mlistChildren.size() == 1) {
-                                this.setStructExprRecog(UnitProtoType.Type.TYPE_EQUAL, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, similarity);
-                            }
                             sta = 0;
                         }
                     }else{
                         S.add(son);
                         sta = 0;
+
                     }
                 }
                 mlistChildren.clear();
                 mlistChildren.addAll(S);
+                if (mlistChildren.size() == 1) {
+                    this.setStructExprRecog(UnitProtoType.Type.TYPE_EQUAL, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, mlistChildren.getFirst().mimgChop, 0);
+                }
+
             }
 
         } else if (mnExprRecogType == EXPRRECOGTYPE_MULTIEXPRS) {
@@ -5029,6 +5031,7 @@ public class StructExprRecog {
                         for(int idx2 = idx; idx2 < idxofFirstHblank; idx2 ++){
                             if(!ispossibletheconsofHblank(firstBhblank, mlistChildren.get(idx2)) || mlistChildren.get(idx2).mType == UnitProtoType.Type.TYPE_EQUAL){
                                 firstBhblank = null;
+                                break;
                             }
                         }
                     }
