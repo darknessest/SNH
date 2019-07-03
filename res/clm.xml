@@ -8,6 +8,9 @@
 	<CharCandSet Type="SMALL_L" Font="">
 		<CharCand Type="ONE" Font="" MissRecogTimes="" />
 	</CharCandSet>
+	<CharCandSet Type="BACKWARD_SLASH" Font="">
+		<CharCand Type="ONE" Font="" MissRecogTimes="" />
+	</CharCandSet>
 	<CharCandSet Type="SMALL_I_WITHOUT_DOT" Font="">
 		<CharCand Type="ONE" Font="" MissRecogTimes="" />
 	</CharCandSet>

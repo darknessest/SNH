@@ -818,11 +818,12 @@ public class ExprFilter {
                     || serParent.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_MULTIEXPRS) {
                 // multiexprs may have dot points in the end of each expression.
                 // step 1. look for close boundary from beginning and open boundary from end. Do not consider [ ] because they can be misrecognized 1.
-                //todo dml_changed5 : 考虑到[]()可能被识别成1,注释掉相应的判断
+                //todo dml_changed5 : 不要直接过滤掉不匹配的括号，因为他们可能是被错误识别的
                 int idxFirstCloseBndNoMatch = idxFrom - 1, idxLastCloseBndNoMatch = idxFrom - 1;
                 int idxFirstOpenBndNoMatch = idxTo + 1, idxLastOpenBndNoMatch = idxTo + 1;
                 for (int idx = idxFrom; idx <= idxTo; idx ++) {
                     StructExprRecog ser = listNewChildren.get(idx).getPrincipleSER(4);
+                    //这里只考虑了{}作为过滤条件
                     if (ser.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
                             && (//ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET||
                                 /*|| ser.mType == UnitProtoType.Type.TYPE_SQUARE_BRACKET*/
@@ -840,23 +841,24 @@ public class ExprFilter {
                         idxLastCloseBndNoMatch = idx;
                     }
                 }
-                for (int idx = idxTo; idx >= idxFrom; idx --) {
-                    StructExprRecog ser = listNewChildren.get(idx).getPrincipleSER(4);
-                    if (ser.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
-                            && (ser.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET
-                                /*|| ser.mType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET*/
-                                || ser.mType == UnitProtoType.Type.TYPE_CLOSE_BRACE)) {
-                        break;
-                    } else if (ser.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
-                           &&(ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET
-                                /*|| ser.mType == UnitProtoType.Type.TYPE_SQUARE_BRACKET*/
-                                /*|| ser.mType == UnitProtoType.Type.TYPE_BRACE*/)) {   // brace can be starting of a group of expressions.
-                        if (idxFirstOpenBndNoMatch == idxTo + 1) {
-                            idxFirstOpenBndNoMatch = idx;
-                        }
-                        idxLastOpenBndNoMatch = idx;
-                    }
-                }
+                //这里去掉所有以开括号为依据的过滤逻辑，因为([可能是1,{可能是方程组或积分
+//                for (int idx = idxTo; idx >= idxFrom; idx --) {
+//                    StructExprRecog ser = listNewChildren.get(idx).getPrincipleSER(4);
+//                    if (ser.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
+//                            && (ser.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET
+//                                /*|| ser.mType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET*/
+//                                || ser.mType == UnitProtoType.Type.TYPE_CLOSE_BRACE)) {
+//                        break;
+//                    } else if (ser.mnExprRecogType == StructExprRecog.EXPRRECOGTYPE_ENUMTYPE
+//                           &&(ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET
+//                                /*|| ser.mType == UnitProtoType.Type.TYPE_SQUARE_BRACKET*/
+//                                /*|| ser.mType == UnitProtoType.Type.TYPE_BRACE*/)) {   // brace can be starting of a group of expressions.
+//                        if (idxFirstOpenBndNoMatch == idxTo + 1) {
+//                            idxFirstOpenBndNoMatch = idx;
+//                        }
+//                        idxLastOpenBndNoMatch = idx;
+//                    }
+//                }
 
                 // now find out the major part
                 int nWidthB4UnMatchCloseBnd = 0, nWidthInBnd = 0, nWidthAfterMatchOpenBnd = 0;

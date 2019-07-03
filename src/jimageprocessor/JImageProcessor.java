@@ -203,7 +203,7 @@ public class JImageProcessor {
 
             //todo Here is LH's recify
             ser = ser.recifyF();
-//            System.out.println("\n1.5-XZRECIFY：\n" + ser.toString()+"\tEXPR_TYPE: "+ser.mnExprRecogType);
+            System.out.println("\n1.5-XZRECIFY：\n" + ser.toString()+"\tEXPR_TYPE: "+ser.mnExprRecogType);
 
             if (bFilter) {
                 ser = ExprFilter.filterRawSER(ser, null);
@@ -231,11 +231,11 @@ public class JImageProcessor {
                 if (ser != null) {
                     //重点3 错误识别一轮二轮修正，错误识别函数名修正
                     ser.rectifyMisRecogChars1stRnd(clm);
-                    //System.out.println("\n3-RECTIFY_1:\n" + ser.toString());
+                    System.out.println("\n3-RECTIFY_1:\n" + ser.toString());
                     ser.rectifyMisRecogChars2ndRnd();
-                    //System.out.println("3-RECTIFY_2:\n" + ser.toString());
+                    System.out.println("3-RECTIFY_2:\n" + ser.toString());
                     ser.rectifyMisRecogWords(mwm);
-                    //System.out.println("3-RECTIFY_3:\n" + ser.toString());
+                    System.out.println("3-RECTIFY_3:\n" + ser.toString());
 
                     //重点4 最终结果（结构化表达式） 翻译成可计算的数学表达式
                     SerMFPTransFlags smtFlags = new SerMFPTransFlags();

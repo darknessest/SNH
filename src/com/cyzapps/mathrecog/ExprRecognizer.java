@@ -434,18 +434,13 @@ public class ExprRecognizer {
                                 imgChopOriginal.getLeftInOriginalImg(), imgChopOriginal.getTopInOriginalImg(),
                                 imgChopOriginal.mnWidth, imgChopOriginal.mnHeight, imgChopShinked,
                                 listCandidates.get(0).mdOverallSimilarity);
-//                        System.out.println(listCandidates.get(0).mprotoType.mstrFont);
-//                        System.out.println("experssion预识别1：" + serReturnCand1.toString());
-//                        System.out.println("experssion预识别2：" + serReturnCand2.toString());
-                    }//根据运行，选这个条件
+                    }
                     else {
                         // we still need to set its place and image chop although it is unknown.
                         serReturnCand1.setStructExprRecog(UnitProtoType.Type.TYPE_UNKNOWN, serReturnCand1.getFont(),
                                 imgChopOriginal.getLeftInOriginalImg(), imgChopOriginal.getTopInOriginalImg(),
                                 imgChopOriginal.mnWidth, imgChopOriginal.mnHeight, imgChopShinked,
                                 serReturnCand1.mdSimilarity);
-
-//                        System.out.println("experssion:识别4" + serReturn.toString());
                     }
                     if (imgChopsFrom == null || nCutMode != 1) {
                         // if imgChopsFrom is null, means we are analyzing a single connected piece
@@ -455,14 +450,13 @@ public class ExprRecognizer {
                         imgChopsFrom = new ImageChops();
                         imgChopsFrom.mlistChops.add(imgChopOriginal);
                         nCutMode = 1;   // vertical cut.
-//                        System.out.println("experssion:识别5" + serReturn.toString());
                     }
 
                     String dir = "python" + File.separator + "data" + File.separator + String.format("%03d", 1) + ".jpg";
-                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
+                    ImgMatrixOutput.createMatrixImage(imgChopOriginal.mbarrayImg, dir);
                     //分析图片用的，可注释这两行
 //                    String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
-//                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
+//                    ImgMatrixOutput.createMatrixImage(imgChopOriginal.mbarrayImg, dml_dir);
 
                     //todo add some rule to not use or trust py's result by LH
                     if(!shouldnotUsePy(serReturnCand1))
