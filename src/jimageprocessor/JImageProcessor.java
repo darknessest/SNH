@@ -216,6 +216,7 @@ public class JImageProcessor {
 //                System.out.printf("%28s",serThisChild.mType);
 //                System.out.println("\t\t"+serThisChild.toString());
 //            }
+            //hhhhhh
             if (ser != null) {
                 //重点2 字符串重构
                 ser = ser.restruct();

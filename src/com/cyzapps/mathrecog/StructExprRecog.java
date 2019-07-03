@@ -4874,6 +4874,7 @@ public class StructExprRecog {
                     newSon.add(son.mlistChildren.getLast());
                     System.out.println("change!!!!!!!!!!");
                 } */ else {
+                    //hhhhhh
                     newSon.add(son);
                 }
             }

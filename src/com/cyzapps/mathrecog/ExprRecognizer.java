@@ -521,6 +521,8 @@ public class ExprRecognizer {
 
     public static UnitProtoType.Type correctPY_YX(UnitProtoType.Type pythonType, UnitProtoType.Type javaType,UnitProtoType.Type returnType)
     {
+
+        //hhhhhh
         UnitProtoType unitProtoTypeP = new UnitProtoType();
         unitProtoTypeP.mnUnitType = pythonType;
         UnitProtoType unitProtoTypeJ = new UnitProtoType();
@@ -567,7 +569,7 @@ public class ExprRecognizer {
         similarty = 1;
         try {
             int count = 0;
-            Socket socket = new Socket("127.0.0.1", 9999);
+            Socket socket = new Socket("127.0.0.1", 9998);
             //System.out.println("Client start!");
             PrintWriter out = new PrintWriter(socket.getOutputStream()); // 输出，to 服务器 socket
             out.println("Client request! :-) ");
