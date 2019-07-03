@@ -72,7 +72,7 @@ if __name__ == "__main__":
     # convert_img(file)
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    address = ('localhost', 9998)
+    address = ('localhost', 9999)
     sock.bind(address)
     sock.listen()
 

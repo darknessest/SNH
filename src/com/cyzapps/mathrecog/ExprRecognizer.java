@@ -664,10 +664,10 @@ public class ExprRecognizer {
                 rety = UnitProtoType.getmningTypeValue("\\times");
                 break;
             case "{":
-                rety = UnitProtoType.getmningTypeValue("{");
+                rety = UnitProtoType.getmningTypeValue("\\brace");
                 break;
             case "}":
-                rety = UnitProtoType.getmningTypeValue("}");
+                rety = UnitProtoType.getmningTypeValue("\\closebrace");
                 break;
             case "!":
                 rety = UnitProtoType.getmningTypeValue("!");

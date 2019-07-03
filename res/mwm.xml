@@ -11,6 +11,7 @@
 			<LetterCandidate>o</LetterCandidate>
 			<LetterCandidate>O</LetterCandidate>
 			<LetterCandidate>0</LetterCandidate>
+			<LetterCandidate Misrecog="true" >D</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_S" >
 			<LetterCandidate>s</LetterCandidate>
@@ -18,10 +19,8 @@
 			<LetterCandidate Misrecog="true" >5</LetterCandidate>
 		</LetterCandidates>
 	</MisrecogWord>
-	<MisrecogWord ShouldBe="sin" WordType="FUNCTION" >
-		<WordCandidate>s1n</WordCandidate>
+	<MisrecogWord ShouldBe="sin" WordType="WORD_SIN" >
 		<WordCandidate>91n</WordCandidate>
-		<WordCandidate>9ln</WordCandidate>
 		<LetterCandidates Index="0" UnitType="SMALL_S" >
 			<LetterCandidate>s</LetterCandidate>
 			<LetterCandidate>S</LetterCandidate>
@@ -31,6 +30,9 @@
 		<LetterCandidates Index="1" UnitType="SMALL_I" >
 			<LetterCandidate>i</LetterCandidate>
 			<LetterCandidate>1</LetterCandidate>
+			<LetterCandidate Misrecog="true">j</LetterCandidate>
+			<LetterCandidate Misrecog="true">|</LetterCandidate>
+			<LetterCandidate Misrecog="true">l</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_N" >
 			<LetterCandidate>n</LetterCandidate>
@@ -62,11 +64,12 @@
 			<LetterCandidate Misrecog="true" >\Pi</LetterCandidate>
 		</LetterCandidates>
 	</MisrecogWord>
-	<MisrecogWord ShouldBe="log" WordType="FUNCTION" >
+	<MisrecogWord ShouldBe="log" WordType="WORD_TAN" >
 		<LetterCandidates Index="0" UnitType="SMALL_L" >
 			<LetterCandidate>l</LetterCandidate>
 			<LetterCandidate>I</LetterCandidate>
 			<LetterCandidate>1</LetterCandidate>
+			<LetterCandidate>L</LetterCandidate>
 			<LetterCandidate>|</LetterCandidate>
 			<LetterCandidate Misrecog="true" >]</LetterCandidate>
 		</LetterCandidates>
@@ -74,6 +77,7 @@
 			<LetterCandidate>o</LetterCandidate>
 			<LetterCandidate>O</LetterCandidate>
 			<LetterCandidate>0</LetterCandidate>
+			<LetterCandidate Misrecog="true" >D</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_G" >
 			<LetterCandidate>g</LetterCandidate>
@@ -130,6 +134,11 @@
 		</LetterCandidates>
 		<LetterCandidates Index="1" UnitType="SMALL_I" >
 			<LetterCandidate>i</LetterCandidate>
+			<LetterCandidate>l</LetterCandidate>
+			<LetterCandidate>I</LetterCandidate>
+			<LetterCandidate>1</LetterCandidate>
+			<LetterCandidate>(</LetterCandidate>
+			<LetterCandidate>[</LetterCandidate>
 		</LetterCandidates>
 		<LetterCandidates Index="2" UnitType="SMALL_M" >
 			<LetterCandidate>m</LetterCandidate>
