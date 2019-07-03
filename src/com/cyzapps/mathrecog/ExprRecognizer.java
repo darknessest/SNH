@@ -502,7 +502,7 @@ public class ExprRecognizer {
         return serReturn;
     }
 
-    public static String resu  = "asdf";
+    public static String resu="**";
     public static double similarty;
     public static int count = 0;
 
@@ -516,7 +516,8 @@ public class ExprRecognizer {
         //those character is pre-Recognised by java
         */
         if(ser.mType == UnitProtoType.Type.TYPE_DOT || ser.mType == UnitProtoType.Type.TYPE_ONE || ser.mType ==  UnitProtoType.Type.TYPE_VERTICAL_LINE
-                || ser.mType == UnitProtoType.Type.TYPE_SUBTRACT || ser.mType == UnitProtoType.Type.TYPE_EMPTY || ser.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET)
+                || ser.mType == UnitProtoType.Type.TYPE_SUBTRACT || ser.mType == UnitProtoType.Type.TYPE_EMPTY||
+        ser.mType==UnitProtoType.Type.TYPE_ROUND_BRACKET||ser.mType==UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET)
             return true;
         return false;
     }
@@ -576,7 +577,7 @@ public class ExprRecognizer {
         similarty = 1;
         try {
             int count = 0;
-            Socket socket = new Socket("127.0.0.1", 9998);
+            Socket socket = new Socket("127.0.0.1", 9999);
             //System.out.println("Client start!");
             PrintWriter out = new PrintWriter(socket.getOutputStream()); // 输出，to 服务器 socket
             out.println("Client request! :-) ");

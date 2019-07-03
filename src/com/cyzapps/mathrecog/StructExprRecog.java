@@ -3879,6 +3879,38 @@ public class StructExprRecog {
                                 }
                             }
                         }
+                        if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && (serThisChild.isCloseBoundChar() || serThisChild.isBoundChar())) {
+                            if (serThisChild.isCloseBoundChar()) {
+                                serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+                            } else if (serThisChild.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET) {
+                                boolean dmlMatch = false;
+                                StructExprRecog serDmlChild = null;
+                                for (int i = 1; i < mlistChildren.size() ; ++i) {
+                                    serDmlChild = mlistChildren.get(i);
+                                    if (serDmlChild.mType== UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET) {
+                                        dmlMatch = true;
+                                        break;
+                                    }
+                                }
+                                if (!dmlMatch) {
+                                    serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+                                }
+                            }
+                            else if (serThisChild.mType == UnitProtoType.Type.TYPE_SQUARE_BRACKET) {
+                                boolean dmlMatch = false;
+                                StructExprRecog serDmlChild = null;
+                                for (int i = 1; i < mlistChildren.size() ; ++i) {
+                                    serDmlChild = mlistChildren.get(i);
+                                    if (serDmlChild.mType== UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET) {
+                                        dmlMatch = true;
+                                        break;
+                                    }
+                                }
+                                if (!dmlMatch) {
+                                    serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+                                }
+                            }
+                        }
                     }
                     //最后一个字符
                     else if (idx == mlistChildren.size() - 1) {
@@ -3895,6 +3927,38 @@ public class StructExprRecog {
                                     serThisChildPrinciple.changeSEREnumType(listCands.get(idx1).mType,
                                             (listCands.get(idx1).mstrFont.length() == 0) ? serThisChildPrinciple.mstrFont : listCands.get(idx1).mstrFont);
                                     break;
+                                }
+                            }
+                        }
+                        if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && (serThisChild.isCloseBoundChar() || serThisChild.isBoundChar())) {
+                            if (serThisChild.isBoundChar()) {
+                                serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+                            } else if (serThisChild.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET) {
+                                boolean dmlMatch = false;
+                                StructExprRecog serDmlChild = null;
+                                for (int i = 1; i < mlistChildren.size() ; ++i) {
+                                    serDmlChild = mlistChildren.get(i);
+                                    if (serDmlChild.mType== UnitProtoType.Type.TYPE_ROUND_BRACKET) {
+                                        dmlMatch = true;
+                                        break;
+                                    }
+                                }
+                                if (!dmlMatch) {
+                                    serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+                                }
+                            }
+                            else if (serThisChild.mType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET) {
+                                boolean dmlMatch = false;
+                                StructExprRecog serDmlChild = null;
+                                for (int i = 1; i < mlistChildren.size() ; ++i) {
+                                    serDmlChild = mlistChildren.get(i);
+                                    if (serDmlChild.mType== UnitProtoType.Type.TYPE_SQUARE_BRACKET) {
+                                        dmlMatch = true;
+                                        break;
+                                    }
+                                }
+                                if (!dmlMatch) {
+                                    serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
                                 }
                             }
                         }
@@ -3964,7 +4028,7 @@ public class StructExprRecog {
                                     }
                                 }
                             }
-                            //todo dml_changed5.2 括号不匹配不可---初级纠错，可进一步完善括号匹配机制
+                            //todo dml_changed5.2 括号不匹配的话就进行改正
                             else if (serThisChild.isCloseBoundChar() || serThisChild.isBoundChar()) {
                                 boolean dmlMatch = false;
                                 StructExprRecog serDmlChild = null;
@@ -3977,7 +4041,7 @@ public class StructExprRecog {
                                             break;
                                         }
                                     }
-                                    if (!dmlMatch) {//不纠错了，直接改成1吧，因为别的地反可能也有用到clm进行修改的
+                                    if (!dmlMatch) {
                                         serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
                                     }
                                 }
@@ -4123,9 +4187,9 @@ public class StructExprRecog {
                 StructExprRecog serThisChild = mlistChildren.get(idx).getPrincipleSER(4);
                 //todo by LH
                 /*change some D to 0*/
-                if(idx>=1) {
+                if (idx >= 1) {
                     StructExprRecog curSer = mlistChildren.get(idx);
-                    StructExprRecog preSer = mlistChildren.get(idx-1);
+                    StructExprRecog preSer = mlistChildren.get(idx - 1);
                     if (curSer.mType == UnitProtoType.Type.TYPE_BIG_D && (isNumberChar(preSer.mType))) {
                         curSer.changeSEREnumType(UnitProtoType.Type.TYPE_ZERO, "");
                     }
@@ -4868,9 +4932,6 @@ public class StructExprRecog {
 
     public void bigger(){
         mnTop -= mnHeight*0.15;
-        if(mnTop < 0){
-            mnTop = 1;
-        }
         mnHeight = (int)(mnHeight*1.3);
     }
 
@@ -4920,13 +4981,17 @@ public class StructExprRecog {
                             }
                             sta = 0;
                         }
-                    }else{
+                    } else {
                         S.add(son);
                         sta = 0;
                     }
                 }
                 mlistChildren.clear();
                 mlistChildren.addAll(S);
+                if (mlistChildren.size() == 1) {
+                    this.setStructExprRecog(UnitProtoType.Type.TYPE_EQUAL, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, mlistChildren.getFirst().mimgChop, 0);
+                }
+
             }
 
         } else if (mnExprRecogType == EXPRRECOGTYPE_MULTIEXPRS) {
@@ -4956,7 +5021,7 @@ public class StructExprRecog {
         } else if (mnExprRecogType == EXPRRECOGTYPE_VBLANKCUT) {
             /*If we find a 't' and the second letter after it is n, then we think the letter after 't' should be a*/
 
-            StructExprRecog curSer, preSer, afterSer, startofM = null, firstBhblank=null, lastBhblank = null;
+            StructExprRecog curSer, preSer, afterSer, startofM = null, firstBhblank = null, lastBhblank = null;
             int startidx = -1;
             status S = status.NORMAL; /*0 means normal expr, 1 means possibly function set, 2 means possibly Matrix*/
             for (int idx = 1; idx < mlistChildren.size() - 1; idx++) {
@@ -4973,20 +5038,20 @@ public class StructExprRecog {
                 }*/
 
 
-                if(preSer.mType == UnitProtoType.Type.TYPE_INTEGRATE&&idx == 1){
-                    for(int idx2 = idx; idx2<mlistChildren.size(); idx2++){
-                        if(ispossibleEqual(mlistChildren.get(idx2))){
+                if (preSer.mType == UnitProtoType.Type.TYPE_INTEGRATE && idx == 1) {
+                    for (int idx2 = idx; idx2 < mlistChildren.size(); idx2++) {
+                        if (ispossibleEqual(mlistChildren.get(idx2))) {
                             preSer.changeSEREnumType(UnitProtoType.Type.TYPE_BRACE, "");
                         }
                     }
                 }
 
-                if(curSer.mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT&&!ispossibleEqual(curSer)){
+                if (curSer.mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT && !ispossibleEqual(curSer)) {
                     lastBhblank = curSer;
-                }else if(lastBhblank != null){
-                    if(ispossibletheconsofHblank(lastBhblank, curSer)){
+                } else if (lastBhblank != null) {
+                    if (ispossibletheconsofHblank(lastBhblank, curSer)) {
 
-                    }else{
+                    } else {
                         lastBhblank = null;
                     }
                 }
@@ -5022,22 +5087,23 @@ public class StructExprRecog {
 
                 if (preSer.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isPossibleTheStartOfMatrixOrMutiExpr(preSer.mType)) {
                     int idxofFirstHblank = -1;
-                    for(int idx2 = idx; idx2 < mlistChildren.size(); idx2++){
+                    for (int idx2 = idx; idx2 < mlistChildren.size(); idx2++) {
                         StructExprRecog temp = mlistChildren.get(idx2);
-                        if(temp.mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT){
+                        if (temp.mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT) {
                             idxofFirstHblank = idx2;
                             break;
                         }
                     }
-                    if(idxofFirstHblank != -1){
+                    if (idxofFirstHblank != -1) {
                         firstBhblank = mlistChildren.get(idxofFirstHblank);
-                        for(int idx2 = idx; idx2 < idxofFirstHblank; idx2 ++){
-                            if(!ispossibletheconsofHblank(firstBhblank, mlistChildren.get(idx2)) || mlistChildren.get(idx2).mType == UnitProtoType.Type.TYPE_EQUAL){
+                        for (int idx2 = idx; idx2 < idxofFirstHblank; idx2++) {
+                            if (!ispossibletheconsofHblank(firstBhblank, mlistChildren.get(idx2)) || mlistChildren.get(idx2).mType == UnitProtoType.Type.TYPE_EQUAL) {
                                 firstBhblank = null;
+                                break;
                             }
                         }
                     }
-                    if(firstBhblank != null) {
+                    if (firstBhblank != null) {
                         LinkedList<StructExprRecog> grandson = new LinkedList<>();
                         grandson.addAll(firstBhblank.mlistChildren);
                         int totalHeight = 0;
@@ -5046,13 +5112,16 @@ public class StructExprRecog {
                             totalHeight += curGrandson.mnHeight;
                         }
                         if (totalHeight <= preSer.mnHeight) {
-                            preSer.changeSEREnumType(UnitProtoType.Type.TYPE_BRACE, "");
+                            if (mlistChildren.indexOf(preSer) == 0)
+                                preSer.changeSEREnumType(UnitProtoType.Type.TYPE_BRACE, "");
+                            else
+                                preSer.changeSEREnumType(UnitProtoType.Type.TYPE_SQUARE_BRACKET, "");
                             System.out.println("RECIFY------find one brace!!!");
-                            preSer.bigger();
+                            //preSer.bigger();
                             startofM = preSer;
                             startidx = idx - 1;
 
-                            //lastBhblank = null;
+                            lastBhblank = null;
                             firstBhblank = null;
                         }
                     }
@@ -5067,20 +5136,20 @@ public class StructExprRecog {
                     }
                     if (totalHeight <= afterSer.mnHeight) {
                         afterSer.changeSEREnumType(UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET, "");
-                        afterSer.bigger();
+                        //afterSer.bigger();
                         lastBhblank = null;
-                        //firstBhblank = null;
+                        firstBhblank = null;
                         /*but how should we do when starofM == null*/
                         if (startofM != null) {
                             startofM.changeSEREnumType(UnitProtoType.Type.TYPE_SQUARE_BRACKET, "");
-                            startofM.bigger();
+
                             System.out.println("RECIFY------find one close brace!!!");
 
                             /*Then I want to add some rule to recify the item of the Matrix. each item of a
                              * matrix should must be a unit type*/
 
                             for (int cidx = startidx + 1; cidx <= idx; ++cidx) {
-                                recifysigleVertialLine(mlistChildren.get(cidx));
+                                //recifysigleVertialLine(mlistChildren.get(cidx));
                             }
 
                             startofM = null;

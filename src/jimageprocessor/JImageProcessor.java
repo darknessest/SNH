@@ -203,19 +203,19 @@ public class JImageProcessor {
 
             //todo Here is LH's recify
             ser = ser.recifyF();
-//            System.out.println("\n1.5-XZRECIFY：\n" + ser.toString()+"\tEXPR_TYPE: "+ser.mnExprRecogType);
-            /*Here to add my new class to recify*/
+            System.out.println("\n1.5-XZRECIFY：\n" + ser.toString()+"\tEXPR_TYPE: "+ser.mnExprRecogType);
+
             if (bFilter) {
                 ser = ExprFilter.filterRawSER(ser, null);
-                System.out.println("\n1.5-FILTERED:\n" + ser.toString()+"\tEXPR_TYPE:\t"+ser.getExprRecogType()+"\n");
+                System.out.println("\n1.6-FILTERED:\n" + ser.toString()+"\tEXPR_TYPE:\t"+ser.getExprRecogType()+"\n");
                 serOld = ser;
             }
-            for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
-                StructExprRecog serThisChild = ser.mlistChildren.get(idx);
-                System.out.print("EXPR_TYPE: "+serThisChild.mnExprRecogType + "\tM_TYPE: ");
-                System.out.printf("%28s",serThisChild.mType);
-                System.out.println("\t\t"+serThisChild.toString());
-            }
+//            for (int idx = 0; idx < ser.mlistChildren.size(); idx ++)   {
+//                StructExprRecog serThisChild = ser.mlistChildren.get(idx);
+//                System.out.print("EXPR_TYPE: "+serThisChild.mnExprRecogType + "\tM_TYPE: ");
+//                System.out.printf("%28s",serThisChild.mType);
+//                System.out.println("\t\t"+serThisChild.toString());
+//            }
             if (ser != null) {
                 //重点2 字符串重构
                 ser = ser.restruct();
@@ -259,7 +259,7 @@ public class JImageProcessor {
         long endTime = System.nanoTime();
         System.out.println("\n4-FINAL_RESULT:\n" + strOutput);
 
-        System.out.println(String.format("\nTOTAL_TIME: Recognize %s takes %s\n", strImageFile, toString(endTime - startTime)));
+        //System.out.println(String.format("\nTOTAL_TIME: Recognize %s takes %s\n", strImageFile, toString(endTime - startTime)));
         return strOutput;
     }
 

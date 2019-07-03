@@ -290,7 +290,7 @@ public class UnitRecognizer {
             UnitCandidate uc = listCands.get(0);
             System.out.println(uc.mprotoType.toString() + "\t" + uc.mprotoType.mstrFont + "\t" + uc.mdOverallSimilarity + "\t"
                     + uc.mdarraySims[UNIT_RECOG_SHAPE_COMPARING_METHOD] + "\t"
-                    + uc.mdarraySims[UNIT_RECOG_JNTPNT_COMPARING_METHOD] + "\t"
+                    + uc.mdarraySims[] + "\t"UNIT_RECOG_JNTPNT_COMPARING_METHOD
                     + uc.mdarraySims[UNIT_RECOG_LATTICEDENS_COMPARING_METHOD] + "\t"
                     + uc.mdarraySims[UNIT_RECOG_MINDISTANCE_COMPARING_METHOD]);
         }

@@ -26,7 +26,7 @@ def calculDiff(strExpr):
     newSocket.send(bytes(str(ans), encoding='utf-8'))
 
 # 图像格式转化
-def convert_img(img_file, path_to_img='data/'): # E:\\recomath\\final\SNH\Python\Pretre\Pretre\data/
+def convert_img(img_file, path_to_img='data/'):
     if img_file.endswith('.jpg') or img_file.endswith('.png') or img_file.endswith('.bmp'):
         # print(img_file + ' is being processed')
         image = Image.open(os.path.join(path_to_img, img_file))
@@ -94,6 +94,7 @@ if __name__ == "__main__":
                 calculDiff(recvData.split(':')[1])
             except:
                 print("I can't calculate it yet!")
+                newSocket.send(bytes(str("I can't calculate it yet!"), encoding='utf-8'))
 
         else:
             # here we can put our code
