@@ -4828,7 +4828,7 @@ public class StructExprRecog {
             }
         } else
             return false;
-        System.out.println("Is possible equal!!!");
+        //System.out.println("Is possible equal!!!");
         return true;
     }
 
@@ -4900,7 +4900,7 @@ public class StructExprRecog {
         } else {
             for (StructExprRecog son : H.mlistChildren) {
                 if (((son.mnTop - son.mnHeight * 0.3) < S.mnTop) && (son.mnTop + son.mnHeight * 1.3 > (S.mnTop + S.mnHeight))) {
-                    System.out.println("is belong to the H");
+                    //System.out.println("is belong to the H");
                     return true;
                 }
             }
@@ -4956,7 +4956,7 @@ public class StructExprRecog {
                         S.add(son);
                         preSon = son;
                     } else if (son.mType == UnitProtoType.Type.TYPE_SUBTRACT && sta == 1) {
-                        System.out.println(son.mnWidth + "====" + preSon.mnWidth);
+                        //System.out.println(son.mnWidth + "====" + preSon.mnWidth);
                         System.out.println(Math.abs((Math.abs(preSon.mnWidth - son.mnWidth)) / (preSon.mnWidth + 0.01) - 0));
                         if (Math.abs((son.mnWidth) / (preSon.mnWidth + 0.01) - 1) <= 0.4) {
                             //Here we change to substract to euqal
@@ -5058,7 +5058,7 @@ public class StructExprRecog {
                         curSer.mstrFont = "";
                         curSer.mdSimilarity = 0.0;
                         curSer.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
-                        System.out.println("RECIFY------change one t*n to tan!!!");
+                        //System.out.println("RECIFY------change one t*n to tan!!!");
                     }
                 }
                 if (curSer.mType == UnitProtoType.Type.TYPE_SMALL_I) {
@@ -5067,7 +5067,7 @@ public class StructExprRecog {
                         curSer.mstrFont = "";
                         curSer.mdSimilarity = 0.0;
                         curSer.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
-                        System.out.println("RECIFY------change one t*n to sin!!!");
+                        //System.out.println("RECIFY------change one t*n to sin!!!");
                     }
                 }
                 if (preSer.mType == UnitProtoType.Type.TYPE_SMALL_C || preSer.mType == UnitProtoType.Type.TYPE_BIG_C) {
@@ -5076,7 +5076,7 @@ public class StructExprRecog {
                         curSer.mstrFont = "";
                         curSer.mdSimilarity = 0.0;
                         curSer.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
-                        System.out.println("RECIFY------change one c*s to cos!!!");
+                        //System.out.println("RECIFY------change one c*s to cos!!!");
                     }
                 }
 
@@ -5111,7 +5111,7 @@ public class StructExprRecog {
                                 preSer.changeSEREnumType(UnitProtoType.Type.TYPE_BRACE, "");
                             else
                                 preSer.changeSEREnumType(UnitProtoType.Type.TYPE_SQUARE_BRACKET, "");
-                            System.out.println("RECIFY------find one brace!!!");
+                            //System.out.println("RECIFY------find one brace!!!");
                             //preSer.bigger();
                             startofM = preSer;
                             startidx = idx - 1;
@@ -5138,7 +5138,7 @@ public class StructExprRecog {
                         if (startofM != null) {
                             startofM.changeSEREnumType(UnitProtoType.Type.TYPE_SQUARE_BRACKET, "");
 
-                            System.out.println("RECIFY------find one close brace!!!");
+                            //System.out.println("RECIFY------find one close brace!!!");
 
                             /*Then I want to add some rule to recify the item of the Matrix. each item of a
                              * matrix should must be a unit type*/

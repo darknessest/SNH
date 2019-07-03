@@ -288,7 +288,12 @@ public class Controller implements Initializable {
             //************************
             if (strExpressions.contains("\n"))//方程组
             {
-                strExpressions = Cut(strExpressions);
+                try {
+                    strExpressions = Cut(strExpressions);
+                }
+                catch (ErrProcessor.JFCALCExpErrException e) {
+                    System.out.println("not FCZ but have \\n ");
+                }
             } else if (strExpressions.contains("integrate") && strExpressions.contains("=="))//积分方程
             {
                 String calcA1;
