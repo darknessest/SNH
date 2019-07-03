@@ -1,8 +1,6 @@
 import os
 
 import socket
-
-import time
 import sympy
 
 import numpy as np
@@ -78,9 +76,6 @@ if __name__ == "__main__":
     sock.bind(address)
     sock.listen()
 
-    dml_cnt = 0
-    dml_last_time = time.time()
-    dml_this_time = dml_last_time
     while True:
         all_images = []
         all_labels = []
@@ -100,14 +95,6 @@ if __name__ == "__main__":
             # here we can put our code
             for file in os.listdir(path):
                 if not file.startswith("."):
-
-                    dml_last_time = dml_this_time
-                    dml_this_time = time.time()
-                    if (dml_this_time - dml_last_time > 1):
-                        dml_cnt = 1
-                        print('----------------------------------------')
-                    print(dml_cnt)
-                    dml_cnt += 1
 
                     img = io.imread(os.path.join(path, file), as_gray=True)
                     # plt.imshow(img)

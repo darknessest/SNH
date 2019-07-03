@@ -3936,7 +3936,7 @@ public class StructExprRecog {
                             } else if (serThisChild.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET) {
                                 boolean dmlMatch = false;
                                 StructExprRecog serDmlChild = null;
-                                for (int i = 1; i < mlistChildren.size() ; ++i) {
+                                for (int i = mlistChildren.size()-1; i >=0 ; --i) {
                                     serDmlChild = mlistChildren.get(i);
                                     if (serDmlChild.mType== UnitProtoType.Type.TYPE_ROUND_BRACKET) {
                                         dmlMatch = true;
@@ -3950,7 +3950,7 @@ public class StructExprRecog {
                             else if (serThisChild.mType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET) {
                                 boolean dmlMatch = false;
                                 StructExprRecog serDmlChild = null;
-                                for (int i = 1; i < mlistChildren.size() ; ++i) {
+                                for (int i = mlistChildren.size()-1; i >=0 ; --i) {
                                     serDmlChild = mlistChildren.get(i);
                                     if (serDmlChild.mType== UnitProtoType.Type.TYPE_SQUARE_BRACKET) {
                                         dmlMatch = true;
