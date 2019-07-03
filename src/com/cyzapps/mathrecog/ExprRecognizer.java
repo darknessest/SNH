@@ -434,18 +434,13 @@ public class ExprRecognizer {
                                 imgChopOriginal.getLeftInOriginalImg(), imgChopOriginal.getTopInOriginalImg(),
                                 imgChopOriginal.mnWidth, imgChopOriginal.mnHeight, imgChopShinked,
                                 listCandidates.get(0).mdOverallSimilarity);
-//                        System.out.println(listCandidates.get(0).mprotoType.mstrFont);
-//                        System.out.println("experssion预识别1：" + serReturnCand1.toString());
-//                        System.out.println("experssion预识别2：" + serReturnCand2.toString());
-                    }//根据运行，选这个条件
+                    }
                     else {
                         // we still need to set its place and image chop although it is unknown.
                         serReturnCand1.setStructExprRecog(UnitProtoType.Type.TYPE_UNKNOWN, serReturnCand1.getFont(),
                                 imgChopOriginal.getLeftInOriginalImg(), imgChopOriginal.getTopInOriginalImg(),
                                 imgChopOriginal.mnWidth, imgChopOriginal.mnHeight, imgChopShinked,
                                 serReturnCand1.mdSimilarity);
-
-//                        System.out.println("experssion:识别4" + serReturn.toString());
                     }
                     if (imgChopsFrom == null || nCutMode != 1) {
                         // if imgChopsFrom is null, means we are analyzing a single connected piece
@@ -455,16 +450,14 @@ public class ExprRecognizer {
                         imgChopsFrom = new ImageChops();
                         imgChopsFrom.mlistChops.add(imgChopOriginal);
                         nCutMode = 1;   // vertical cut.
-//                        System.out.println("experssion:识别5" + serReturn.toString());
                     }
 
+                    //还是要用Thinned
                     String dir = "python" + File.separator + "data" + File.separator + String.format("%03d", 1) + ".jpg";
-                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
-                    dir = "python" + File.separator + "data_backup" + File.separator + String.format("%03d", count++) + ".jpg";
-                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
+                    ImgMatrixOutput.createMatrixImage(imgChopOriginal.mbarrayImg, dir);
                     //分析图片用的，可注释这两行
-                    //String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
-                    //ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
+//                    String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
+//                    ImgMatrixOutput.createMatrixImage(imgChopOriginal.mbarrayImg, dml_dir);
 
                     //todo add some rule to not use or trust py's result by LH
                     if(!shouldnotUsePy(serReturnCand1))
@@ -475,21 +468,18 @@ public class ExprRecognizer {
                     System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu +"\t"+similarty);
                     UnitProtoType.Type cType = getTpye((resu));
                     serReturn = serReturnCand1;
-                    if ((similarty >= 0.995||cType==serReturnCand1.mType)&& !shouldnotUsePy(serReturnCand1) &&  !shouldnotTrustPy(cType)) {
-                        serReturn = serReturnCand1;
+                    if ((similarty >= 0.995||cType==serReturnCand1.mType)&& !shouldnotUsePy(serReturnCand1) && !shouldnotTrustPy(cType)) {
                         serReturn.mType = correctPY_YX(getTpye(resu),serReturnCand1.mType,getTpye(resu));
                         serReturn.mdSimilarity = 0.0;
                         serReturn.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
                     }
                     //这里进行过度切分！(过度切分并没有用cnn来识别）然后，从java识别结果ser1和过度切分分析结果ser2中选一个
-                    /*
-                    else {
-                        serReturnCand1.mType = correctPY_YX(getTpye(resu),serReturnCand1.mType,serReturnCand1.mType);
-                        serReturnCand2 = disconnect2Recog(imgChopsFrom, nCutMode, imgChopsFrom.mlistChops.indexOf(imgChopOriginal), dAvgStrokeWidth, serReturnCand1, new LinkedList<ImageChop>(), nStackLvl + 1);
-                        serReturn = selectSERFromCands(serReturnCand1, serReturnCand2);
-                    }
-                    */
-                    System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString());
+//                    else {
+//                        serReturnCand1.mType = correctPY_YX(getTpye(resu),serReturnCand1.mType,serReturnCand1.mType);
+//                        serReturnCand2 = disconnect2Recog(imgChopsFrom, nCutMode, imgChopsFrom.mlistChops.indexOf(imgChopOriginal), dAvgStrokeWidth, serReturnCand1, new LinkedList<ImageChop>(), nStackLvl + 1);
+//                        serReturn = selectSERFromCands(serReturnCand1, serReturnCand2);
+//                    }
+                    //System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString()+"\n");
 
                 } else {
                     int nExtractedMajorIdx = ExprSeperator.getMajorChopFromSameOriginal(imgChopsExtracted);
@@ -535,7 +525,7 @@ public class ExprRecognizer {
         unitProtoTypeP.mnUnitType = pythonType;
         UnitProtoType unitProtoTypeJ = new UnitProtoType();
         unitProtoTypeJ.mnUnitType = javaType;
-        if(pythonType==UnitProtoType.Type.TYPE_UNKNOWN && javaType==UnitProtoType.Type.TYPE_BIG_S)
+        if(pythonType==UnitProtoType.Type.TYPE_INTEGRATE && javaType==UnitProtoType.Type.TYPE_BIG_S)
         {//python:{ java:s 则：int
             return UnitProtoType.Type.TYPE_INFINITE;
         }

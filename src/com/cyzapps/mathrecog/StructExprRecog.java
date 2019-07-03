@@ -1340,7 +1340,7 @@ public class StructExprRecog {
             // step 4.3 : todo at last, trying to rectify some miss-identified char levels
             for (int idx = 0; idx < listBaseULIdentified.size(); idx++) {
                 //分析中间结果之用
-                System.out.println(listBaseULIdentified.get(idx).mnExprRecogType+"\t"+listBaseULIdentified.get(idx).toString()+"\t"+listCharLevel.get(idx));
+                //System.out.println(listBaseULIdentified.get(idx).mnExprRecogType+"\t"+listBaseULIdentified.get(idx).toString()+"\t"+listCharLevel.get(idx));
                 if (listBaseULIdentified.get(idx).mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
                         && (listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_EQUAL
                         || listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_EQUAL_ALWAYS)
@@ -1403,7 +1403,7 @@ public class StructExprRecog {
                 // need not to consider a case like \topunder{infinite, \Sigma, n = 1} is misrecognized to
                 // \topunder{infinite, \Sigma, n^=}_1. This kind of situation has been processed.
 
-                if (listBaseULIdentified.get(idx).mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && listCharLevel.get(idx) !=0) {
+                if (listBaseULIdentified.get(idx).mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && listCharLevel.get(idx) != 0) {
                     //todo dml_changed7: 先粗暴的认为dx不可能作为指数，后续可加入更高级的纠错逻辑（比如根据切块中心坐标进行纠错）。
                     if (listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_SMALL_D
                             && ((idx < listBaseULIdentified.size() - 1) && listBaseULIdentified.get(idx + 1).mType == UnitProtoType.Type.TYPE_SMALL_X)) {
@@ -1415,7 +1415,7 @@ public class StructExprRecog {
                     }
 
                     //todo dml_changed8：分数不能直接带指数，除非有括号。
-                    if(idx>0&&listBaseULIdentified.get(idx-1).mnExprRecogType == EXPRRECOGTYPE_HLINECUT) {
+                    if (idx > 0 && listBaseULIdentified.get(idx - 1).mnExprRecogType == EXPRRECOGTYPE_HLINECUT) {
                         listCharLevel.set(idx, 0);
                     }
                 }
@@ -1427,7 +1427,7 @@ public class StructExprRecog {
 //                    }
 //                }
                 //todo dml_changed10: 累乘的间接解决---如果是最大的，类型确实small_pi，则改为big_pi
-                if(idx==nBiggestChildIdx&&listBaseULIdentified.get(idx).mType ==UnitProtoType.Type.TYPE_SMALL_PI){
+                if (idx == nBiggestChildIdx && listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_SMALL_PI) {
                     listBaseULIdentified.get(idx).setUnitType(UnitProtoType.Type.TYPE_BIG_PI);
                 }
             }
@@ -3452,7 +3452,7 @@ public class StructExprRecog {
                 || unitType == UnitProtoType.Type.TYPE_VERTICAL_LINE || unitType == UnitProtoType.Type.TYPE_SMALL_Z
                 || unitType == UnitProtoType.Type.TYPE_BIG_Z || unitType == UnitProtoType.Type.TYPE_BIG_I
                 || unitType == UnitProtoType.Type.TYPE_SQUARE_BRACKET || unitType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET
-                || unitType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET) {
+                || unitType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET||unitType==UnitProtoType.Type.TYPE_BACKWARD_SLASH) {
             // open round bracket is very unlikely to be 1.
             return true;
         }
@@ -4804,8 +4804,7 @@ public class StructExprRecog {
                 || type == UnitProtoType.Type.TYPE_SMALL_L || type == UnitProtoType.Type.TYPE_SMALL_F
                 || type == UnitProtoType.Type.TYPE_SMALL_I_WITHOUT_DOT || type == UnitProtoType.Type.TYPE_BIG_I
                 || type == UnitProtoType.Type.TYPE_VERTICAL_LINE || type == UnitProtoType.Type.TYPE_SMALL_L
-                || type == UnitProtoType.Type.TYPE_SQUARE_BRACKET || type == UnitProtoType.Type.TYPE_ROUND_BRACKET
-                || type == UnitProtoType.Type.TYPE_BACKWARD_SLASH || type == UnitProtoType.Type.TYPE_FORWARD_SLASH)
+                || type == UnitProtoType.Type.TYPE_SQUARE_BRACKET || type == UnitProtoType.Type.TYPE_ROUND_BRACKET)
             return true;
 
         return false;
@@ -4816,8 +4815,7 @@ public class StructExprRecog {
         if (type == UnitProtoType.Type.TYPE_ONE || type == UnitProtoType.Type.TYPE_LEFT_ARROW
                 || type == UnitProtoType.Type.TYPE_SMALL_I_WITHOUT_DOT || type == UnitProtoType.Type.TYPE_BIG_I
                 || type == UnitProtoType.Type.TYPE_VERTICAL_LINE || type == UnitProtoType.Type.TYPE_SMALL_L
-                || type == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET || type == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET
-                || type == UnitProtoType.Type.TYPE_CLOSE_BRACE)
+                || type == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET || type == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET)
             return true;
         return false;
     }
@@ -4874,7 +4872,7 @@ public class StructExprRecog {
                     newSon.add(son.mlistChildren.getFirst());
                     newSon.add(son.mlistChildren.getLast());
                     System.out.println("change!!!!!!!!!!");
-                } */else {
+                } */ else {
                     newSon.add(son);
                 }
             }
@@ -4888,7 +4886,7 @@ public class StructExprRecog {
                         son.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
                     } else if (isPossibleZero(son.mType)) {
                         son.changeSEREnumType(UnitProtoType.Type.TYPE_ZERO, "");
-                    }else if(son.mType == UnitProtoType.Type.TYPE_LARGER){
+                    } else if (son.mType == UnitProtoType.Type.TYPE_LARGER) {
                         son.changeSEREnumType(UnitProtoType.Type.TYPE_SEVEN, "");
                     }
                 }
@@ -4896,11 +4894,11 @@ public class StructExprRecog {
         }
     }
 
-    public boolean ispossibletheconsofHblank(StructExprRecog H, StructExprRecog S){
-        if(H.mnExprRecogType != EXPRRECOGTYPE_HBLANKCUT){
+    public boolean ispossibletheconsofHblank(StructExprRecog H, StructExprRecog S) {
+        if (H.mnExprRecogType != EXPRRECOGTYPE_HBLANKCUT) {
             return false;
-        }else{
-            for(StructExprRecog son : H.mlistChildren) {
+        } else {
+            for (StructExprRecog son : H.mlistChildren) {
                 if (((son.mnTop - son.mnHeight * 0.3) < S.mnTop) && (son.mnTop + son.mnHeight * 1.3 > (S.mnTop + S.mnHeight))) {
                     System.out.println("is belong to the H");
                     return true;
@@ -4957,6 +4955,10 @@ public class StructExprRecog {
                         sta = 1;
                         S.add(son);
                         preSon = son;
+                    } else if (son.mType == UnitProtoType.Type.TYPE_SUBTRACT && sta == 1) {
+                        //System.out.println(son.mnWidth + "====" + preSon.mnWidth);
+                        System.out.println(Math.abs((Math.abs(preSon.mnWidth - son.mnWidth)) / (preSon.mnWidth + 0.01) - 0));
+                        if (Math.abs((son.mnWidth) / (preSon.mnWidth + 0.01) - 1) <= 0.4) {
                     }
                     else if(son.mType == UnitProtoType.Type.TYPE_SUBTRACT && sta == 1){
                         System.out.println(son.mnWidth + "====" + preSon.mnWidth);
@@ -4984,6 +4986,7 @@ public class StructExprRecog {
                     } else {
                         S.add(son);
                         sta = 0;
+
                     }
                 }
                 mlistChildren.clear();
@@ -5116,7 +5119,7 @@ public class StructExprRecog {
                                 preSer.changeSEREnumType(UnitProtoType.Type.TYPE_BRACE, "");
                             else
                                 preSer.changeSEREnumType(UnitProtoType.Type.TYPE_SQUARE_BRACKET, "");
-                            System.out.println("RECIFY------find one brace!!!");
+                            //System.out.println("RECIFY------find one brace!!!");
                             //preSer.bigger();
                             startofM = preSer;
                             startidx = idx - 1;

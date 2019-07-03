@@ -19,7 +19,9 @@
 		</LetterCandidates>
 	</MisrecogWord>
 	<MisrecogWord ShouldBe="sin" WordType="FUNCTION" >
+		<WordCandidate>s1n</WordCandidate>
 		<WordCandidate>91n</WordCandidate>
+		<WordCandidate>9ln</WordCandidate>
 		<LetterCandidates Index="0" UnitType="SMALL_S" >
 			<LetterCandidate>s</LetterCandidate>
 			<LetterCandidate>S</LetterCandidate>
