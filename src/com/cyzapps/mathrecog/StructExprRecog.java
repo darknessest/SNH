@@ -3963,7 +3963,7 @@ public class StructExprRecog {
                             }
                         }
                     }
-                    //剩下的都在这呢
+                    //剩下的都在这
                     else {
                         //前一个后一个
                         StructExprRecog serPrevChild = mlistChildren.get(idx - 1);
