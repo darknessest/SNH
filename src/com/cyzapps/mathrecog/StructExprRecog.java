@@ -4028,7 +4028,7 @@ public class StructExprRecog {
                                     }
                                 }
                             }
-                            //todo dml_changed5.2 括号不匹配的话就进行改正
+                            //todo dml_changed5.2 括号不匹配不可---初级纠错，可进一步完善括号匹配机制
                             else if (serThisChild.isCloseBoundChar() || serThisChild.isBoundChar()) {
                                 boolean dmlMatch = false;
                                 StructExprRecog serDmlChild = null;
@@ -4041,7 +4041,7 @@ public class StructExprRecog {
                                             break;
                                         }
                                     }
-                                    if (!dmlMatch) {
+                                    if (!dmlMatch) {//不纠错了，直接改成1吧，因为别的地反可能也有用到clm进行修改的
                                         serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
                                     }
                                 }
@@ -4187,9 +4187,9 @@ public class StructExprRecog {
                 StructExprRecog serThisChild = mlistChildren.get(idx).getPrincipleSER(4);
                 //todo by LH
                 /*change some D to 0*/
-                if (idx >= 1) {
+                if(idx>=1) {
                     StructExprRecog curSer = mlistChildren.get(idx);
-                    StructExprRecog preSer = mlistChildren.get(idx - 1);
+                    StructExprRecog preSer = mlistChildren.get(idx-1);
                     if (curSer.mType == UnitProtoType.Type.TYPE_BIG_D && (isNumberChar(preSer.mType))) {
                         curSer.changeSEREnumType(UnitProtoType.Type.TYPE_ZERO, "");
                     }
@@ -4829,7 +4829,7 @@ public class StructExprRecog {
             }
         } else
             return false;
-        //System.out.println("Is possible equal!!!");
+        System.out.println("Is possible equal!!!");
         return true;
     }
 
@@ -4874,6 +4874,7 @@ public class StructExprRecog {
                     newSon.add(son.mlistChildren.getLast());
                     System.out.println("change!!!!!!!!!!");
                 } */ else {
+                    //hhhhhh
                     newSon.add(son);
                 }
             }
@@ -4901,7 +4902,7 @@ public class StructExprRecog {
         } else {
             for (StructExprRecog son : H.mlistChildren) {
                 if (((son.mnTop - son.mnHeight * 0.3) < S.mnTop) && (son.mnTop + son.mnHeight * 1.3 > (S.mnTop + S.mnHeight))) {
-                    //System.out.println("is belong to the H");
+                    System.out.println("is belong to the H");
                     return true;
                 }
             }
@@ -4928,11 +4929,14 @@ public class StructExprRecog {
         ImageChop imgChop4SER = ExprSeperator.mergeImgChopsWithSameOriginal(listParts);
         serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_DIVIDE, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, dSimilarity);
     }*/
-//
-//    public void bigger(){
-//        mnTop -= mnHeight*0.15;
-//        mnHeight = (int)(mnHeight*1.3);
-//    }
+
+    public void bigger(){
+        mnTop -= mnHeight*0.15;
+        if(mnTop < 0){
+            mnTop = 1;
+        }
+        mnHeight = (int)(mnHeight*1.3);
+    }
 
     public StructExprRecog recifyF() {
         /*1. optimizing the recognising of function set and matrix*/
@@ -4951,15 +4955,16 @@ public class StructExprRecog {
             StructExprRecog preSon = null;
             if (ispossibleEqual(this)) {
                 LinkedList S = new LinkedList<>();
-                for (StructExprRecog son : mlistChildren) {
-                    if (son.mType == UnitProtoType.Type.TYPE_SUBTRACT && sta == 0) {
+                for(StructExprRecog son : mlistChildren){
+                    if(son.mType == UnitProtoType.Type.TYPE_SUBTRACT && sta == 0){
                         sta = 1;
                         S.add(son);
                         preSon = son;
-                    } else if (son.mType == UnitProtoType.Type.TYPE_SUBTRACT && sta == 1) {
-                        //System.out.println(son.mnWidth + "====" + preSon.mnWidth);
-                        System.out.println(Math.abs((Math.abs(preSon.mnWidth - son.mnWidth)) / (preSon.mnWidth + 0.01) - 0));
-                        if (Math.abs((son.mnWidth) / (preSon.mnWidth + 0.01) - 1) <= 0.4) {
+                    }
+                    else if(son.mType == UnitProtoType.Type.TYPE_SUBTRACT && sta == 1){
+                        System.out.println(son.mnWidth + "====" + preSon.mnWidth);
+                        System.out.println(Math.abs((Math.abs(preSon.mnWidth-son.mnWidth))/(preSon.mnWidth+0.01) - 0));
+                        if(Math.abs((son.mnWidth)/(preSon.mnWidth+0.01) - 1) <= 0.4) {
                             //Here we change to substract to euqal
                             double similarity = son.getSimilarity() > preSon.getSimilarity() ? son.getSimilarity() : preSon.getSimilarity();
                             LinkedList<ImageChop> listParts = new LinkedList<ImageChop>();
@@ -4974,6 +4979,9 @@ public class StructExprRecog {
                             //mlistChildren.remove(preSon);
                             S.add(son);
                             S.remove(preSon);
+                            if (mlistChildren.size() == 1) {
+                                this.setStructExprRecog(UnitProtoType.Type.TYPE_EQUAL, UNKNOWN_FONT_TYPE, mnLeft, mnTop, mnWidth, mnHeight, imgChop4SER, similarity);
+                            }
                             sta = 0;
                         }
                     } else {
@@ -5038,6 +5046,19 @@ public class StructExprRecog {
                     for (int idx2 = idx; idx2 < mlistChildren.size(); idx2++) {
                         if (ispossibleEqual(mlistChildren.get(idx2))) {
                             preSer.changeSEREnumType(UnitProtoType.Type.TYPE_BRACE, "");
+                            startofM = preSer;
+                            startidx = idx - 1;
+                            break;
+                        }
+                    }
+                    if(curSer.mnExprRecogType == 2){
+                        for(int idx2 = 0; idx2<curSer.mlistChildren.size(); ++idx2){
+                            StructExprRecog temp = curSer.mlistChildren.get(idx2);
+                            if(temp.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isPossibleZero(temp.mType)){
+                                temp.changeSEREnumType(UnitProtoType.Type.TYPE_ZERO, "");
+                            }else if(temp.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isPossibleTheStartOfMatrixOrMutiExpr(temp.mType)){
+                                temp.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+                            }
                         }
                     }
                 }
@@ -5059,16 +5080,16 @@ public class StructExprRecog {
                         curSer.mstrFont = "";
                         curSer.mdSimilarity = 0.0;
                         curSer.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
-                        //System.out.println("RECIFY------change one t*n to tan!!!");
+                        System.out.println("RECIFY------change one t*n to tan!!!");
                     }
                 }
                 if (curSer.mType == UnitProtoType.Type.TYPE_SMALL_I) {
                     if (afterSer.mType == UnitProtoType.Type.TYPE_SMALL_N) {
-                        curSer.mType = UnitProtoType.Type.TYPE_SMALL_S;
-                        curSer.mstrFont = "";
-                        curSer.mdSimilarity = 0.0;
-                        curSer.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
-                        //System.out.println("RECIFY------change one t*n to sin!!!");
+                        preSer.mType = UnitProtoType.Type.TYPE_SMALL_S;
+                        preSer.mstrFont = "";
+                        preSer.mdSimilarity = 0.0;
+                        preSer.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
+                        System.out.println("RECIFY------change one *in to sin!!!");
                     }
                 }
                 if (preSer.mType == UnitProtoType.Type.TYPE_SMALL_C || preSer.mType == UnitProtoType.Type.TYPE_BIG_C) {
@@ -5077,12 +5098,23 @@ public class StructExprRecog {
                         curSer.mstrFont = "";
                         curSer.mdSimilarity = 0.0;
                         curSer.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
-                        //System.out.println("RECIFY------change one c*s to cos!!!");
+                        System.out.println("RECIFY------change one c*s to cos!!!");
+                    }
+                }
+
+                if (isPossibleTheStartOfMatrixOrMutiExpr(preSer.mType) ) {
+                    if (afterSer.mType == UnitProtoType.Type.TYPE_SMALL_G) {
+                        curSer.mType = UnitProtoType.Type.TYPE_SMALL_O;
+                        curSer.mstrFont = "";
+                        curSer.mdSimilarity = 0.0;
+                        curSer.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
+                        System.out.println("RECIFY------change one l*g to log!!!");
                     }
                 }
 
                 if (preSer.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && isPossibleTheStartOfMatrixOrMutiExpr(preSer.mType)) {
                     int idxofFirstHblank = -1;
+                    firstBhblank = null;
                     for (int idx2 = idx; idx2 < mlistChildren.size(); idx2++) {
                         StructExprRecog temp = mlistChildren.get(idx2);
                         if (temp.mnExprRecogType == EXPRRECOGTYPE_HBLANKCUT) {
@@ -5106,7 +5138,9 @@ public class StructExprRecog {
                         for (int idx2 = 0; idx2 < grandson.size(); ++idx2) {
                             StructExprRecog curGrandson = grandson.get(idx2);
                             totalHeight += curGrandson.mnHeight;
+                            System.out.println(curGrandson.mnHeight);
                         }
+                        System.out.println(preSer.mnHeight);
                         if (totalHeight <= preSer.mnHeight) {
                             if (mlistChildren.indexOf(preSer) == 0)
                                 preSer.changeSEREnumType(UnitProtoType.Type.TYPE_BRACE, "");
@@ -5139,7 +5173,7 @@ public class StructExprRecog {
                         if (startofM != null) {
                             startofM.changeSEREnumType(UnitProtoType.Type.TYPE_SQUARE_BRACKET, "");
 
-                            //System.out.println("RECIFY------find one close brace!!!");
+                            System.out.println("RECIFY------find one close brace!!!");
 
                             /*Then I want to add some rule to recify the item of the Matrix. each item of a
                              * matrix should must be a unit type*/

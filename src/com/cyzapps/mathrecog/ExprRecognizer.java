@@ -454,7 +454,7 @@ public class ExprRecognizer {
 
                     //还是要用Thinned
                     String dir = "python" + File.separator + "data" + File.separator + String.format("%03d", 1) + ".jpg";
-                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
+                    ImgMatrixOutput.createMatrixImage(imgChopOriginal.mbarrayImg, dir);
                     //分析图片用的，可注释这两行
 //                    String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
 //                    ImgMatrixOutput.createMatrixImage(imgChopOriginal.mbarrayImg, dml_dir);
@@ -464,11 +464,11 @@ public class ExprRecognizer {
                         usePy();
 
                     //test3
-                    //System.out.println("[JAVA___RESULT]\t" + serReturnCand1.mType + " \t" + serReturnCand1.toString());
-                    //System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu +"\t"+similarty);
+                    System.out.println("[JAVA___RESULT]\t" + serReturnCand1.mType + " \t" + serReturnCand1.toString());
+                    System.out.println("[PYTHON_RESULT]\t" + getTpye(resu) + " \t" + resu +"\t"+similarty);
                     UnitProtoType.Type cType = getTpye((resu));
                     serReturn = serReturnCand1;
-                    if ((similarty >= 0.99||cType==serReturnCand1.mType)&& !shouldnotUsePy(serReturnCand1) && !shouldnotTrustPy(cType)) {
+                    if ((similarty >= 0.995||cType==serReturnCand1.mType)&& !shouldnotUsePy(serReturnCand1) && !shouldnotTrustPy(cType)) {
                         serReturn.mType = correctPY_YX(getTpye(resu),serReturnCand1.mType,getTpye(resu));
                         serReturn.mdSimilarity = 0.0;
                         serReturn.mnExprRecogType = StructExprRecog.EXPRRECOGTYPE_ENUMTYPE;
@@ -494,6 +494,7 @@ public class ExprRecognizer {
 
     public static String resu="**";
     public static double similarty;
+    public static int count = 0;
 
     public static boolean shouldnotUsePy(StructExprRecog ser){
         /*Some case wo shoule not use py, Because use py may let to misunderstood and to save time*/
@@ -520,6 +521,8 @@ public class ExprRecognizer {
 
     public static UnitProtoType.Type correctPY_YX(UnitProtoType.Type pythonType, UnitProtoType.Type javaType,UnitProtoType.Type returnType)
     {
+
+        //hhhhhh
         UnitProtoType unitProtoTypeP = new UnitProtoType();
         unitProtoTypeP.mnUnitType = pythonType;
         UnitProtoType unitProtoTypeJ = new UnitProtoType();
@@ -566,7 +569,7 @@ public class ExprRecognizer {
         similarty = 1;
         try {
             int count = 0;
-            Socket socket = new Socket("127.0.0.1", 9999);
+            Socket socket = new Socket("127.0.0.1", 9998);
             //System.out.println("Client start!");
             PrintWriter out = new PrintWriter(socket.getOutputStream()); // 输出，to 服务器 socket
             out.println("Client request! :-) ");
