@@ -13,6 +13,7 @@ public class SNH extends Application{
         launch(args);
     }
 
+    //test-by DML
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));   // Settings for elements on the screen
