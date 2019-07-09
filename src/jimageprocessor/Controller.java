@@ -312,7 +312,7 @@ public class Controller implements Initializable {
                 Function df = new Function(strExpressions);
                 String arg = Function.x + Function.ccount + Function.str;//这里的df.ccount，为求导阶数，目前一阶导数测试通过
 
-                Socket socket = new Socket("127.0.0.1", 9999);
+                Socket socket = new Socket("127.0.0.1", 9998);
                 System.out.println("Client start!");
                 PrintWriter out = new PrintWriter(socket.getOutputStream()); // 输出，to 服务器 socket
                 out.println("derivative:" + arg);
