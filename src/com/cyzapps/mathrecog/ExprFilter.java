@@ -899,6 +899,7 @@ public class ExprFilter {
                         // vertical line, forward slash and backward slash can be actually misrecognized 1, multiply can be x.
                         continue;
                     } else {
+                        //2final_change: times也加上。
                         if(ser.mType==UnitProtoType.Type.TYPE_DOT_MULTIPLY){
                             ser.mType=UnitProtoType.Type.TYPE_SMALL_X;
                         }

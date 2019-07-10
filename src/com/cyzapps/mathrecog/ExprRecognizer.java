@@ -122,7 +122,7 @@ public class ExprRecognizer {
             }
         }
 
-        //todo 关键还是要在这里识别出 TYPE_LINE_DIV 类型
+        // 关键还是要在这里识别出 TYPE_LINE_DIV 类型
         //先在这里找到分数线的长度，默认是最长的那个imgchop的宽度
         for (int idx = nStartIdx; idx <= nEndIdx; idx++) {
             ImageChop imgChop = imgChops.mlistChops.get(idx);
@@ -260,7 +260,7 @@ public class ExprRecognizer {
 
         StructExprRecog serReturn = new StructExprRecog(imgChopOriginal.mbarrayOriginalImg);
 
-        // todo 重点！！！ 判断切块类型
+        //  重点！！！ 判断切块类型
         if (imgChopOriginal.isEmptyImage() ||
                 imgChopOriginal.mnChopType == ImageChop.TYPE_BLANK_DIV ||
                 imgChopOriginal.mnChopType == ImageChop.TYPE_UNDER_DIV ||
@@ -279,7 +279,7 @@ public class ExprRecognizer {
 
             return serReturn;
         }
-        //todo  TYPE_LINE_DIV——>TYPE_SUBTRACT
+        //  TYPE_LINE_DIV——>TYPE_SUBTRACT
         else if (imgChopOriginal.mnChopType == ImageChop.TYPE_LINE_DIV) {
             ImageChop imgChopShrinked = imgChopOriginal.shrinkImgArray();
             serReturn.setStructExprRecog(UnitProtoType.Type.TYPE_SUBTRACT, StructExprRecog.UNKNOWN_FONT_TYPE,
@@ -454,10 +454,10 @@ public class ExprRecognizer {
 
                     //还是要用Thinned
                     String dir = "python" + File.separator + "data" + File.separator + String.format("%03d", 1) + ".jpg";
-                    ImgMatrixOutput.createMatrixImage(imgChopOriginal.mbarrayImg, dir);
+                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dir);
                     //分析图片用的，可注释这两行
-//                    String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
-//                    ImgMatrixOutput.createMatrixImage(imgChopOriginal.mbarrayImg, dml_dir);
+                    String dml_dir = "dml_data" + File.separator + String.format("%03d", ++dml_cnt) + ".jpg";
+                    ImgMatrixOutput.createMatrixImage(imgChopThinned.mbarrayImg, dml_dir);
 
                     //todo add some rule to not use or trust py's result by LH
                     if(!shouldnotUsePy(serReturnCand1))
@@ -479,7 +479,7 @@ public class ExprRecognizer {
 //                        serReturnCand2 = disconnect2Recog(imgChopsFrom, nCutMode, imgChopsFrom.mlistChops.indexOf(imgChopOriginal), dAvgStrokeWidth, serReturnCand1, new LinkedList<ImageChop>(), nStackLvl + 1);
 //                        serReturn = selectSERFromCands(serReturnCand1, serReturnCand2);
 //                    }
-                    //System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString()+"\n");
+                    System.out.println("[FINAL__RESULT]\t" + serReturn.mType + " \t" + serReturn.toString()+"\n");
 
                 } else {
                     int nExtractedMajorIdx = ExprSeperator.getMajorChopFromSameOriginal(imgChopsExtracted);
@@ -577,7 +577,7 @@ public class ExprRecognizer {
             int i = 0;
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // 输入， from 服务器 socket
             while ((line = in.readLine()) != null) {
-                //todo 这里已经将所有CNN识别结果都转化成小写了
+                // 这里已经将所有CNN识别结果都转化成小写了
                 line = line.toLowerCase();
                 //System.out.println(line);
                 if (i % 2 == 0)

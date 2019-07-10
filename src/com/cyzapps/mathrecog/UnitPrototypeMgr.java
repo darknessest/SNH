@@ -1614,8 +1614,9 @@ public class UnitPrototypeMgr {
                 case "\\dottimes":
                     mn=UnitProtoType.Type.TYPE_DOT_MULTIPLY;
                     break;
+                    //todo 1_final_change by dml TYPE_DOT_MULTIPLY -> TYPE_MULTIPLY
                 case "\\times":
-                    mn=UnitProtoType.Type.TYPE_DOT_MULTIPLY;
+                    mn=UnitProtoType.Type.TYPE_MULTIPLY;
                     break;
                 case "\\div":
                     mn=UnitProtoType.Type.TYPE_DIVIDE;

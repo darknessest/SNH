@@ -306,7 +306,7 @@ public class PtnSlvMultiVarsIdentifier {
 		} else if (arrayaeOriginalExprs.length != mpssArray.length)	{
 			return false;	// number of expressions in pattern != number of original expressions
 		} else	{
-			// TODO: note, so far only support no order multiple variables, but should support ordered multiple variables later on.
+			// note, so far only support no order multiple variables, but should support ordered multiple variables later on.
 			listPEUMap.clear();
 			for (int idx = 0; idx < listOriginalExprVars.size(); idx ++)	{
 				listPEUMap.add(new PatternExprUnitMap(listOriginalExprVars.get(idx), listPatternVars.get(idx)));
@@ -395,7 +395,7 @@ public class PtnSlvMultiVarsIdentifier {
 			}
 			if (!bIsSingleExprMatchPattern)	{
 				// cannot find a match
-				// TODO: here assume all pattern equations have same order level. If they have different
+				//  here assume all pattern equations have same order level. If they have different
 				// order level, have to repeat above search again.
 				bIsMatchPattern = false;
 				break;

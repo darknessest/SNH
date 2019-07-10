@@ -29,7 +29,7 @@ public class StructExprRecog {
     public final static int EXPRRECOGTYPE_HCUTCAPUNDER = 6;
     public final static int EXPRRECOGTYPE_VBLANKCUT = 10;
     public final static int EXPRRECOGTYPE_VCUTLEFTTOPNOTE = 11;    // first element is left top note, second element is base
-    //todo 指数以及上下标的定义在这里
+    // 指数以及上下标的定义在这里
     public final static int EXPRRECOGTYPE_VCUTUPPERNOTE = 12;   // first element is  base, second element is upper note
     public final static int EXPRRECOGTYPE_VCUTLOWERNOTE = 13;   // first element is base, second element is lower note
     public final static int EXPRRECOGTYPE_VCUTLUNOTES = 14;  // first element is base, second element is lower note, third element is upper note.
@@ -52,7 +52,7 @@ public class StructExprRecog {
     // 0 means UnitProtoType,
     // 1 means a list of StructuredExprRecog children，but unknown cut mode.
 
-    //todo 这里定义了水平切割的各种情况
+    // 这里定义了水平切割的各种情况
 
     // 2 means horizontally cut by blank, 空白
     // 3 means horizontally cut by line   横线？
@@ -492,7 +492,7 @@ public class StructExprRecog {
         return true;
     }
 
-    //todo CORE 重构函数
+    // CORE 重构函数
     public StructExprRecog restruct() throws InterruptedException {  // needs original image chop as parameter which will be used for matrix and m exprs.
         if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException();
@@ -686,7 +686,6 @@ public class StructExprRecog {
                 }
             }
 
-            //todo step2 分析上下标
 
             // step 2: identify upper notes or lower notes, This is raw upper lower identification procedure. h-cut
             // children are not analyzed.
@@ -1178,7 +1177,6 @@ public class StructExprRecog {
                 }
             }
 
-            // todo step 4.2, identify cap under
             // now we need to handle the cap and/or under notes for \Sigma, \Pi and \Integrate
             // this is for the case that \topunder{infinite, \Sigma, n = 1} is misrecognized to
             // \topunder{infinite, \Sigma, n^=}_1, or \topunder{1+2+3+4, \integrate, 5+6+7+8+9}
@@ -1337,10 +1335,10 @@ public class StructExprRecog {
             listBaseULIdentified = listCUIdentifiedBLU;
             listCharLevel = listCUIdentifiedCharLvl;
 
-            // step 4.3 : todo at last, trying to rectify some miss-identified char levels
+            // step 4.3 : at last, trying to rectify some miss-identified char levels
             for (int idx = 0; idx < listBaseULIdentified.size(); idx++) {
                 //分析中间结果之用
-                //System.out.println(listBaseULIdentified.get(idx).mnExprRecogType+"\t"+listBaseULIdentified.get(idx).toString()+"\t"+listCharLevel.get(idx));
+                System.out.println(listBaseULIdentified.get(idx).mnExprRecogType+"\t"+listBaseULIdentified.get(idx).toString()+"\t"+listCharLevel.get(idx));
                 if (listBaseULIdentified.get(idx).mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
                         && (listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_EQUAL
                         || listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_EQUAL_ALWAYS)
@@ -1405,12 +1403,17 @@ public class StructExprRecog {
 
                 if (listBaseULIdentified.get(idx).mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && listCharLevel.get(idx) != 0) {
                     //todo dml_changed7: 先粗暴的认为dx不可能作为指数，后续可加入更高级的纠错逻辑（比如根据切块中心坐标进行纠错）。
-                    if (listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_SMALL_D
-                            && ((idx < listBaseULIdentified.size() - 1) && listBaseULIdentified.get(idx + 1).mType == UnitProtoType.Type.TYPE_SMALL_X)) {
+                    if (listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_SMALL_D && ((idx < listBaseULIdentified.size() - 1)
+                            && (listBaseULIdentified.get(idx + 1).mType == UnitProtoType.Type.TYPE_SMALL_X
+                            ||listBaseULIdentified.get(idx + 1).mType == UnitProtoType.Type.TYPE_MULTIPLY
+                            ||listBaseULIdentified.get(idx + 1).mType == UnitProtoType.Type.TYPE_DOT_MULTIPLY))) {
                         listCharLevel.set(idx, 0);
                     }
-                    if (listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_SMALL_X
-                            && ((idx > 0) && listBaseULIdentified.get(idx - 1).mType == UnitProtoType.Type.TYPE_SMALL_D)) {
+                    //todo 2final_change: x 扩充到 times 和 dottimes |
+                    if (((idx > 0) && listBaseULIdentified.get(idx - 1).mType == UnitProtoType.Type.TYPE_SMALL_D)
+                            &&(listBaseULIdentified.get(idx ).mType == UnitProtoType.Type.TYPE_SMALL_X
+                            ||listBaseULIdentified.get(idx ).mType == UnitProtoType.Type.TYPE_MULTIPLY
+                            ||listBaseULIdentified.get(idx ).mType == UnitProtoType.Type.TYPE_DOT_MULTIPLY)) {
                         listCharLevel.set(idx, 0);
                     }
 
@@ -3440,7 +3443,7 @@ public class StructExprRecog {
         return false;
     }
 
-    //todo 可能是数字的
+    //可能是数字的
     public static boolean isPossibleNumberChar(UnitProtoType.Type unitType) {
         if (unitType == UnitProtoType.Type.TYPE_ONE || unitType == UnitProtoType.Type.TYPE_TWO
                 || unitType == UnitProtoType.Type.TYPE_THREE || unitType == UnitProtoType.Type.TYPE_FOUR
@@ -3768,7 +3771,7 @@ public class StructExprRecog {
         }
     }
 
-    //todo : 错误字符一轮修正----主要是纠正数字和字母
+    //错误字符一轮修正----主要是纠正数字和字母
     public void rectifyMisRecogChars1stRnd(CharLearningMgr clm) {
         // some characters might be misrecognized, so rectify them
         switch (mnExprRecogType) {
@@ -3859,7 +3862,7 @@ public class StructExprRecog {
                         }
                     }
 
-                    //todo 这块贼六！！！！
+                    // 这块贼六！！！！
                     //第一个字符不是数字、不是字母等……那么可能识别错了
                     if (idx == 0) {
                         if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
@@ -4405,7 +4408,7 @@ public class StructExprRecog {
         }
     }
 
-    //todo ：函数名修正
+
     public void rectifyMisRecogWords(MisrecogWordMgr mwm) throws InterruptedException {
         if (mnExprRecogType == EXPRRECOGTYPE_VBLANKCUT) {
             int idx = 0;
@@ -4662,7 +4665,7 @@ public class StructExprRecog {
             }
             return strReturn;
         }
-        //todo 分数结构判定及重构
+
         else if (mnExprRecogType == EXPRRECOGTYPE_HLINECUT) {
             // horizontally cut by line div, and assume there are three children, the middle one is divide.
             String strNumerator = mlistChildren.getFirst().toString();

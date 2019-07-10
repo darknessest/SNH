@@ -357,7 +357,7 @@ public class Controller implements Initializable {
 
     // This method can be used outside (in other files)
     // Returns path to the opened image
-    // TODO 如果在别的文档不能用这个函数，就可以删掉
+    //如果在别的文档不能用这个函数，就可以删掉
     // 注意函数自动增加 '\n'
     private String getSelectedImagePath() {
         return SelectedImagePath;
@@ -379,7 +379,7 @@ public class Controller implements Initializable {
             ccount = 1;
         }
 
-        // TODO 计算求导阶数，并赋值给ccount
+        //  计算求导阶数，并赋值给ccount
         public static void StringCount(String str) {
             int index = 0;
             String key = "derivative";

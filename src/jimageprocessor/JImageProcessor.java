@@ -201,7 +201,7 @@ public class JImageProcessor {
             StructExprRecog serOld = ser; //保存上一步的结果，便于与本步对比
             System.out.println("\n1-RAW: image " + strImageFile + " includes expression :\n" + ser.toString()+"\tEXPR_TYPE:\t"+ser.getExprRecogType());
 
-            //todo Here is LH's recify
+            // Here is LH's recify
             ser = ser.recifyF();
             System.out.println("\n1.5-XZRECIFY：\n" + ser.toString()+"\tEXPR_TYPE: "+ser.mnExprRecogType);
 

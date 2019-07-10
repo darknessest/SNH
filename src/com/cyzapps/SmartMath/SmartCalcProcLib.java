@@ -376,7 +376,7 @@ public class SmartCalcProcLib {
 							LinkedList<LinkedList<UnknownVariable>> listAllResultSets = SolveAnalyzer.solveExprVars(SolveAnalyzer.mspm, aeOriginalExprs, listVarUnknown, lVarNameSpaces);
 							if (listAllResultSets.size() > 0) {
 								//strOutput += "<pre>";
-								// TODO: at this moment only store all the roots in an array. In the future should have more choices.此时，只将所有根存储在一个数组中。未来应该有更多的选择。
+								//  at this moment only store all the roots in an array. In the future should have more choices.此时，只将所有根存储在一个数组中。未来应该有更多的选择。
 								for (int idx = 0; idx < listAllResultSets.get(0).size(); idx++) {
 									String strVarName = listAllResultSets.get(0).get(idx).getName();
 									UnknownVariable varSolved = UnknownVarOperator.lookUpList(strVarName, listAlreadyPrinted);

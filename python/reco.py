@@ -111,9 +111,9 @@ if __name__ == "__main__":
                 probs = clf.predict(input_img[np.newaxis, num])
                 prediction = probs.argmax(axis=1)
 
-                # print('LABEL:\t', int(prediction[0]))
-                # print('PROBS:\t', probs[0][int(prediction[0])])  # probs.argmax(axis=1))
-                # print('IT IS:\t', model_labels[int(prediction[0])] + '\n')  # + '-' + probs[int(prediction[0])])
+                print('LABEL:\t', int(prediction[0]))
+                print('PROBS:\t', probs[0][int(prediction[0])])  # probs.argmax(axis=1))
+                print('IT IS:\t', model_labels[int(prediction[0])] + '\n')  # + '-' + probs[int(prediction[0])])
 
                 newSocket.send(bytes(model_labels[int(prediction[0])] + "\n", encoding='utf-8'))
                 newSocket.send(bytes(str(probs[0][int(prediction[0])]) + "\n", encoding='utf-8'))

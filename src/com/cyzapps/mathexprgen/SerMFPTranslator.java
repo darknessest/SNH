@@ -1429,7 +1429,7 @@ public class SerMFPTranslator   {
                         }
                     }
                 }
-                //TODO 求导阶数信息原来在这里
+                // 求导阶数信息原来在这里
                 if (bIsDefDeri) {
                     strReturn = "deri_ridders(\"" + addEscapes(strToDeri) + "\", \"" + addEscapes(strVarName) + "\", " + strVarVal + ", " + strOrder + ")";
                     curPos.mnPos += 2;  
