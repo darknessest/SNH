@@ -2,9 +2,6 @@
 	<CharCandSet Type="CLOSE_SQUARE_BRACKET" Font="">
 		<CharCand Type="ONE" Font="" MissRecogTimes="" />
 	</CharCandSet>
-	<CharCandSet Type="ROUND_BRACKET" Font="">
-		<CharCand Type="ONE" Font="" MissRecogTimes="" />
-	</CharCandSet>
 	<CharCandSet Type="SMALL_L" Font="">
 		<CharCand Type="ONE" Font="" MissRecogTimes="" />
 	</CharCandSet>

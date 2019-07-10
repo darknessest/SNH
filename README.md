@@ -18,3 +18,16 @@
 ## 【有待研究】
 - 1.极限怎样才能识别对！！！
 - 2.方程组的大括号一定要识别出来，不然拼不成方程组？
+
+## 【final_change】
+- 1.StructExprRecog.java 1406 // 2final_change: x 扩充到 times 和 dottimes
+扩增为：
+(listBaseULIdentified.get(idx ).mType == UnitProtoType.Type.TYPE_SMALL_X
+||listBaseULIdentified.get(idx ).mType == UnitProtoType.Type.TYPE_MULTIPLY
+||listBaseULIdentified.get(idx ).mType == UnitProtoType.Type.TYPE_DOT_MULTIPLY)
+- 2.UnitProtoypeMgr.java 1619 // 1final_change: TYPE_DOT_MULTIPLY -> TYPE_MULTIPLY
+- 3.StructExprRecog.java 4037 // 3final_change: getprincipleser(4)
+先去掉首尾匹配，
+(此步必要性等待验证：然后内部匹配变为全局匹配(剪切到4062,去掉else))，
+两处serDmlChild = mlistChildren.get(i)改为serDmlChild = mlistChildren.get(i).getPrincipleSER(4);
+重点!!!:clm中去掉(->1的纠错

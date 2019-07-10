@@ -1338,7 +1338,7 @@ public class StructExprRecog {
             // step 4.3 : at last, trying to rectify some miss-identified char levels
             for (int idx = 0; idx < listBaseULIdentified.size(); idx++) {
                 //分析中间结果之用
-                System.out.println(listBaseULIdentified.get(idx).mnExprRecogType+"\t"+listBaseULIdentified.get(idx).toString()+"\t"+listCharLevel.get(idx));
+                System.out.print(listBaseULIdentified.get(idx).mnExprRecogType+"\t"+listBaseULIdentified.get(idx).toString()+"\t"+listCharLevel.get(idx));
                 if (listBaseULIdentified.get(idx).mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
                         && (listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_EQUAL
                         || listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_EQUAL_ALWAYS)
@@ -1403,24 +1403,27 @@ public class StructExprRecog {
 
                 if (listBaseULIdentified.get(idx).mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && listCharLevel.get(idx) != 0) {
                     //todo dml_changed7: 先粗暴的认为dx不可能作为指数，后续可加入更高级的纠错逻辑（比如根据切块中心坐标进行纠错）。
-                    if (listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_SMALL_D && ((idx < listBaseULIdentified.size() - 1)
+                    if (listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_SMALL_D && (idx < listBaseULIdentified.size() - 1)
                             && (listBaseULIdentified.get(idx + 1).mType == UnitProtoType.Type.TYPE_SMALL_X
-                            ||listBaseULIdentified.get(idx + 1).mType == UnitProtoType.Type.TYPE_MULTIPLY
-                            ||listBaseULIdentified.get(idx + 1).mType == UnitProtoType.Type.TYPE_DOT_MULTIPLY))) {
+//                            ||listBaseULIdentified.get(idx + 1).mType == UnitProtoType.Type.TYPE_MULTIPLY
+//                            ||listBaseULIdentified.get(idx + 1).mType == UnitProtoType.Type.TYPE_DOT_MULTIPLY)
+                              )) {
                         listCharLevel.set(idx, 0);
                     }
                     //todo 2final_change: x 扩充到 times 和 dottimes |
-                    if (((idx > 0) && listBaseULIdentified.get(idx - 1).mType == UnitProtoType.Type.TYPE_SMALL_D)
+                    if ((listBaseULIdentified.get(idx - 1).mType == UnitProtoType.Type.TYPE_SMALL_D)&& (idx > 0)
                             &&(listBaseULIdentified.get(idx ).mType == UnitProtoType.Type.TYPE_SMALL_X
-                            ||listBaseULIdentified.get(idx ).mType == UnitProtoType.Type.TYPE_MULTIPLY
-                            ||listBaseULIdentified.get(idx ).mType == UnitProtoType.Type.TYPE_DOT_MULTIPLY)) {
+//                            ||listBaseULIdentified.get(idx ).mType == UnitProtoType.Type.TYPE_MULTIPLY
+//                            ||listBaseULIdentified.get(idx ).mType == UnitProtoType.Type.TYPE_DOT_MULTIPLY
+                              )) {
                         listCharLevel.set(idx, 0);
                     }
 
                     //todo dml_changed8：分数不能直接带指数，除非有括号。
                     if (idx > 0 && listBaseULIdentified.get(idx - 1).mnExprRecogType == EXPRRECOGTYPE_HLINECUT) {
-                        listCharLevel.set(idx, 0);
+                        listCharLevel.set(idx, 1);
                     }
+
                 }
 
                 //todo dml_changed9: 针对积分内容自动丢弃的问题----实验证明这个逻辑太暴力了，期待更优美的方案
@@ -1433,6 +1436,7 @@ public class StructExprRecog {
                 if (idx == nBiggestChildIdx && listBaseULIdentified.get(idx).mType == UnitProtoType.Type.TYPE_SMALL_PI) {
                     listBaseULIdentified.get(idx).setUnitType(UnitProtoType.Type.TYPE_BIG_PI);
                 }
+                System.out.println("\tafter: "+listCharLevel.get(idx));
             }
 
             // step 5, since different levels have been well-sorted, we merge them.
@@ -3862,7 +3866,6 @@ public class StructExprRecog {
                         }
                     }
 
-                    // 这块贼六！！！！
                     //第一个字符不是数字、不是字母等……那么可能识别错了
                     if (idx == 0) {
                         if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE
@@ -3882,38 +3885,38 @@ public class StructExprRecog {
                                 }
                             }
                         }
-                        if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && (serThisChild.isCloseBoundChar() || serThisChild.isBoundChar())) {
-                            if (serThisChild.isCloseBoundChar()) {
-                                serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
-                            } else if (serThisChild.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET) {
-                                boolean dmlMatch = false;
-                                StructExprRecog serDmlChild = null;
-                                for (int i = 1; i < mlistChildren.size() ; ++i) {
-                                    serDmlChild = mlistChildren.get(i);
-                                    if (serDmlChild.mType== UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET) {
-                                        dmlMatch = true;
-                                        break;
-                                    }
-                                }
-                                if (!dmlMatch) {
-                                    serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
-                                }
-                            }
-                            else if (serThisChild.mType == UnitProtoType.Type.TYPE_SQUARE_BRACKET) {
-                                boolean dmlMatch = false;
-                                StructExprRecog serDmlChild = null;
-                                for (int i = 1; i < mlistChildren.size() ; ++i) {
-                                    serDmlChild = mlistChildren.get(i);
-                                    if (serDmlChild.mType== UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET) {
-                                        dmlMatch = true;
-                                        break;
-                                    }
-                                }
-                                if (!dmlMatch) {
-                                    serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
-                                }
-                            }
-                        }
+//                        if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && (serThisChild.isCloseBoundChar() || serThisChild.isBoundChar())) {
+//                            if (serThisChild.isCloseBoundChar()) {
+//                                serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+//                            } else if (serThisChild.mType == UnitProtoType.Type.TYPE_ROUND_BRACKET) {
+//                                boolean dmlMatch = false;
+//                                StructExprRecog serDmlChild = null;
+//                                for (int i = 1; i < mlistChildren.size() ; ++i) {
+//                                    serDmlChild = mlistChildren.get(i);
+//                                    if (serDmlChild.mType== UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET) {
+//                                        dmlMatch = true;
+//                                        break;
+//                                    }
+//                                }
+//                                if (!dmlMatch) {
+//                                    serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+//                                }
+//                            }
+//                            else if (serThisChild.mType == UnitProtoType.Type.TYPE_SQUARE_BRACKET) {
+//                                boolean dmlMatch = false;
+//                                StructExprRecog serDmlChild = null;
+//                                for (int i = 1; i < mlistChildren.size() ; ++i) {
+//                                    serDmlChild = mlistChildren.get(i);
+//                                    if (serDmlChild.mType== UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET) {
+//                                        dmlMatch = true;
+//                                        break;
+//                                    }
+//                                }
+//                                if (!dmlMatch) {
+//                                    serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+//                                }
+//                            }
+//                        }
                     }
                     //最后一个字符
                     else if (idx == mlistChildren.size() - 1) {
@@ -3933,38 +3936,38 @@ public class StructExprRecog {
                                 }
                             }
                         }
-                        if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && (serThisChild.isCloseBoundChar() || serThisChild.isBoundChar())) {
-                            if (serThisChild.isBoundChar()) {
-                                serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
-                            } else if (serThisChild.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET) {
-                                boolean dmlMatch = false;
-                                StructExprRecog serDmlChild = null;
-                                for (int i = mlistChildren.size()-1; i >=0 ; --i) {
-                                    serDmlChild = mlistChildren.get(i);
-                                    if (serDmlChild.mType== UnitProtoType.Type.TYPE_ROUND_BRACKET) {
-                                        dmlMatch = true;
-                                        break;
-                                    }
-                                }
-                                if (!dmlMatch) {
-                                    serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
-                                }
-                            }
-                            else if (serThisChild.mType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET) {
-                                boolean dmlMatch = false;
-                                StructExprRecog serDmlChild = null;
-                                for (int i = mlistChildren.size()-1; i >=0 ; --i) {
-                                    serDmlChild = mlistChildren.get(i);
-                                    if (serDmlChild.mType== UnitProtoType.Type.TYPE_SQUARE_BRACKET) {
-                                        dmlMatch = true;
-                                        break;
-                                    }
-                                }
-                                if (!dmlMatch) {
-                                    serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
-                                }
-                            }
-                        }
+//                        if (serThisChild.mnExprRecogType == EXPRRECOGTYPE_ENUMTYPE && (serThisChild.isCloseBoundChar() || serThisChild.isBoundChar())) {
+//                            if (serThisChild.isBoundChar()) {
+//                                serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+//                            } else if (serThisChild.mType == UnitProtoType.Type.TYPE_CLOSE_ROUND_BRACKET) {
+//                                boolean dmlMatch = false;
+//                                StructExprRecog serDmlChild = null;
+//                                for (int i = mlistChildren.size()-1; i >=0 ; --i) {
+//                                    serDmlChild = mlistChildren.get(i);
+//                                    if (serDmlChild.mType== UnitProtoType.Type.TYPE_ROUND_BRACKET) {
+//                                        dmlMatch = true;
+//                                        break;
+//                                    }
+//                                }
+//                                if (!dmlMatch) {
+//                                    serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+//                                }
+//                            }
+//                            else if (serThisChild.mType == UnitProtoType.Type.TYPE_CLOSE_SQUARE_BRACKET) {
+//                                boolean dmlMatch = false;
+//                                StructExprRecog serDmlChild = null;
+//                                for (int i = mlistChildren.size()-1; i >=0 ; --i) {
+//                                    serDmlChild = mlistChildren.get(i);
+//                                    if (serDmlChild.mType== UnitProtoType.Type.TYPE_SQUARE_BRACKET) {
+//                                        dmlMatch = true;
+//                                        break;
+//                                    }
+//                                }
+//                                if (!dmlMatch) {
+//                                    serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_ONE, "");
+//                                }
+//                            }
+//                        }
                     }
                     //剩下的都在这
                     else {
@@ -4032,13 +4035,14 @@ public class StructExprRecog {
                                 }
                             }
                             //todo dml_changed5.2 括号不匹配不可---初级纠错，可进一步完善括号匹配机制
+                            //todo 3final_change: getprincipleser(4)
                             else if (serThisChild.isCloseBoundChar() || serThisChild.isBoundChar()) {
                                 boolean dmlMatch = false;
                                 StructExprRecog serDmlChild = null;
                                 //这里是闭括号，去前面找开括号
                                 if (serThisChild.isCloseBoundChar()) {
                                     for (int i = 0; i < idx; ++i) {
-                                        serDmlChild = mlistChildren.get(i);
+                                        serDmlChild = mlistChildren.get(i).getPrincipleSER(4);
                                         if (serDmlChild.isBoundChar()) {
                                             dmlMatch = true;
                                             break;
@@ -4052,7 +4056,7 @@ public class StructExprRecog {
                                 else {
                                     dmlMatch = false;
                                     for (int i = idx + 1; i < mlistChildren.size(); ++i) {
-                                        serDmlChild = mlistChildren.get(i);
+                                        serDmlChild = mlistChildren.get(i).getPrincipleSER(4);
                                         if (serDmlChild.isCloseBoundChar()) {
                                             dmlMatch = true;
                                             break;
@@ -4087,6 +4091,7 @@ public class StructExprRecog {
                                 serThisChild.changeSEREnumType(UnitProtoType.Type.TYPE_SMALL_X, serThisChild.mstrFont);
                             }
                         }
+
                     }
                 }
                 break;
@@ -4188,8 +4193,7 @@ public class StructExprRecog {
             LinkedList<Integer> listVLnCharIndices = new LinkedList<Integer>();
             for (int idx = 0; idx < mlistChildren.size(); idx++) {
                 StructExprRecog serThisChild = mlistChildren.get(idx).getPrincipleSER(4);
-                //todo by LH
-                /*change some D to 0*/
+                //todo by LH  change some D to 0
                 if(idx>=1) {
                     StructExprRecog curSer = mlistChildren.get(idx);
                     StructExprRecog preSer = mlistChildren.get(idx-1);
